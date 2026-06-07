@@ -57,6 +57,14 @@
     background: transparent; border: 0; cursor: pointer; padding: 2px 6px; border-radius: var(--radius-sm); }
   .modal-x:hover { color: var(--color-signal); background: var(--signal-bg); }
   .modal-box iframe { flex: 1; width: 100%; height: auto; border: 0; background: var(--bg-primary); display: block; }
+  /* display-font substitution caution */
+  .font-note { max-width: 1200px; margin: 0 auto 14px; padding: 11px 14px;
+    border: 1px solid var(--border-default); border-left: 3px solid var(--color-highlight);
+    border-radius: var(--radius-sm); background: var(--highlight-bg);
+    font-family: var(--font-body); font-size: 12.5px; line-height: 1.55; color: var(--text-secondary); }
+  .font-note b { font-family: var(--font-heading); color: var(--text-primary); }
+  .font-note a { color: var(--color-signal); text-decoration: none; }
+  .font-note a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -71,6 +79,13 @@
       <span class="meta">v1.0.0</span>
       <button class="tg" id="themeBtn" type="button">Toggle theme</button>
     </div>
+  </div>
+  <div class="font-note">
+    <b>Display font &mdash;</b> the intended display typeface is <b>Berkeley Mono</b> (a commercial font by
+    <a href="https://usgraphics.com/typefaces/berkeley-mono" target="_blank" rel="noopener">U.S. Graphics</a>).
+    This public gallery renders <b>Fira Code</b> in its place &mdash; Berkeley Mono is not redistributed here.
+    The type specimens still name the intended Berkeley Mono weights, but the rendered glyphs are Fira Code.
+    See <b>README.md &rarr; Display font</b> to restore it after cloning.
   </div>
   <div class="wrap" id="wrap"></div>
   <footer>QBall Design System · light + dark component contact-sheet</footer>
