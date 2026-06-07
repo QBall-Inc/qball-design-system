@@ -12,9 +12,12 @@
   body { background: var(--bg-primary); color: var(--text-secondary); padding: clamp(20px, 5vw, 56px); }
   .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
     margin: 0 0 8px; }
-  h1 { font-family: var(--font-display); font-size: clamp(30px, 5vw, 52px); font-weight: 700;
-    letter-spacing: -2px; color: var(--text-primary); margin: 0 0 6px; line-height: 1; }
-  .sub { font-family: var(--font-body); font-size: 14px; color: var(--text-muted); margin: 0; max-width: 60ch; }
+  h1 { font-family: var(--font-display); font-size: clamp(32px, 4.6vw, 56px); font-weight: 700;
+    letter-spacing: -1.5px; color: var(--text-primary); margin: 0 0 10px; line-height: 1.02;
+    white-space: nowrap; }
+  @media (max-width: 560px) { h1 { white-space: normal; } }
+  .sub { font-family: var(--font-body); font-size: clamp(15px, 1.25vw, 18px); line-height: 1.5;
+    color: var(--text-muted); margin: 0; max-width: 80ch; }
   .meta { font-family: var(--font-ui); font-size: 11px; letter-spacing: 1.25px; text-transform: uppercase;
     color: var(--text-muted); }
   .toolbar { display: flex; gap: 8px; align-items: center; }
@@ -22,14 +25,15 @@
     border: 1px solid var(--color-signal); color: var(--color-signal); background: transparent; cursor: pointer; }
   .tg:hover { background: var(--signal-bg); }
   .wrap { margin: 0; }
-  h2 { font-family: var(--font-heading); font-size: 16px; font-weight: 600; color: var(--text-primary);
-    letter-spacing: -0.3px; margin: 40px 0 4px; padding-top: 18px; border-top: 1px solid var(--border-default); }
-  .sec-note { font-family: var(--font-body); font-size: 12.5px; color: var(--text-muted); margin: 0 0 18px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  h2 { font-family: var(--font-heading); font-size: clamp(18px, 1.7vw, 24px); font-weight: 600; color: var(--text-primary);
+    letter-spacing: -0.3px; margin: 48px 0 5px; padding-top: 18px; border-top: 1px solid var(--border-default); }
+  .sec-note { font-family: var(--font-body); font-size: clamp(13px, 1.05vw, 15.5px); color: var(--text-muted); margin: 0 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
   .cell { border: 0.5px solid var(--border-default); border-radius: var(--radius-md); overflow: hidden;
     background: var(--bg-surface); display: flex; flex-direction: column; }
   .cell.tall { grid-column: span 2; }
-  @media (max-width: 760px) { .cell.tall { grid-column: span 1; } }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px)  { .grid { grid-template-columns: minmax(0, 1fr); } .cell.tall { grid-column: span 1; } }
   .cap { display: flex; align-items: center; justify-content: space-between; gap: 8px;
     padding: 9px 13px; border-bottom: 0.5px solid var(--border-default); }
   .cap b { font-family: var(--font-heading); font-size: 12px; font-weight: 600; color: var(--text-primary); }
@@ -58,10 +62,10 @@
   .modal-x:hover { color: var(--color-signal); background: var(--signal-bg); }
   .modal-box iframe { flex: 1; width: 100%; height: auto; border: 0; background: var(--bg-primary); display: block; }
   /* display-font substitution caution */
-  .font-note { margin: 0 0 14px; padding: 11px 14px;
+  .font-note { margin: 26px 0 18px; padding: 13px 16px;
     border: 1px solid var(--border-default); border-left: 3px solid var(--color-highlight);
     border-radius: var(--radius-sm); background: var(--highlight-bg);
-    font-family: var(--font-body); font-size: 12.5px; line-height: 1.55; color: var(--text-secondary); }
+    font-family: var(--font-body); font-size: clamp(13px, 1.05vw, 15px); line-height: 1.55; color: var(--text-secondary); }
   .font-note b { font-family: var(--font-heading); color: var(--text-primary); }
   .font-note a { color: var(--color-signal); text-decoration: none; }
   .font-note a:hover { text-decoration: underline; }
@@ -70,10 +74,10 @@
 <body>
   <div class="top">
     <div>
-      <h1>Component gallery</h1>
-      <p class="sub">Every component in the QBall Design System, live in light + dark. Each tile is its
-        own <code class="code" style="font-size:11px">preview/*.html</code> card — the canonical state matrix.
-        Toggle the theme to check both. Full build guidance in <b>COMPONENT-LIBRARY.md</b>.</p>
+      <h1>QBall Design System</h1>
+      <p class="sub">Component gallery — every component, live in light + dark. Each tile is its own
+        <code class="code" style="font-size:0.85em">preview/*.html</code> card, the canonical state matrix.
+        Toggle the theme to check both; full build guidance in <b>COMPONENT-LIBRARY.md</b>.</p>
     </div>
     <div class="toolbar">
       <span class="meta">v1.0.0</span>
