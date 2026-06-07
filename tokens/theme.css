@@ -1,0 +1,120 @@
+/* ============================================================
+   Ashay Kubal Design System — Tailwind v4 theme
+   Generated from colors_and_type.css (the canonical token source).
+   Values mirror it EXACTLY — never re-derive a color/spacing by eye.
+   Light is the default; [data-theme="dark"] flips the theme (same
+   mechanism the CSS source uses). `prefers-color-scheme: dark` is
+   honored too unless [data-theme="light"] is set.
+
+   Usage in a Vite + React + Tailwind app:
+     @import "tailwindcss";
+     @import "./tokens/theme.css";
+     @import "./colors_and_type.css";   // optional: brings the @font-face + element styles
+   Then: bg-bg, bg-surface, text-fg, text-signal, border-strong,
+         font-display, rounded-md, text-up/text-down, ease-out, etc.
+   ============================================================ */
+
+@theme {
+  /* ----- font families ----- */
+  /* Ships as Fira Code in the public repo; intended face is Berkeley Mono
+     (commercial, https://usgraphics.com) — restore per README. */
+  --font-display: "Fira Code", "SF Mono", "Cascadia Code", monospace;
+  --font-heading: "Fira Code", "SF Mono", "Cascadia Code", monospace;
+  --font-body:    "Syne", "Inter", system-ui, sans-serif;
+  --font-ui:      "Fira Code", "SF Mono", monospace;
+  --font-quote:   "Instrument Serif", "Georgia", serif;
+  --font-code:    "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+
+  /* ----- type scale (px) ----- */
+  --text-h1: 56px;  --text-h2: 36px;  --text-h3: 24px;  --text-h4: 18px;
+  --text-body: 16px; --text-quote: 20px; --text-code: 14px;
+  --text-caption: 12px; --text-tag: 11px; --text-button: 13px;
+
+  /* ----- color: light (default) ----- */
+  --color-bg: #F7F3EE;            /* parchment */
+  --color-surface: #EDE8E1;
+  --color-fg: #141414;            /* primary text (void) */
+  --color-fg-secondary: #57534E;  /* earth */
+  --color-fg-muted: #78716C;      /* stone */
+  --color-signal: #3F6B5B;        /* sage — all wayfinding */
+  --color-highlight: #B45309;     /* amber — featured/secondary */
+  --color-error: #991B1B;
+  --color-success: #3F6B5B;
+  --color-warning: #B45309;
+  --color-info: #78716C;
+  --color-border-default: rgba(0,0,0,0.06);
+  --color-border-strong: rgba(0,0,0,0.14);
+  --color-signal-bg: rgba(63,107,91,0.10);
+  --color-highlight-bg: rgba(180,83,9,0.10);
+
+  /* finance / data palette — SEMANTICS ONLY, never wayfinding */
+  --color-up: #2E7D4F;  --color-down: #B5342B;  --color-warn: #9A7D0F;
+  --color-data-info: #2C6395;  --color-flat: #78716C;
+  --color-up-bg: rgba(46,125,79,0.10);
+  --color-down-bg: rgba(181,52,43,0.10);
+  --color-warn-bg: rgba(154,125,15,0.12);
+  --color-data-info-bg: rgba(44,99,149,0.10);
+
+  /* grounding annotation — deliberately outside the finance palette */
+  --color-anno-source: #4E6577;
+  --color-anno-source-bg: rgba(78,101,119,0.12);
+
+  /* ----- radii ----- (never above lg; pills are off-brand) */
+  --radius-sm: 4px;  --radius-md: 8px;  --radius-lg: 12px;
+
+  /* ----- spacing (8px base; do not invent intermediate steps) ----- */
+  --spacing-xs: 4px; --spacing-sm: 8px; --spacing-md: 16px;
+  --spacing-lg: 32px; --spacing-xl: 64px; --spacing-2xl: 128px;
+
+  /* ----- content widths ----- */
+  --container-body: 720px; --container-page: 1200px;
+  --container-code: 800px; --container-quote: 480px;
+
+  /* ----- motion ----- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms; --duration-base: 200ms; --duration-slow: 360ms;
+}
+
+/* ----- color: dark (charcoal) — set data-theme="dark" on <html> ----- */
+[data-theme="dark"] {
+  --color-bg: #1E1D1B;
+  --color-surface: #2A2826;
+  --color-fg: #E7E0D6;            /* bone */
+  --color-fg-secondary: #A8A29E;
+  --color-fg-muted: #78716C;
+  --color-signal: #5B9E87;
+  --color-highlight: #D97706;
+  --color-error: #EF4444;
+  --color-success: #5B9E87;
+  --color-warning: #D97706;
+  --color-info: #A8A29E;
+  --color-border-default: rgba(255,255,255,0.06);
+  --color-border-strong: rgba(255,255,255,0.14);
+  --color-signal-bg: rgba(91,158,135,0.15);
+  --color-highlight-bg: rgba(217,119,6,0.15);
+  --color-up: #4FB07A;  --color-down: #E2705F;  --color-warn: #D9B43C;
+  --color-data-info: #5B9BD6;  --color-flat: #A8A29E;
+  --color-up-bg: rgba(79,176,122,0.15);
+  --color-down-bg: rgba(226,112,95,0.15);
+  --color-warn-bg: rgba(217,180,60,0.16);
+  --color-data-info-bg: rgba(91,155,214,0.15);
+  --color-anno-source: #93A7B5;
+  --color-anno-source-bg: rgba(147,167,181,0.16);
+}
+
+/* Auto dark unless explicitly light — mirrors the CSS source */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #1E1D1B; --color-surface: #2A2826;
+    --color-fg: #E7E0D6; --color-fg-secondary: #A8A29E; --color-fg-muted: #78716C;
+    --color-signal: #5B9E87; --color-highlight: #D97706;
+    --color-error: #EF4444; --color-success: #5B9E87; --color-warning: #D97706; --color-info: #A8A29E;
+    --color-border-default: rgba(255,255,255,0.06); --color-border-strong: rgba(255,255,255,0.14);
+    --color-signal-bg: rgba(91,158,135,0.15); --color-highlight-bg: rgba(217,119,6,0.15);
+    --color-up: #4FB07A; --color-down: #E2705F; --color-warn: #D9B43C; --color-data-info: #5B9BD6; --color-flat: #A8A29E;
+    --color-up-bg: rgba(79,176,122,0.15); --color-down-bg: rgba(226,112,95,0.15);
+    --color-warn-bg: rgba(217,180,60,0.16); --color-data-info-bg: rgba(91,155,214,0.15);
+    --color-anno-source: #93A7B5; --color-anno-source-bg: rgba(147,167,181,0.16);
+  }
+}

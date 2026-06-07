@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QBall Design System — component gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  html, body { margin: 0; }
+  body { background: var(--bg-primary); color: var(--text-secondary); padding: clamp(20px, 5vw, 56px); }
+  .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+    max-width: 1200px; margin: 0 auto 8px; }
+  h1 { font-family: var(--font-display); font-size: clamp(30px, 5vw, 52px); font-weight: 700;
+    letter-spacing: -2px; color: var(--text-primary); margin: 0 0 6px; line-height: 1; }
+  .sub { font-family: var(--font-body); font-size: 14px; color: var(--text-muted); margin: 0; max-width: 60ch; }
+  .meta { font-family: var(--font-ui); font-size: 11px; letter-spacing: 1.25px; text-transform: uppercase;
+    color: var(--text-muted); }
+  .toolbar { display: flex; gap: 8px; align-items: center; }
+  .tg { font-family: var(--font-ui); font-size: 12px; padding: 7px 14px; border-radius: var(--radius-sm);
+    border: 1px solid var(--color-signal); color: var(--color-signal); background: transparent; cursor: pointer; }
+  .tg:hover { background: var(--signal-bg); }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  h2 { font-family: var(--font-heading); font-size: 16px; font-weight: 600; color: var(--text-primary);
+    letter-spacing: -0.3px; margin: 40px 0 4px; padding-top: 18px; border-top: 1px solid var(--border-default); }
+  .sec-note { font-family: var(--font-body); font-size: 12.5px; color: var(--text-muted); margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  .cell { border: 0.5px solid var(--border-default); border-radius: var(--radius-md); overflow: hidden;
+    background: var(--bg-surface); display: flex; flex-direction: column; }
+  .cell.tall { grid-column: span 2; }
+  @media (max-width: 760px) { .cell.tall { grid-column: span 1; } }
+  .cap { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 9px 13px; border-bottom: 0.5px solid var(--border-default); }
+  .cap b { font-family: var(--font-heading); font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .cap a { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); text-decoration: none; }
+  .cap a:hover { color: var(--color-signal); }
+  iframe { width: 100%; height: 240px; border: 0; background: var(--bg-primary); display: block; }
+  iframe.h-sm { height: 180px; } iframe.h-lg { height: 360px; } iframe.h-xl { height: 440px; }
+  footer { max-width: 1200px; margin: 48px auto 0; padding-top: 18px; border-top: 1px solid var(--border-default);
+    font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); }
+  /* in-page preview modal (replaces opening previews in a new tab) */
+  .modal-overlay { position: fixed; inset: 0; z-index: 50; display: none;
+    align-items: center; justify-content: center; padding: clamp(16px, 4vw, 48px);
+    background: rgba(0,0,0,0.55); }
+  .modal-overlay.open { display: flex; }
+  .modal-box { width: min(1100px, 100%); height: min(80vh, 900px); display: flex; flex-direction: column;
+    background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+    overflow: hidden; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 11px 14px; border-bottom: 1px solid var(--border-default); }
+  .modal-head b { font-family: var(--font-heading); font-size: 13px; color: var(--text-primary); }
+  .modal-actions { display: flex; align-items: center; gap: 14px; }
+  .modal-actions a { font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); text-decoration: none; }
+  .modal-actions a:hover { color: var(--color-signal); }
+  .modal-x { font-family: var(--font-ui); font-size: 16px; line-height: 1; color: var(--text-muted);
+    background: transparent; border: 0; cursor: pointer; padding: 2px 6px; border-radius: var(--radius-sm); }
+  .modal-x:hover { color: var(--color-signal); background: var(--signal-bg); }
+  .modal-box iframe { flex: 1; width: 100%; height: auto; border: 0; background: var(--bg-primary); display: block; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <h1>Component gallery</h1>
+      <p class="sub">Every component in the QBall Design System, live in light + dark. Each tile is its
+        own <code class="code" style="font-size:11px">preview/*.html</code> card — the canonical state matrix.
+        Toggle the theme to check both. Full build guidance in <b>COMPONENT-LIBRARY.md</b>.</p>
+    </div>
+    <div class="toolbar">
+      <span class="meta">v1.0.0</span>
+      <button class="tg" id="themeBtn" type="button">Toggle theme</button>
+    </div>
+  </div>
+  <div class="wrap" id="wrap"></div>
+  <footer>QBall Design System · light + dark component contact-sheet</footer>
+
+  <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-label="Component preview">
+    <div class="modal-box">
+      <div class="modal-head">
+        <b id="modalTitle"></b>
+        <div class="modal-actions">
+          <a id="modalNewTab" href="#" target="_blank" rel="noopener">open in new tab ↗</a>
+          <button class="modal-x" id="modalClose" type="button" aria-label="Close preview">✕</button>
+        </div>
+      </div>
+      <iframe id="modalFrame" title="Component preview"></iframe>
+    </div>
+  </div>
+
+<script>
+  const SECTIONS = [
+    { t: "Foundations", note: "Color, type, spacing, radii, borders, motion — the locked token layer.", h: "h-sm", items: [
+      ["theme.html","Theme"],["colors-signal.html","Signal · sage + amber"],["colors-data.html","Finance / data palette"],
+      ["colors-semantic.html","Semantic colors"],["colors-light-neutrals.html","Neutrals · light"],["colors-dark-neutrals.html","Neutrals · dark"],
+      ["type-display.html","Type · display"],["type-headings.html","Type · headings"],["type-body.html","Type · body"],["type-code.html","Type · code"],
+      ["spacing-scale.html","Spacing scale"],["radii.html","Radii"],["borders.html","Borders"],["motion.html","Motion"],["voice.html","Voice"] ] },
+    { t: "Forms & controls", note: "Buttons, inputs, the brand-native squared toggle, select, segmented, secret input.", items: [
+      ["buttons.html","Buttons"],["buttons-states.html","Button states"],["form-input.html","Text input + field"],
+      ["form-controls.html","Form controls"],["secret-input.html","Secret / masked input"],["select.html","Select"],["toggle.html","Switch + segmented"] ] },
+    { t: "Data display & charts", note: "Tables, stats, meters, badges, sparklines, and the D3 candlestick (color + chrome decisions).", items: [
+      ["data-table.html","Data table"],["stats-meters.html","Stats + meters"],["tags.html","Tags + badges"],
+      ["chart-candlestick-color.html","Candlestick · color",true],["chart-candlestick-chrome.html","Candlestick · chrome",true],["tooltip-avatar.html","Tooltip + avatar"] ] },
+    { t: "Overlays, feedback & states", note: "Modal (border+scrim lift, no shadow), toast, banner, loading, empty/error.", items: [
+      ["modal.html","Modal"],["toast.html","Toast"],["banner.html","Banner / callout"],
+      ["loading.html","Loading · skeleton + spinner"],["states.html","Empty / error states"] ] },
+    { t: "App chrome", note: "Two directions: traditional bar vs the floating command island. Plus auth surfaces.", h: "h-lg", items: [
+      ["app-chrome-island.html","App chrome · island",true],["app-chrome-traditional.html","App chrome · traditional",true],["auth.html","Auth"] ] },
+    { t: "AI conversation & grounding", note: "The terminal transcript + the grounding wave-flag (source / unverified).", h: "h-lg", items: [
+      ["conversation-terminal.html","Terminal conversation",true] ] },
+    { t: "Briefings", note: "The LLM digest card — unread / read / loading / empty.", items: [
+      ["briefing.html","Briefing / digest card",true] ] },
+    { t: "Brand & misc", note: "Logo, iconography (Lucide), editorial bits.", items: [
+      ["logo.html","Logo"],["iconography.html","Iconography · Lucide"],["card-featured.html","Featured card"],
+      ["code-block.html","Code block"],["pull-quote.html","Pull quote"] ] }
+  ];
+  const wrap = document.getElementById("wrap");
+  SECTIONS.forEach(sec => {
+    const h = document.createElement("h2"); h.textContent = sec.t; wrap.appendChild(h);
+    const n = document.createElement("p"); n.className = "sec-note"; n.textContent = sec.note; wrap.appendChild(n);
+    const g = document.createElement("div"); g.className = "grid";
+    sec.items.forEach(([file, label, tall]) => {
+      const cell = document.createElement("div"); cell.className = "cell" + (tall ? " tall" : "");
+      const cap = document.createElement("div"); cap.className = "cap";
+      cap.innerHTML = '<b></b><a class="open-modal" href="preview/'+file+'" rel="noopener">open ↗</a>';
+      cap.querySelector("b").textContent = label;
+      const capLink = cap.querySelector("a"); capLink.dataset.file = file; capLink.dataset.label = label;
+      const f = document.createElement("iframe"); f.src = "preview/" + file; f.loading = "lazy";
+      if (sec.h) f.className = sec.h; if (tall) f.className = "h-lg";
+      cell.append(cap, f); g.appendChild(cell);
+    });
+    wrap.appendChild(g);
+  });
+  // theme toggle — propagate to every iframe card
+  const root = document.documentElement, btn = document.getElementById("themeBtn");
+  function apply(t){ root.setAttribute("data-theme", t);
+    document.querySelectorAll("iframe").forEach(f => { try { f.contentDocument.documentElement.setAttribute("data-theme", t); } catch(e){} }); }
+  btn.addEventListener("click", () => apply(root.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+  // re-apply to each frame once it loads
+  document.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => {
+    try { f.contentDocument.documentElement.setAttribute("data-theme", root.getAttribute("data-theme")); } catch(e){} }));
+
+  // in-page preview modal (replaces opening previews in a new tab)
+  const modal = document.getElementById("modal");
+  const modalFrame = document.getElementById("modalFrame");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalNewTab = document.getElementById("modalNewTab");
+  function openModal(file, label){
+    modalTitle.textContent = label || file;
+    modalNewTab.href = "preview/" + file;
+    modalFrame.src = "preview/" + file;   // load fires the theme-propagation listener above
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){
+    modal.classList.remove("open");
+    modalFrame.src = "about:blank";
+    document.body.style.overflow = "";
+  }
+  // left-click opens the modal; cmd/ctrl/shift-click falls through to the href (native new tab)
+  wrap.addEventListener("click", e => {
+    const a = e.target.closest("a.open-modal"); if (!a) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault(); openModal(a.dataset.file, a.dataset.label);
+  });
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+</script>
+</body>
+</html>

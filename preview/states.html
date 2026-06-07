@@ -1,0 +1,94 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Empty & Error States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);
+    background:var(--bg-primary);display:flex;flex-direction:column}
+  .panel .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);
+    padding:12px 14px 0}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · empty &amp; error</div>
+      <h3>When there's nothing — or something went wrong</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- EMPTY -->
+    <div class="panel">
+      <span class="state">empty · neutral</span>
+      <div class="state-fig">
+        <span class="state-fig__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>
+        </span>
+        <h4 class="state-fig__title">Your watchlist is empty</h4>
+        <p class="state-fig__msg">Add a ticker to start tracking prices and set alerts.</p>
+        <div class="state-fig__actions">
+          <button class="btn btn--primary">Add a ticker</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NO RESULTS -->
+    <div class="panel">
+      <span class="state">empty · no results</span>
+      <div class="state-fig">
+        <span class="state-fig__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <h4 class="state-fig__title">No matches for “ZXQ”</h4>
+        <p class="state-fig__msg">Check the symbol, or search by company name.</p>
+        <div class="state-fig__actions">
+          <button class="btn btn--secondary">Clear search</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="panel">
+      <span class="state">error · with retry</span>
+      <div class="state-fig state-fig--error">
+        <span class="state-fig__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </span>
+        <h4 class="state-fig__title">Couldn't load this chart</h4>
+        <p class="state-fig__msg">The data provider didn't respond. Your other data is unaffected.</p>
+        <div class="state-fig__actions">
+          <button class="btn btn--secondary">Retry</button>
+          <button class="btn btn--ghost">Dismiss</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

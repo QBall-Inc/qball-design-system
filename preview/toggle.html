@@ -1,0 +1,97 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Toggle / Switch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:560px}
+  .variant{border:.5px solid var(--border-default);border-radius:var(--radius-md);
+    background:var(--bg-surface);padding:18px;display:flex;flex-direction:column;gap:14px}
+  .variant__top{display:flex;align-items:center;gap:8px}
+  .variant__name{font-family:var(--font-heading);font-size:14px;font-weight:600;color:var(--text-primary)}
+  .pick{font-size:9px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;
+    padding:2px 7px;border-radius:var(--radius-sm)}
+  .pick--rec{color:var(--color-signal);background:var(--signal-bg)}
+  .pick--alt{color:var(--text-muted);background:var(--bg-primary);border:.5px solid var(--border-strong)}
+  .pick--exc{color:var(--data-warn);background:var(--data-warn-bg)}
+  .rowset{display:flex;flex-direction:column;gap:12px}
+  .desc{font-size:11px;line-height:1.5;color:var(--text-muted)}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · toggle</div>
+      <h3>Three ways to flip a setting</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- 1 · brand-native switch -->
+    <div class="variant">
+      <div class="variant__top">
+        <span class="variant__name">Switch</span>
+        <span class="pick pick--rec">recommended</span>
+      </div>
+      <div class="rowset">
+        <label class="switch"><input type="checkbox"><span class="switch__ui"></span> Off</label>
+        <label class="switch"><input type="checkbox" checked><span class="switch__ui"></span> On</label>
+        <label class="switch"><input type="checkbox" checked disabled><span class="switch__ui"></span> Disabled</label>
+      </div>
+      <p class="desc">Rounded-rect knob, 4px radius — on-brand. Maps to <code>alerts.enabled</code>. Sage when on.</p>
+    </div>
+
+    <!-- 2 · segmented control -->
+    <div class="variant">
+      <div class="variant__top">
+        <span class="variant__name">Segmented</span>
+        <span class="pick pick--alt">for 2–3 options</span>
+      </div>
+      <div class="rowset">
+        <div class="segmented" role="group" aria-label="Alert direction">
+          <button aria-pressed="true">Above</button>
+          <button aria-pressed="false">Below</button>
+        </div>
+        <div class="segmented" role="group" aria-label="Range">
+          <button aria-pressed="false">1D</button>
+          <button aria-pressed="true">1W</button>
+          <button aria-pressed="false">1M</button>
+        </div>
+      </div>
+      <p class="desc">When the choice is a direction or a small set, a segmented control beats a switch — both states stay visible.</p>
+    </div>
+
+  </div>
+
+<script>
+  // segmented behaves like a radio
+  document.querySelectorAll('.segmented').forEach(g=>{
+    g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+    }));
+  });
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

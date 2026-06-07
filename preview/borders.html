@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Borders & dividers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Syne&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:22px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;box-sizing:border-box}
+  .row{display:grid;grid-template-columns:130px 1fr;gap:18px;align-items:center}
+  .name{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);letter-spacing:.5px}
+  .card{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:8px;padding:10px 14px;font-family:var(--font-ui);font-size:12px;color:var(--text-primary)}
+  .accent{background:var(--bg-surface);border-left:3px solid var(--color-signal);padding:10px 14px;font-family:var(--font-code);font-size:12px;color:var(--text-primary)}
+  hr{border:0;border-top:1px solid var(--border-default);margin:0;flex:1}
+</style>
+</head><body>
+  <div class="row"><div class="name">Card · 0.5px</div><div class="card">background: surface · radius 8px · border 0.5px</div></div>
+  <div class="row"><div class="name">Sage accent · 3px</div><div class="accent">code block / pull quote — radius 0 on accented edge</div></div>
+  <div class="row"><div class="name">Divider · 1px</div><hr></div>
+</body></html>

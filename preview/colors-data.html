@@ -1,0 +1,129 @@
+<!-- @dsCard group="Colors" -->
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Colors — Finance / Data Palette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg-primary);
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    box-sizing:border-box;
+    font-family:var(--font-ui);
+    background-color:var(--border-strong);
+  }
+  .panel{padding:28px 32px;display:flex;flex-direction:column;gap:18px}
+  .panel--light{background:#F7F3EE}
+  .panel--dark{background:#1E1D1B}
+  .panel__head{
+    font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;
+    text-transform:uppercase;display:flex;align-items:baseline;gap:8px;
+  }
+  .panel--light .panel__head{color:#78716C}
+  .panel--dark .panel__head{color:#A8A29E}
+  .panel__head b{font-weight:600}
+  .panel--light .panel__head b{color:#141414}
+  .panel--dark .panel__head b{color:#E7E0D6}
+
+  .row{display:grid;grid-template-columns:18px 92px 1fr auto;align-items:center;gap:12px}
+  .dot{width:14px;height:14px;border-radius:4px}
+  .nm{font-size:12px;font-weight:500}
+  .panel--light .nm{color:#141414}
+  .panel--dark .nm{color:#E7E0D6}
+  .hex{font-size:11px;letter-spacing:.4px}
+  .panel--light .hex{color:#78716C}
+  .panel--dark .hex{color:#78716C}
+  .badge{
+    font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;
+    display:inline-flex;align-items:center;gap:6px;justify-self:start;
+  }
+  .sample{
+    font-family:var(--font-display);font-variant-numeric:tabular-nums;
+    font-size:13px;font-weight:600;text-align:right;
+  }
+</style>
+</head><body>
+  <!-- LIGHT -->
+  <section class="panel panel--light" data-theme="light">
+    <div class="panel__head"><b>Finance palette</b> · light / parchment</div>
+
+    <div class="row">
+      <span class="dot" style="background:var(--data-up)"></span>
+      <span class="nm">Up / gain</span>
+      <span class="badge" style="color:var(--data-up);background:var(--data-up-bg)">▲ buy signal</span>
+      <span class="sample" style="color:var(--data-up)">+2.34%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-down)"></span>
+      <span class="nm">Down / loss</span>
+      <span class="badge" style="color:var(--data-down);background:var(--data-down-bg)">▼ sell signal</span>
+      <span class="sample" style="color:var(--data-down)">−1.08%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-warn)"></span>
+      <span class="nm">Caution</span>
+      <span class="badge" style="color:var(--data-warn);background:var(--data-warn-bg)">near limit</span>
+      <span class="sample" style="color:var(--data-warn)">86%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-info)"></span>
+      <span class="nm">Info</span>
+      <span class="badge" style="color:var(--data-info);background:var(--data-info-bg)">market open</span>
+      <span class="sample" style="color:var(--data-info)">NYSE</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-flat)"></span>
+      <span class="nm">Flat / —</span>
+      <span class="badge" style="color:var(--data-flat);background:rgba(120,113,108,.10)">unchanged</span>
+      <span class="sample" style="color:var(--data-flat)">0.00%</span>
+    </div>
+
+    <div class="row" style="grid-template-columns:1fr;margin-top:2px">
+      <span class="hex">hex · up #2E7D4F &nbsp; down #B5342B &nbsp; gold #9A7D0F &nbsp; blue #2C6395</span>
+    </div>
+  </section>
+
+  <!-- DARK -->
+  <section class="panel panel--dark" data-theme="dark">
+    <div class="panel__head"><b>Finance palette</b> · dark / charcoal</div>
+
+    <div class="row">
+      <span class="dot" style="background:var(--data-up)"></span>
+      <span class="nm">Up / gain</span>
+      <span class="badge" style="color:var(--data-up);background:var(--data-up-bg)">▲ buy signal</span>
+      <span class="sample" style="color:var(--data-up)">+2.34%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-down)"></span>
+      <span class="nm">Down / loss</span>
+      <span class="badge" style="color:var(--data-down);background:var(--data-down-bg)">▼ sell signal</span>
+      <span class="sample" style="color:var(--data-down)">−1.08%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-warn)"></span>
+      <span class="nm">Caution</span>
+      <span class="badge" style="color:var(--data-warn);background:var(--data-warn-bg)">near limit</span>
+      <span class="sample" style="color:var(--data-warn)">86%</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-info)"></span>
+      <span class="nm">Info</span>
+      <span class="badge" style="color:var(--data-info);background:var(--data-info-bg)">market open</span>
+      <span class="sample" style="color:var(--data-info)">NYSE</span>
+    </div>
+    <div class="row">
+      <span class="dot" style="background:var(--data-flat)"></span>
+      <span class="nm">Flat / —</span>
+      <span class="badge" style="color:var(--data-flat);background:rgba(168,162,158,.12)">unchanged</span>
+      <span class="sample" style="color:var(--data-flat)">0.00%</span>
+    </div>
+
+    <div class="row" style="grid-template-columns:1fr;margin-top:2px">
+      <span class="hex">hex · up #4FB07A &nbsp; down #E2705F &nbsp; gold #D9B43C &nbsp; blue #5B9BD6</span>
+    </div>
+  </section>
+</body></html>

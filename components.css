@@ -1,0 +1,753 @@
+/* ============================================================
+   ashaykubal.com — App components
+   Layered ON TOP of colors_and_type.css. Editorial/marketing
+   styles stay in that file; this is the application UI kit
+   (data surfaces, overlays, controls) for product screens.
+   Append new components here as the gap list is built out.
+   ============================================================ */
+
+/* ----- Semantic badge / pill -----------------------------------
+   Status + finance semantics. Sage/amber map to brand signal +
+   highlight; up/down/warn/info map to the finance data palette. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  white-space: nowrap;
+}
+.badge--up       { color: var(--data-up);         background: var(--data-up-bg); }
+.badge--down     { color: var(--data-down);       background: var(--data-down-bg); }
+.badge--warn     { color: var(--data-warn);       background: var(--data-warn-bg); }
+.badge--info     { color: var(--data-info);       background: var(--data-info-bg); }
+.badge--signal   { color: var(--color-signal);    background: var(--signal-bg); }
+.badge--highlight{ color: var(--color-highlight);  background: var(--highlight-bg); }
+.badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* ----- Data table ----------------------------------------------
+   Denser than the editorial layout: compact rows, hairline
+   dividers, Berkeley Mono tabular numerics, row-hover actions. */
+.dt { width: 100%; border-collapse: collapse; font-family: var(--font-ui); }
+.dt thead th {
+  font-size: 12.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-align: left;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.dt thead th.num, .dt td.num { text-align: right; }
+.dt tbody td {
+  padding: 15px 18px;
+  border-bottom: 0.5px solid var(--border-default);
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+.dt tbody tr { transition: background var(--dur-fast) var(--ease-out); }
+.dt tbody tr:hover { background: var(--bg-surface); }
+.dt tbody tr:last-child td { border-bottom: 0; }
+.dt .num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.dt .sym {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 16px;
+  letter-spacing: 0;
+}
+.dt .co {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  letter-spacing: 0;
+}
+.dt .up   { color: var(--data-up); }
+.dt .down { color: var(--data-down); }
+.dt .flat { color: var(--data-flat); }
+.dt__spark { display: block; }
+.dt__remove {
+  width: 26px; height: 26px;
+  display: inline-grid; place-items: center;
+  border-radius: var(--radius-sm);
+  border: 0; background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out),
+              color var(--dur-base) var(--ease-out),
+              background var(--dur-base) var(--ease-out);
+}
+.dt tbody tr:hover .dt__remove { opacity: 1; }
+.dt__remove:hover { color: var(--data-down); background: var(--data-down-bg); }
+
+/* ----- Form field wrapper --------------------------------------
+   Label + control + helper + error. Drives 400/422 validation. */
+.field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; font-family: var(--font-ui); }
+.field__label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
+  color: var(--text-secondary); display: inline-flex; gap: 5px; align-items: center;
+}
+.field__req { color: var(--data-down); }
+.field__help { font-size: 11px; line-height: 1.4; color: var(--text-muted); }
+.field__error {
+  font-size: 11px; line-height: 1.4; color: var(--data-down);
+  display: inline-flex; gap: 5px; align-items: center;
+}
+
+/* ----- Text input ----------------------------------------------
+   Follows the brand's border-only focus (no elevation ring). */
+.input {
+  font-family: var(--font-ui); font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary); color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  outline: none; width: 100%; box-sizing: border-box;
+  transition: border-color var(--dur-base) var(--ease-out),
+              background var(--dur-base) var(--ease-out);
+}
+.input::placeholder { color: var(--text-muted); }
+.input:focus { border-color: var(--color-signal); }
+.input:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-surface); }
+.input--error { border-color: var(--data-down); }
+.input.num { font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+
+/* affordance wrapper: trailing icon / button inside the field */
+.input-wrap { position: relative; }
+.input-wrap .input { padding-right: 38px; }
+.input-wrap__affix {
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  width: 28px; height: 28px; display: inline-grid; place-items: center;
+  border: 0; background: transparent; color: var(--text-muted);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.input-wrap__affix:hover { color: var(--color-signal); background: var(--signal-bg); }
+
+/* ----- Select / dropdown ---------------------------------------
+   Native control, chevron via inline SVG (Stone #78716C reads on
+   both themes). Custom open panel mocked in the preview. */
+.select {
+  font-family: var(--font-ui); font-size: 13px;
+  padding: 9px 34px 9px 12px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--bg-primary); color: var(--text-primary);
+  border-radius: var(--radius-sm); outline: none; cursor: pointer;
+  width: 100%; box-sizing: border-box; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.select:focus { border-color: var(--color-signal); }
+.select:disabled { opacity: 0.5; cursor: not-allowed; background-color: var(--bg-surface); }
+.menu {
+  font-family: var(--font-ui); font-size: 13px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary); border-radius: var(--radius-sm);
+  padding: 4px; min-width: 180px; box-sizing: border-box;
+}
+.menu__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); cursor: pointer;
+}
+.menu__item:hover { background: var(--bg-surface); color: var(--color-signal); }
+.menu__item[aria-selected="true"] { color: var(--color-signal); background: var(--signal-bg); font-weight: 500; }
+.menu__check { color: var(--color-signal); }
+
+/* ----- Toggle / switch -----------------------------------------
+   Default is the brand-native rounded-rect switch (4px). A
+   segmented control covers 2-3 options; a pill switch is offered
+   as a documented exception only. */
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-family: var(--font-ui); font-size: 13px; color: var(--text-secondary); }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__ui {
+  width: 44px; height: 24px; flex: none;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  position: relative;
+  transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+.switch__ui::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 3px;
+  background: var(--text-muted);
+  transition: transform var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.switch input:checked + .switch__ui { background: var(--signal-bg); border-color: var(--color-signal); }
+.switch input:checked + .switch__ui::after { transform: translateX(20px); background: var(--color-signal); }
+.switch input:focus-visible + .switch__ui { border-color: var(--color-signal); }
+.switch input:disabled + .switch__ui { opacity: 0.4; }
+
+.segmented { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; font-family: var(--font-ui); }
+.segmented button {
+  font-size: 12px; padding: 7px 16px; border: 0; text-align: center;
+  border-right: 1px solid var(--border-default);
+  background: transparent; color: var(--text-muted); cursor: pointer;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.segmented button:last-child { border-right: 0; }
+.segmented button:hover { color: var(--text-secondary); }
+.segmented button[aria-pressed="true"] { background: var(--signal-bg); color: var(--color-signal); }
+
+/* ----- Modal / dialog ------------------------------------------
+   No shadow. Lifted off the page by a heavier border + dim scrim
+   (the brand's stated alternative to elevation). 12px radius is
+   reserved for exactly this kind of surface. */
+.modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  width: 100%; box-sizing: border-box;
+  font-family: var(--font-ui);
+}
+.modal__head { padding: 18px 20px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.modal__title { font-family: var(--font-heading); font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0; }
+.modal__sub { font-size: 12px; color: var(--text-muted); margin: 4px 0 0; line-height: 1.45; }
+.modal__x {
+  flex: none; width: 30px; height: 30px; margin: -4px -6px 0 0;
+  display: inline-grid; place-items: center; border: 0; background: transparent;
+  color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.modal__x:hover { color: var(--color-signal); background: var(--bg-surface); }
+.modal__body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.modal__foot { padding: 14px 20px 18px; display: flex; justify-content: flex-end; gap: 8px; border-top: 0.5px solid var(--border-default); }
+
+/* ----- Toast / transient notification --------------------------
+   Semantic left-accent (the brand's accent-edge treatment: 0
+   radius on the accented edge). Stacks vertically. */
+.toast {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--bg-primary);
+  border: 0.5px solid var(--border-default);
+  border-left: 3px solid var(--data-info);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 14px; min-width: 300px; max-width: 360px; box-sizing: border-box;
+  font-family: var(--font-ui);
+}
+.toast--success { border-left-color: var(--data-up); }
+.toast--warning { border-left-color: var(--data-warn); }
+.toast--error   { border-left-color: var(--data-down); }
+.toast--info    { border-left-color: var(--data-info); }
+.toast__icon { flex: none; margin-top: 1px; color: var(--data-info); }
+.toast--success .toast__icon { color: var(--data-up); }
+.toast--warning .toast__icon { color: var(--data-warn); }
+.toast--error   .toast__icon { color: var(--data-down); }
+.toast__body { flex: 1; }
+.toast__title { font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin: 0 0 2px; }
+.toast__msg { font-size: 12px; color: var(--text-secondary); line-height: 1.45; margin: 0; }
+.toast__x {
+  flex: none; width: 22px; height: 22px; margin: -2px -4px 0 0;
+  display: inline-grid; place-items: center; border: 0; background: transparent;
+  color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer;
+}
+.toast__x:hover { color: var(--text-primary); }
+
+/* ----- Banner / inline callout ---------------------------------
+   Tinted semantic surface + accent edge. Hosts the v1 disclaimer
+   (persistent) and degraded-data / outage messages (dismissible). */
+.callout {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 13px 16px;
+  border-left: 3px solid var(--data-info);
+  background: var(--data-info-bg);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-family: var(--font-ui);
+}
+.callout--warn  { border-left-color: var(--data-warn);  background: var(--data-warn-bg); }
+.callout--error { border-left-color: var(--data-down);  background: var(--data-down-bg); }
+.callout--neutral { border-left-color: var(--text-muted); background: var(--bg-surface); }
+.callout__icon { flex: none; margin-top: 1px; color: var(--data-info); }
+.callout--warn .callout__icon  { color: var(--data-warn); }
+.callout--error .callout__icon { color: var(--data-down); }
+.callout--neutral .callout__icon { color: var(--text-muted); }
+.callout__body { flex: 1; }
+.callout__title { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin: 0 0 2px; }
+.callout__msg { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+.callout__msg a { color: var(--color-signal); }
+.callout__x {
+  flex: none; width: 22px; height: 22px; margin: -2px -4px 0 0;
+  display: inline-grid; place-items: center; border: 0; background: transparent;
+  color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer;
+}
+.callout__x:hover { color: var(--text-primary); }
+
+/* ----- Spinner -------------------------------------------------
+   The one sanctioned loop. Use only for true indeterminate waits;
+   prefer skeletons for content. currentColor so it inherits. */
+.spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 1.5px solid var(--border-strong);
+  border-top-color: var(--color-signal);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.spinner--sm { width: 13px; height: 13px; }
+.spinner--lg { width: 28px; height: 28px; border-width: 2px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.load-inline { display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+
+/* ----- Skeleton ------------------------------------------------
+   Preferred over spinners for content. Subtle shimmer left→right;
+   honors reduced-motion (falls back to a static tint). */
+.skel {
+  display: block; border-radius: var(--radius-sm);
+  background: linear-gradient(90deg,
+    var(--bg-surface) 0%, var(--border-default) 50%, var(--bg-surface) 100%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.3s ease-in-out infinite;
+}
+.skel--text { height: 11px; margin: 4px 0; }
+.skel--line { height: 13px; }
+.skel--title { height: 18px; }
+.skel--block { height: 100%; }
+.skel--circle { border-radius: 50%; }
+@keyframes skel-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; background: var(--bg-surface); }
+}
+
+/* ----- Empty / error / status states ---------------------------
+   Centered figure: icon chip, headline, supporting line, action.
+   --error reserves the red for genuine failures; --empty stays
+   neutral (an empty watchlist is not an error). */
+.state-fig {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 12px; padding: 32px 24px; font-family: var(--font-ui); max-width: 360px; margin: 0 auto;
+}
+.state-fig__icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  display: grid; place-items: center;
+  background: var(--bg-surface); color: var(--text-muted);
+  border: 0.5px solid var(--border-default);
+}
+.state-fig--error .state-fig__icon { background: var(--data-down-bg); color: var(--data-down); border-color: transparent; }
+.state-fig--warn .state-fig__icon  { background: var(--data-warn-bg); color: var(--data-warn); border-color: transparent; }
+.state-fig__title { font-family: var(--font-heading); font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0; }
+.state-fig__msg { font-size: 12px; line-height: 1.55; color: var(--text-muted); margin: 0; }
+.state-fig__actions { display: flex; gap: 8px; margin-top: 4px; }
+
+/* ----- Grounding guardrail -------------------------------------
+   Two inline annotations for AI answers, on the brand's two
+   accents (no new hues): sage = cited/sourced, amber = unverified.
+   Both share a hover tooltip (.gtip). Each conversation direction
+   styles its own trigger glyph; these are the canonical chips. */
+.gwrap { position: relative; display: inline-flex; vertical-align: middle; cursor: help; }
+.gtip {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  width: max-content; max-width: 232px; text-align: left;
+  background: var(--bg-primary); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 9px 11px;
+  font-family: var(--font-ui); font-size: 11px; line-height: 1.5; color: var(--text-secondary);
+  opacity: 0; pointer-events: none; transition: opacity var(--dur-fast) var(--ease-out);
+  z-index: 30;
+}
+.gwrap:hover .gtip, .gwrap:focus-within .gtip { opacity: 1; }
+.gtip--below { top: calc(100% + 8px); bottom: auto; }
+/* edge-aware alignment so the bubble never clips against a panel wall */
+.gtip--alignL { left: 0; right: auto; transform: none; }
+.gtip--alignR { left: auto; right: 0; transform: none; }
+.gtip__k { display: block; font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 600; margin-bottom: 4px; }
+.gtip__src { color: var(--anno-source); font-family: var(--font-display); }
+.gtip--cited .gtip__k { color: var(--anno-source); }
+.gtip--unverified .gtip__k { color: var(--color-highlight); }
+
+/* canonical inline chips */
+.ground {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: var(--font-ui); font-size: 10px; line-height: 1;
+  padding: 2px 7px; border-radius: 999px;
+}
+.ground--cited     { color: var(--anno-source);     background: var(--anno-source-bg); }
+.ground--unverified{ color: var(--color-highlight); background: var(--highlight-bg); }
+
+/* Wave-shimmer trigger ------------------------------------------
+   A bright band sweeps left→right across the letters + brackets so
+   source / unverified flags pull the eye instead of blending into
+   the answer. Gradient is clipped to the glyphs; --wave-base adapts
+   per theme via the annotation tokens. Honors reduced-motion. */
+.ground-wave {
+  font-weight: 600;
+  background-image: linear-gradient(100deg,
+    var(--wave-base) 0%, var(--wave-base) 38%,
+    var(--wave-hi) 50%,
+    var(--wave-base) 62%, var(--wave-base) 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: ground-wave 2.6s linear infinite;
+}
+.ground-wave--source     { --wave-base: var(--anno-source);     --wave-hi: #BFE0F2; }
+.ground-wave--unverified { --wave-base: var(--color-highlight); --wave-hi: #F0C07A; }
+@keyframes ground-wave { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ground-wave { animation: none; -webkit-text-fill-color: var(--wave-base); color: var(--wave-base); }
+}
+
+/* ----- App shell / top nav -------------------------------------
+   Signed-in chrome. Hairline-bottom bar, brand mark left, primary
+   nav, then the right cluster: search, notification bell, and the
+   user menu. The theme switcher is a GLOBAL control and lives in
+   the user menu — never on individual surfaces. */
+.appbar {
+  display: flex; align-items: center; gap: 18px;
+  padding: 0 20px; height: 56px;
+  border-bottom: 0.5px solid var(--border-default);
+  background: var(--bg-primary); font-family: var(--font-ui);
+}
+.appbar__brand { display: flex; align-items: center; gap: 9px; font-family: var(--font-heading);
+  font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; white-space: nowrap; }
+.appbar__mark {
+  width: 26px; height: 26px; border-radius: var(--radius-sm); flex: none;
+  display: grid; place-items: center;
+  background: var(--text-primary); color: var(--bg-primary);
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+}
+.appnav { display: flex; align-items: center; gap: 2px; }
+.appnav a {
+  font-size: 12.5px; color: var(--text-muted); text-decoration: none;
+  padding: 7px 11px; border-radius: var(--radius-sm);
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.appnav a:hover { color: var(--text-secondary); background: var(--bg-surface); }
+.appnav a[aria-current="page"] { color: var(--color-signal); background: var(--signal-bg); }
+.appbar__spacer { flex: 1; }
+.appbar__right { display: flex; align-items: center; gap: 8px; }
+
+/* icon button used in the bar (search, bell) */
+.iconbtn {
+  position: relative; width: 34px; height: 34px; flex: none;
+  display: inline-grid; place-items: center;
+  border: 0; background: transparent; color: var(--text-muted);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.iconbtn:hover { color: var(--color-signal); background: var(--bg-surface); }
+.iconbtn[aria-expanded="true"] { color: var(--color-signal); background: var(--signal-bg); }
+
+/* unread badge on the bell */
+.badge-count {
+  position: absolute; top: 4px; right: 4px; min-width: 15px; height: 15px;
+  padding: 0 4px; box-sizing: border-box;
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-size: 9px; font-weight: 600; line-height: 1;
+  color: var(--bg-primary); background: var(--data-down);
+  border: 1.5px solid var(--bg-primary); border-radius: 999px;
+}
+
+/* user menu trigger */
+.usermenu { display: flex; align-items: center; gap: 7px; padding: 4px 8px 4px 4px;
+  border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-md);
+  transition: background var(--dur-base) var(--ease-out); }
+.usermenu:hover, .usermenu[aria-expanded="true"] { background: var(--bg-surface); }
+.usermenu svg { color: var(--text-muted); }
+
+/* avatar (image or initials) */
+.avatar {
+  width: 28px; height: 28px; flex: none; border-radius: var(--radius-sm);
+  display: grid; place-items: center; overflow: hidden;
+  background: var(--signal-bg); color: var(--color-signal);
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar--lg { width: 38px; height: 38px; font-size: 14px; }
+.avatar--round { border-radius: 50%; }
+
+/* dropdown panel shared by user menu + notification center */
+.dropdown {
+  background: var(--bg-primary); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); font-family: var(--font-ui);
+  width: 232px; box-sizing: border-box; overflow: hidden;
+}
+.dropdown__head { padding: 12px 14px; border-bottom: 0.5px solid var(--border-default);
+  display: flex; align-items: center; gap: 10px; }
+.dropdown__name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+.dropdown__mail { font-family: var(--font-display); font-size: 10.5px; color: var(--text-muted); }
+.dropdown__sec { padding: 6px; }
+.dropdown__row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; border: 0; background: transparent; cursor: pointer;
+  border-radius: var(--radius-sm); font-family: var(--font-ui); font-size: 12.5px;
+  color: var(--text-secondary); text-align: left;
+}
+.dropdown__row:hover { background: var(--bg-surface); color: var(--text-primary); }
+.dropdown__row svg { color: var(--text-muted); flex: none; }
+.dropdown__row--danger { color: var(--data-down); }
+.dropdown__row--danger svg { color: var(--data-down); }
+.dropdown__rule { height: 0; border: 0; border-top: 0.5px solid var(--border-default); margin: 0; }
+/* the theme switcher row: label + segmented sits inline */
+.dropdown__theme { display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; font-size: 12.5px; color: var(--text-secondary); }
+
+/* ----- Notification center -------------------------------------
+   SSE-driven dropdown. Wider than the user menu; unread rows carry
+   a sage dot + tinted surface; semantics use the finance/status
+   colors via a small left mark. */
+.notif { width: 320px; }
+.notif__head { display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 0.5px solid var(--border-default); }
+.notif__title { font-family: var(--font-heading); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.notif__clear { font-family: var(--font-ui); font-size: 11px; color: var(--color-signal);
+  background: transparent; border: 0; cursor: pointer; }
+.notif__list { max-height: 320px; overflow-y: auto; }
+.notif__item {
+  display: grid; grid-template-columns: 26px 1fr; gap: 10px;
+  padding: 11px 14px; border-bottom: 0.5px solid var(--border-default);
+  cursor: pointer; transition: background var(--dur-fast) var(--ease-out);
+}
+.notif__item:last-child { border-bottom: 0; }
+.notif__item:hover { background: var(--bg-surface); }
+.notif__item--unread { background: var(--signal-bg); }
+.notif__item--unread:hover { background: color-mix(in srgb, var(--signal-bg) 70%, var(--bg-surface)); }
+.notif__mark {
+  width: 26px; height: 26px; border-radius: var(--radius-sm); flex: none;
+  display: grid; place-items: center; background: var(--bg-surface); color: var(--text-muted);
+}
+.notif__mark--up   { background: var(--data-up-bg);   color: var(--data-up); }
+.notif__mark--down { background: var(--data-down-bg); color: var(--data-down); }
+.notif__mark--warn { background: var(--data-warn-bg); color: var(--data-warn); }
+.notif__mark--info { background: var(--data-info-bg); color: var(--data-info); }
+.notif__txt { font-size: 12px; line-height: 1.45; color: var(--text-secondary); }
+.notif__txt b { color: var(--text-primary); font-weight: 600; }
+.notif__num { font-family: var(--font-display); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.notif__time { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 3px; display: block; }
+.notif__foot { padding: 10px 14px; text-align: center; border-top: 0.5px solid var(--border-default); }
+.notif__foot a { font-family: var(--font-ui); font-size: 11.5px; color: var(--color-signal); text-decoration: none; }
+
+/* ----- Stocky — CRT-bot brand mascot icon ----------------------
+   A little cathode-ray TV with an antenna and two cute eyes. The
+   screen "simmers": a scanline sweeps and the eyes blink. Body +
+   antenna use currentColor (theme text); the screen is always a
+   dark CRT tone with sage phosphor so it reads in both themes. */
+.stocky-icon { display: inline-grid; place-items: center; line-height: 0; color: var(--text-secondary); }
+.stocky-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.stocky-screen { fill: #161410; }
+.stocky-eye { fill: var(--color-signal); transform-box: fill-box; transform-origin: center;
+  animation: stocky-blink 4.6s infinite both; }
+.stocky-eye--r { animation-delay: 0.04s; }
+.stocky-scan { fill: var(--color-signal); fill-opacity: 0.55; transform-box: fill-box;
+  animation: stocky-scan 2.6s linear infinite; }
+@keyframes stocky-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.12); } }
+@keyframes stocky-scan {
+  0% { transform: translateY(0); opacity: 0; }
+  14% { opacity: 0.6; } 86% { opacity: 0.6; }
+  100% { transform: translateY(11px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stocky-eye, .stocky-scan { animation: none; }
+  .stocky-scan { opacity: 0.4; }
+}
+/* the icon-button variant pulses a faint sage glow to invite a tap */
+.iconbtn--stocky:hover .stocky-icon { color: var(--color-signal); }
+
+/* ----- Single-click theme toggle (sun ⇄ moon) ------------------ */
+.theme-toggle .ic-moon { display: none; }
+html[data-theme="dark"] .theme-toggle .ic-sun { display: none; }
+html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
+
+/* ----- Command island / dock -----------------------------------
+   A floating action cluster (search · ask Stocky · add) anchored
+   bottom-center. Squared (radius-lg, never a pill). Each action
+   opens a modal that pops ABOVE the dock. */
+.dock {
+  position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; padding: 10px;
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg); z-index: 15;
+  transition: transform 0.34s var(--ease-out), opacity 0.28s var(--ease-out);
+}
+.dock__div { width: 0.5px; align-self: stretch; background: var(--border-default); margin: 7px 3px; }
+.dock .btn--icon { width: 52px; height: 52px; }
+.dock .btn--icon svg { width: 26px; height: 26px; }
+.dock .stocky-icon { width: 34px; height: 34px; }
+/* hidden while actively scrolling; springs back when scroll stops */
+.dock--hidden { transform: translateX(-50%) translateY(165%); opacity: 0; pointer-events: none; }
+/* popover that floats above the dock */
+.dock-pop {
+  position: absolute; left: 50%; bottom: 98px; transform: translateX(-50%);
+  z-index: 16;
+}
+.dock-pop::after {
+  content: ""; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%) rotate(45deg);
+  width: 10px; height: 10px; background: var(--bg-primary);
+  border-right: 1px solid var(--border-strong); border-bottom: 1px solid var(--border-strong);
+}
+
+/* ----- Stat / metric tile --------------------------------------
+   A single number with label, optional delta and inline sparkline.
+   Delta uses the finance palette; the number is Berkeley Mono. */
+.stat {
+  border: 0.5px solid var(--border-default); border-radius: var(--radius-md);
+  background: var(--bg-primary); padding: 16px 18px; font-family: var(--font-ui);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.stat__label { font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); }
+.stat__row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.stat__value {
+  font-family: var(--font-display); font-variant-numeric: tabular-nums;
+  font-size: 28px; font-weight: 600; color: var(--text-primary); line-height: 1; letter-spacing: -0.5px;
+}
+.stat__unit { font-family: var(--font-display); font-size: 13px; color: var(--text-muted); }
+.stat__delta {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: var(--font-display); font-variant-numeric: tabular-nums;
+  font-size: 13px; font-weight: 600;
+}
+.stat__delta--up   { color: var(--data-up); }
+.stat__delta--down { color: var(--data-down); }
+.stat__delta--flat { color: var(--data-flat); }
+.stat__foot { font-size: 11.5px; color: var(--text-muted); }
+.stat__spark { margin-top: 2px; }
+
+/* ----- Tooltip (general-purpose) -------------------------------
+   Reuses the grounding-tooltip mechanics for any hover hint. */
+.tip { position: relative; display: inline-flex; cursor: help; }
+.tip__pop {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  width: max-content; max-width: 220px; text-align: center;
+  background: var(--text-primary); color: var(--bg-primary);
+  border-radius: var(--radius-sm); padding: 7px 10px;
+  font-family: var(--font-ui); font-size: 11px; line-height: 1.45;
+  opacity: 0; pointer-events: none; transition: opacity var(--dur-fast) var(--ease-out); z-index: 30;
+}
+.tip__pop::after {
+  content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--text-primary);
+}
+.tip:hover .tip__pop, .tip:focus-within .tip__pop { opacity: 1; }
+
+/* ----- Sparkline frame -----------------------------------------
+   The sparkline itself is drawn (SVG/canvas) by the app; this is
+   the sizing + caption wrapper and the trend coloring helpers. */
+.sparkline { display: inline-flex; flex-direction: column; gap: 3px; }
+.sparkline svg { display: block; }
+.sparkline__cap { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); }
+.trend-up   { color: var(--data-up); }
+.trend-down { color: var(--data-down); }
+.trend-flat { color: var(--data-flat); }
+
+/* ----- Usage / progress meter ----------------------------------
+   Token usage and any bounded quantity. Track + fill; fill tints
+   to warn/over as it approaches/exceeds the limit. */
+.meter { font-family: var(--font-ui); display: flex; flex-direction: column; gap: 6px; }
+.meter__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.meter__label { font-size: 12px; color: var(--text-secondary); }
+.meter__val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text-muted); }
+.meter__track { height: 7px; border-radius: 999px; background: var(--bg-surface); overflow: hidden; }
+.meter__fill { height: 100%; border-radius: 999px; background: var(--color-signal);
+  transition: width var(--dur-slow) var(--ease-out); }
+.meter--warn .meter__fill { background: var(--data-warn); }
+.meter--over .meter__fill { background: var(--data-down); }
+.meter--over .meter__val { color: var(--data-down); }
+
+/* ----- Avatar extensions ---------------------------------------
+   (base .avatar lives in the app-shell block). Adds sizes + a
+   neutral and a sage tone for initials, plus a stacked group. */
+.avatar--sm { width: 22px; height: 22px; font-size: 9px; }
+.avatar--xl { width: 52px; height: 52px; font-size: 18px; }
+.avatar--neutral { background: var(--bg-surface); color: var(--text-secondary); }
+.avatar-group { display: inline-flex; }
+.avatar-group .avatar { border: 1.5px solid var(--bg-primary); }
+.avatar-group .avatar + .avatar { margin-left: -8px; }
+.avatar__status {
+  position: absolute; right: -1px; bottom: -1px; width: 9px; height: 9px;
+  border-radius: 50%; border: 1.5px solid var(--bg-primary); background: var(--data-up);
+}
+.avatar { position: relative; }
+
+/* ----- Auth surfaces -------------------------------------------
+   Centered card for magic-link request, check-your-email, and the
+   verify/redirect loader. No password fields anywhere — this app
+   is magic-link only. */
+.auth { max-width: 380px; margin: 0 auto; font-family: var(--font-ui);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; }
+.auth__mark {
+  width: 46px; height: 46px; border-radius: var(--radius-md);
+  display: grid; place-items: center; color: var(--text-primary); margin-bottom: 2px;
+}
+.auth__title { font-family: var(--font-heading); font-size: 19px; font-weight: 600;
+  color: var(--text-primary); margin: 0; letter-spacing: -0.3px; }
+.auth__sub { font-size: 12.5px; line-height: 1.55; color: var(--text-muted); margin: 0; }
+.auth__sub b { color: var(--text-secondary); font-weight: 600; }
+.auth__form { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.auth__foot { font-size: 11px; color: var(--text-muted); margin: 2px 0 0; }
+.auth__link { background: 0; border: 0; padding: 0; cursor: pointer;
+  color: var(--color-signal); font-family: var(--font-ui); font-size: 11.5px; }
+/* status icon chip for check-email / success / error states */
+.auth__icon { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; }
+.auth__icon--ok    { background: var(--data-up-bg);   color: var(--data-up); }
+.auth__icon--mail  { background: var(--signal-bg);    color: var(--color-signal); }
+.auth__icon--err   { background: var(--data-down-bg); color: var(--data-down); }
+
+/* ----- Briefing / digest card ----------------------------------
+   Periodic LLM-narrated market briefing (≈3/user/session-day).
+   States: unread (sage accent + dot), read (muted), loading
+   (skeleton lines), empty. Narrated numbers may carry the
+   grounding annotations (.ground-wave / .gwrap) inline. */
+.digest { border: 0.5px solid var(--border-default); border-radius: var(--radius-md);
+  background: var(--bg-primary); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  font-family: var(--font-ui); }
+.digest--unread { border-left: 3px solid var(--color-signal); }
+.digest__head { display: flex; align-items: center; gap: 8px; }
+.digest__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-signal); flex: none; }
+.digest__period { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.digest__title { font-family: var(--font-heading); font-size: 14.5px; font-weight: 600;
+  color: var(--text-primary); margin: 0; }
+.digest__body { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin: 0; }
+.digest__body b { font-family: var(--font-display); color: var(--text-primary); font-weight: 600; }
+.digest__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 2px; }
+.digest__time { font-family: var(--font-display); font-size: 10.5px; color: var(--text-muted); }
+.digest__actions { display: flex; gap: 4px; }
+.digest--read { opacity: 0.85; }
+.digest--read .digest__title { color: var(--text-secondary); font-weight: 500; }
+.digest--read .digest__dot { display: none; }
+.digest__skel { display: flex; flex-direction: column; gap: 9px; }
+
+/* ----- Scrollbar (design-system default) ------------------------
+   Thin, unobtrusive, token-driven. Track is transparent; the thumb
+   uses the strong border token and darkens on hover. Applies to any
+   scrollable surface so overflow chrome matches the brand instead
+   of falling back to the heavy native bar. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-corner { background: transparent; }

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Voice · content fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Syne:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:20px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;box-sizing:border-box}
+  .row{display:grid;grid-template-columns:24px 1fr;gap:14px;align-items:start}
+  .row .mark{font-family:var(--font-ui);font-size:14px;font-weight:600}
+  .yes .mark{color:var(--color-signal)}
+  .no  .mark{color:var(--color-error);opacity:.7}
+  .copy{font-family:var(--font-body);font-size:14px;line-height:1.55;color:var(--text-primary);max-width:none}
+  .no .copy{color:var(--text-muted);text-decoration:line-through;text-decoration-thickness:.5px}
+</style>
+</head><body>
+  <div class="row yes"><div class="mark">YES</div><div class="copy">"I spent the weekend benchmarking three small embedding models on a corpus of dense legal text."</div></div>
+  <div class="row no"><div class="mark">NO</div><div class="copy">"Welcome to my blog! 👋 I write about AI and tech 🚀"</div></div>
+  <div class="row yes"><div class="mark">YES</div><div class="copy">Sentence case · curly quotes · first person · no emoji</div></div>
+  <div class="row no"><div class="mark">NO</div><div class="copy">Em-dashes — they read as AI-generated now. Use commas, colons, or new sentences.</div></div>
+</body></html>

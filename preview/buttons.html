@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Buttons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:24px 32px;display:flex;flex-direction:column;justify-content:center;gap:16px;box-sizing:border-box}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .label{font-family:var(--font-ui);font-size:10px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted);min-width:90px}
+</style>
+</head><body>
+  <div class="row">
+    <div class="label">Primary</div>
+    <button class="btn btn--primary">Read the post <span aria-hidden="true">→</span></button>
+    <button class="btn btn--primary" style="opacity:.88">hover</button>
+  </div>
+  <div class="row">
+    <div class="label">Secondary</div>
+    <button class="btn btn--secondary">View on GitHub</button>
+    <button class="btn btn--secondary" style="background:var(--signal-bg)">hover</button>
+  </div>
+  <div class="row">
+    <div class="label">Tertiary</div>
+    <button class="btn btn--tertiary">Subscribe</button>
+    <button class="btn btn--tertiary" style="background:var(--highlight-bg)">hover</button>
+  </div>
+</body></html>

@@ -1,0 +1,131 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Modal / Dialog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .stagewrap{display:flex;flex-direction:column;gap:8px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .stage{position:relative;border-radius:var(--radius-md);background:var(--bg-surface);
+    overflow:hidden;display:flex;align-items:center;justify-content:center;padding:26px;
+    min-height:336px;border:.5px solid var(--border-default);box-sizing:border-box}
+  .stage__scrim{position:absolute;inset:0;background:rgba(20,20,20,.45)}
+  .stage .modal{position:relative;z-index:1;max-width:340px}
+  .frow{display:flex;flex-direction:column;gap:6px}
+  .frow .lbl{font-size:11px;font-weight:500;letter-spacing:.5px;color:var(--text-secondary)}
+  .switchrow{display:flex;align-items:center;justify-content:space-between}
+  .icon-warn{width:30px;height:30px;border-radius:var(--radius-sm);display:grid;place-items:center;
+    background:var(--data-down-bg);color:var(--data-down);flex:none}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · modal</div>
+      <h3>Form dialog and confirm dialog</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- FORM MODAL -->
+    <div class="stagewrap">
+      <span class="state">form modal · scroll-locked</span>
+      <div class="stage">
+        <div class="stage__scrim"></div>
+        <div class="modal" role="dialog" aria-modal="true" aria-label="Create alert">
+          <div class="modal__head">
+            <div>
+              <h4 class="modal__title">Create alert</h4>
+              <p class="modal__sub">AAPL · Apple Inc.</p>
+            </div>
+            <button class="modal__x" aria-label="Close">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <div class="modal__body">
+            <div class="frow">
+              <span class="lbl">Alert type</span>
+              <button class="select" style="text-align:left"><span>Price threshold</span></button>
+            </div>
+            <div class="frow">
+              <span class="lbl">Direction</span>
+              <div class="segmented" role="group" aria-label="Direction">
+                <button aria-pressed="true">Above</button>
+                <button aria-pressed="false">Below</button>
+              </div>
+            </div>
+            <div class="frow">
+              <span class="lbl">Threshold (USD)</span>
+              <input class="input num" value="200.00" inputmode="decimal">
+            </div>
+            <div class="switchrow">
+              <span class="lbl">Enable immediately</span>
+              <label class="switch"><input type="checkbox" checked><span class="switch__ui"></span></label>
+            </div>
+          </div>
+          <div class="modal__foot">
+            <button class="btn btn--ghost">Cancel</button>
+            <button class="btn btn--primary">Save alert</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div class="stagewrap">
+      <span class="state">confirm modal · destructive</span>
+      <div class="stage">
+        <div class="stage__scrim"></div>
+        <div class="modal" role="alertdialog" aria-modal="true" aria-label="Remove ticker" style="max-width:312px">
+          <div class="modal__head" style="padding-bottom:18px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span class="icon-warn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              </span>
+              <div>
+                <h4 class="modal__title">Remove AAPL?</h4>
+                <p class="modal__sub">This deletes the symbol and its 2 active alerts from your watchlist. You can add it back later.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal__foot">
+            <button class="btn btn--ghost">Cancel</button>
+            <button class="btn btn--destructive">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.querySelectorAll('.segmented').forEach(g=>{
+    g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+    }));
+  });
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

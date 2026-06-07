@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Theme · light & dark side by side</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Syne&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{display:grid;grid-template-columns:1fr 1fr;height:100%}
+  .pane{padding:18px 22px;display:flex;flex-direction:column;justify-content:center;gap:10px;box-sizing:border-box}
+  .light{background:#F7F3EE;color:#141414}
+  .dark{background:#1E1D1B;color:#E7E0D6}
+  .h{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.8px;line-height:1}
+  .label{font-family:var(--font-ui);font-size:10px;letter-spacing:1.25px;text-transform:uppercase}
+  .light .label{color:#78716C}.dark .label{color:#A8A29E}
+  .light a{color:#3F6B5B}.dark a{color:#5B9E87}
+  .light .tag{color:#3F6B5B;background:rgba(63,107,91,.10)}
+  .dark  .tag{color:#5B9E87;background:rgba(91,158,135,.15)}
+  .tag{font-family:var(--font-ui);font-size:11px;padding:4px 10px;border-radius:4px;display:inline-block}
+</style>
+</head><body>
+  <div class="pane light">
+    <div class="label">light · default</div>
+    <div class="h">Parchment</div>
+    <div><a href="#">a link</a> &nbsp; <span class="tag">#sage</span></div>
+  </div>
+  <div class="pane dark">
+    <div class="label">dark</div>
+    <div class="h">Charcoal</div>
+    <div><a href="#">a link</a> &nbsp; <span class="tag">#sage</span></div>
+  </div>
+</body></html>

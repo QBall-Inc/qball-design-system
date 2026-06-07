@@ -1,0 +1,119 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Stat Tiles, Meter & Sparkline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:-6px}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .meters .meter__label,.meters .meter__val{white-space:nowrap}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);padding:16px 18px}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · stat · meter · sparkline</div>
+      <h3>Metric tiles, usage meters & sparklines</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <span class="state">stat / metric tiles — up · down · flat</span>
+  <div class="tiles">
+    <div class="stat">
+      <span class="stat__label">NVDA · Last</span>
+      <div class="stat__row">
+        <span class="stat__value">1,024.88</span>
+        <span class="stat__delta stat__delta--up">▲ +8.4%</span>
+      </div>
+      <span class="stat__spark" id="sp1"></span>
+      <span class="stat__foot">Day range 982.10 – 1,031.40</span>
+    </div>
+    <div class="stat">
+      <span class="stat__label">TSLA · Last</span>
+      <div class="stat__row">
+        <span class="stat__value">178.10</span>
+        <span class="stat__delta stat__delta--down">▼ −4.7%</span>
+      </div>
+      <span class="stat__spark" id="sp2"></span>
+      <span class="stat__foot">Below your 180.00 alert</span>
+    </div>
+    <div class="stat">
+      <span class="stat__label">Portfolio · Today</span>
+      <div class="stat__row">
+        <span class="stat__value">0.00</span>
+        <span class="stat__unit">%</span>
+        <span class="stat__delta stat__delta--flat">— flat</span>
+      </div>
+      <span class="stat__spark" id="sp3"></span>
+      <span class="stat__foot">Markets quiet pre-open</span>
+    </div>
+  </div>
+
+  <span class="state">usage meter — normal · near-limit · over</span>
+  <div class="meters">
+    <div class="panel">
+      <div class="meter">
+        <div class="meter__head"><span class="meter__label">Tokens this month</span><span class="meter__val">42,180 / 100,000</span></div>
+        <div class="meter__track"><div class="meter__fill" style="width:42%"></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="meter meter--warn">
+        <div class="meter__head"><span class="meter__label">API requests today</span><span class="meter__val">86 / 100</span></div>
+        <div class="meter__track"><div class="meter__fill" style="width:86%"></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="meter meter--over">
+        <div class="meter__head"><span class="meter__label">Alerts (hobby tier)</span><span class="meter__val">12 / 10 · over</span></div>
+        <div class="meter__track"><div class="meter__fill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="panel" style="display:flex;align-items:center;gap:18px">
+      <div class="sparkline">
+        <span id="sp4"></span>
+        <span class="sparkline__cap">NVDA · 30d</span>
+      </div>
+      <div class="sparkline">
+        <span id="sp5"></span>
+        <span class="sparkline__cap">TSLA · 30d</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;max-width:160px">Standalone sparkline — trend color follows direction.</div>
+    </div>
+  </div>
+
+<script>
+  function spark(el,seed,wk,w,h){let s=seed;const r=()=>{s=(s*9301+49297)%233280;return s/233280;};
+    const n=24,pts=[];let v=0;const d=wk/n;for(let i=0;i<n;i++){v+=d+(r()-.5)*1.3;pts.push(v);}
+    const mn=Math.min(...pts),mx=Math.max(...pts);const X=i=>1+i*(w-2)/(n-1),Y=p=>h-2-((p-mn)/((mx-mn)||1))*(h-4);
+    let dp='M'+X(0)+' '+Y(pts[0]);for(let i=1;i<n;i++)dp+=' L'+X(i)+' '+Y(pts[i]);
+    const col=wk>0.05?'var(--data-up)':(wk<-0.05?'var(--data-down)':'var(--data-flat)');
+    document.getElementById(el).innerHTML=`<svg width="${w}" height="${h}" style="display:block"><path d="${dp}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+  spark('sp1',7,4,150,30); spark('sp2',5,-4,150,30); spark('sp3',9,0,150,30);
+  spark('sp4',11,6,90,30); spark('sp5',4,-5,90,30);
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

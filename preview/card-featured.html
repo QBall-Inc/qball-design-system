@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Card · Featured post</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:20px 28px;display:flex;align-items:center;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:8px;padding:18px 22px;max-width:560px;display:flex;flex-direction:column;gap:8px}
+  .meta-row{display:flex;align-items:center;gap:10px}
+  .title{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text-primary);letter-spacing:-.8px;line-height:1.05;margin:0}
+  p{margin:0;font-size:14px;line-height:1.6}
+</style>
+</head><body>
+  <div class="card">
+    <div class="meta-row">
+      <span class="tag tag--featured">featured</span>
+      <span class="tag">#ml</span>
+      <span class="caption" style="margin-left:auto">MAY 22 · 8 MIN</span>
+    </div>
+    <h1 class="title">Small embedding models beat the big ones, given the right corpus</h1>
+    <p>A weekend benchmark of three open-source embedding models on a corpus of dense legal text, and what the winner says about scale.</p>
+  </div>
+</body></html>

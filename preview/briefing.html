@@ -1,0 +1,115 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Briefing / Digest Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:-8px}
+  .cell{display:flex;flex-direction:column;gap:8px}
+  .iconbtn{width:28px;height:28px}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · briefing / digest</div>
+      <h3>LLM market briefings — unread · read · loading · empty</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- unread -->
+    <div class="cell">
+      <span class="state">unread</span>
+      <article class="digest digest--unread">
+        <div class="digest__head">
+          <span class="digest__dot"></span>
+          <span class="digest__period">Morning briefing · 30 May</span>
+        </div>
+        <h4 class="digest__title">Your watchlist is up 1.8% pre-open</h4>
+        <p class="digest__body"><b>NVDA</b> leads <span class="ground-wave ground-wave--source">[source]</span> at <b>+8.4%</b> on the week, while <b>TSLA</b> slipped below your <b>180.00</b> alert. Analysts see continued data-center strength<span class="gwrap" tabindex="0"><span class="ground-wave ground-wave--unverified" style="font-family:var(--font-ui);font-size:10px">[unverified]</span><span class="gtip gtip--unverified gtip--below gtip--alignR"><span class="gtip__k">Unverified</span>Pulled from the model, not a confirmed source.</span></span>.</p>
+        <div class="digest__foot">
+          <span class="digest__time">Generated 7:02am ET</span>
+          <div class="digest__actions">
+            <button class="btn btn--ghost btn--icon" aria-label="Ask Stocky"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button>
+            <button class="btn btn--ghost btn--icon" aria-label="Dismiss"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- read -->
+    <div class="cell">
+      <span class="state">read</span>
+      <article class="digest digest--read">
+        <div class="digest__head">
+          <span class="digest__dot"></span>
+          <span class="digest__period">Midday briefing · 29 May</span>
+        </div>
+        <h4 class="digest__title">Quiet session; AMD volume spike noted</h4>
+        <p class="digest__body">Markets drifted sideways. <b>AMD</b> saw unusual volume with little price change; everything else on your list moved less than 1%.</p>
+        <div class="digest__foot">
+          <span class="digest__time">Read · 29 May 12:14pm ET</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- loading -->
+    <div class="cell">
+      <span class="state">loading</span>
+      <article class="digest">
+        <div class="digest__head">
+          <span class="skel skel--circle" style="width:7px;height:7px"></span>
+          <span class="skel" style="width:140px;height:9px"></span>
+        </div>
+        <span class="skel skel--title" style="width:70%"></span>
+        <div class="digest__skel">
+          <span class="skel skel--text" style="width:100%"></span>
+          <span class="skel skel--text" style="width:96%"></span>
+          <span class="skel skel--text" style="width:62%"></span>
+        </div>
+        <span class="skel" style="width:120px;height:9px;margin-top:2px"></span>
+      </article>
+    </div>
+
+    <!-- empty -->
+    <div class="cell">
+      <span class="state">empty</span>
+      <article class="digest" style="align-items:center;text-align:center;padding:26px 18px">
+        <div class="state-fig" style="padding:0">
+          <span class="state-fig__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.2L4 18Z"/><path d="M8 9h8"/><path d="M8 12h5"/></svg>
+          </span>
+          <h4 class="state-fig__title">No briefings yet</h4>
+          <p class="state-fig__msg">Stocky writes up to 3 short market briefings on the days you visit. Your first one lands after the open.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

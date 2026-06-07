@@ -1,0 +1,110 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Buttons — Variants & States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:14px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:4px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .row{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:16px;
+    padding:10px 0;border-top:.5px solid var(--border-default)}
+  .lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .group{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .st{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);
+    align-self:center}
+  svg{display:block}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · button</div>
+      <h3>Variants and states</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Primary</span>
+    <div class="group">
+      <button class="btn btn--primary">Save alert <span aria-hidden="true">→</span></button>
+      <button class="btn btn--primary" style="opacity:.88">hover</button>
+      <button class="btn btn--primary btn--loading"><span>Saving</span></button>
+      <button class="btn btn--primary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Secondary</span>
+    <div class="group">
+      <button class="btn btn--secondary">View detail</button>
+      <button class="btn btn--secondary" style="background:var(--signal-bg)">hover</button>
+      <button class="btn btn--secondary btn--loading"><span>Loading</span></button>
+      <button class="btn btn--secondary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Tertiary</span>
+    <div class="group">
+      <button class="btn btn--tertiary">Subscribe</button>
+      <button class="btn btn--tertiary" style="background:var(--highlight-bg)">hover</button>
+      <button class="btn btn--tertiary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Ghost</span>
+    <div class="group">
+      <button class="btn btn--ghost">Cancel</button>
+      <button class="btn btn--ghost" style="background:var(--bg-surface);color:var(--color-signal)">hover</button>
+      <button class="btn btn--ghost" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Destructive</span>
+    <div class="group">
+      <button class="btn btn--destructive">Remove from watchlist</button>
+      <button class="btn btn--destructive" style="opacity:.88">hover</button>
+      <button class="btn btn--destructive" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="lbl">Icon-only</span>
+    <div class="group">
+      <button class="btn btn--secondary btn--icon" aria-label="Search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="btn btn--ghost btn--icon" aria-label="Notifications">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M21 19H3a2 2 0 0 0 2-2V9a7 7 0 0 1 14 0v8a2 2 0 0 0 2 2"/></svg>
+      </button>
+      <button class="btn btn--ghost btn--icon" aria-label="Close">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="st">· press: translateY(1px), no color flash</span>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

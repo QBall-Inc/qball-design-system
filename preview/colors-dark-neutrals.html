@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Colors — Dark backgrounds & text</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:#1E1D1B;padding:20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;box-sizing:border-box;align-content:center}
+  .sw{display:flex;flex-direction:column;gap:6px}
+  .chip{aspect-ratio:1;border-radius:6px;border:.5px solid rgba(255,255,255,.08)}
+  .name{font-family:var(--font-ui);font-size:11px;color:#E7E0D6;letter-spacing:.3px}
+  .hex{font-family:var(--font-ui);font-size:10px;color:#A8A29E;letter-spacing:.5px}
+</style>
+</head><body>
+  <div class="sw"><div class="chip" style="background:#1E1D1B"></div><div class="name">Charcoal</div><div class="hex">#1E1D1B · bg-primary</div></div>
+  <div class="sw"><div class="chip" style="background:#2A2826"></div><div class="name">Surface</div><div class="hex">#2A2826 · bg-surface</div></div>
+  <div class="sw"><div class="chip" style="background:#E7E0D6"></div><div class="name">Bone</div><div class="hex">#E7E0D6 · text-primary</div></div>
+  <div class="sw"><div class="chip" style="background:#A8A29E"></div><div class="name">Stone</div><div class="hex">#A8A29E · text-secondary</div></div>
+  <div class="sw"><div class="chip" style="background:#78716C"></div><div class="name">Ash</div><div class="hex">#78716C · text-muted</div></div>
+</body></html>

@@ -1,0 +1,197 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Candlestick — Compact vs Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<style>
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg-primary);box-sizing:border-box;
+    padding:24px 28px;display:flex;flex-direction:column;gap:18px;
+    font-family:var(--font-ui);
+  }
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;
+    text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;
+    font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;
+    border:0;background:transparent;color:var(--text-muted);cursor:pointer;
+    transition:background var(--dur-base) var(--ease-out),color var(--dur-base) var(--ease-out)}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+
+  .grid{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+  figure{margin:0;display:flex;flex-direction:column;gap:10px;position:relative}
+
+  .tag-head{display:flex;align-items:center;gap:8px}
+  .use{font-family:var(--font-ui);font-size:10px;font-weight:500;letter-spacing:.6px;
+    text-transform:uppercase;padding:3px 8px;border-radius:var(--radius-sm)}
+  .use--compact{color:var(--text-muted);background:var(--bg-surface);border:.5px solid var(--border-strong)}
+  .use--detail{color:var(--color-signal);background:var(--signal-bg)}
+  .tag-head .nm{font-family:var(--font-heading);font-size:14px;font-weight:600;color:var(--text-primary)}
+
+  svg{width:100%;height:auto;display:block;
+    border:.5px solid var(--border-default);border-radius:var(--radius-md);
+    background:var(--bg-surface)}
+  .axis text{font-family:var(--font-display);font-size:9.5px;fill:var(--text-muted)}
+  .axis .domain{stroke:var(--border-strong)}
+  .axis line{stroke:var(--border-default)}
+  .gridline{stroke:var(--border-default);stroke-dasharray:2 3}
+  .up{fill:var(--data-up);stroke:var(--data-up)}
+  .down{fill:var(--data-down);stroke:var(--data-down)}
+  figcaption{font-size:11.5px;line-height:1.5;color:var(--text-secondary)}
+  figcaption b{color:var(--text-primary);font-weight:600}
+
+  .crosshair line{stroke:var(--text-muted);stroke-width:1;stroke-dasharray:3 3}
+  .crosshair circle{fill:none;stroke:var(--text-primary);stroke-width:1.5}
+  .tt{position:absolute;pointer-events:none;opacity:0;
+    background:var(--bg-primary);border:1px solid var(--border-strong);
+    border-radius:var(--radius-sm);padding:8px 10px;min-width:118px;
+    font-family:var(--font-display);font-size:11px;line-height:1.5;
+    color:var(--text-secondary);transition:opacity var(--dur-fast) var(--ease-out);z-index:5}
+  .tt .d{font-family:var(--font-ui);font-size:9.5px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+  .tt .r{display:flex;justify-content:space-between;gap:14px}
+  .tt .r span:first-child{color:var(--text-muted)}
+  .tt .r b{color:var(--text-primary);font-weight:600;font-variant-numeric:tabular-nums}
+  .tt .chg{margin-top:4px;font-weight:600;font-variant-numeric:tabular-nums}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Candlestick · two scales</div>
+      <h3>One chart, two jobs</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <figure>
+      <div class="tag-head">
+        <span class="use use--compact">card view</span>
+        <span class="nm">Compact</span>
+      </div>
+      <svg id="c-min"></svg>
+      <figcaption><b>No chrome.</b> Price axis only, no grid, no tooltip, not interactive. Drops into watchlist rows, briefing cards, and any inline preview where the shape is the whole story.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="tag-head">
+        <span class="use use--detail">detail view</span>
+        <span class="nm">Full detail</span>
+      </div>
+      <svg id="c-int"></svg>
+      <div class="tt" id="tt"></div>
+      <figcaption><b>Full chrome + interactive.</b> Dashed grid, both axes, crosshair and an OHLC tooltip on hover. The headline chart on the stock-detail page. <b>Hover it.</b></figcaption>
+    </figure>
+  </div>
+
+<script>
+  function genData(n, seed){
+    let s=seed; const rand=()=>{s=(s*9301+49297)%233280;return s/233280;};
+    let price=128; const out=[];
+    const start=new Date(2026,3,1);
+    for(let i=0;i<n;i++){
+      const open=price;
+      const close=Math.max(6, open+(rand()-0.46)*6);
+      const high=Math.max(open,close)+rand()*3;
+      const low=Math.min(open,close)-rand()*3;
+      const dt=new Date(start); dt.setDate(start.getDate()+i);
+      out.push({i,dt,open,high,low,close});
+      price=close;
+    }
+    return out;
+  }
+  const fmtDate=d3.timeFormat('%b %d');
+  const f2=d3.format('.2f');
+
+  function draw(id,{w,h,n,grid=false,axes='min',interactive=false}){
+    const data=genData(n, 11);
+    const M={t:14,r:axes==='full'?10:8,b:22,l:axes==='none'?8:34};
+    const priceBottom=h-M.b;
+    const svg=d3.select('#'+id).attr('viewBox',`0 0 ${w} ${h}`);
+    const x=d3.scaleBand().domain(data.map(d=>d.i)).range([M.l,w-M.r]).padding(0.3);
+    const y=d3.scaleLinear().domain([d3.min(data,d=>d.low),d3.max(data,d=>d.high)]).nice()
+      .range([priceBottom,M.t]);
+    const bw=x.bandwidth();
+
+    if(grid){
+      svg.append('g').selectAll('line').data(y.ticks(4)).join('line')
+        .attr('class','gridline').attr('x1',M.l).attr('x2',w-M.r).attr('y1',y).attr('y2',y);
+    }
+    if(axes!=='none'){
+      const ay=svg.append('g').attr('class','axis').attr('transform',`translate(${M.l},0)`)
+        .call(d3.axisLeft(y).ticks(axes==='full'?5:3).tickSize(0).tickFormat(d3.format('~s')));
+      ay.select('.domain').remove();
+      const ax=svg.append('g').attr('class','axis').attr('transform',`translate(0,${h-M.b})`)
+        .call(d3.axisBottom(x).tickValues(x.domain().filter((d,i)=>i%Math.ceil(n/(axes==='full'?5:3))===0))
+          .tickSize(0).tickFormat(i=>fmtDate(data[i].dt)));
+      ax.select('.domain').remove();
+    }
+
+    const c=svg.append('g').selectAll('g').data(data).join('g')
+      .attr('class',d=>d.close>=d.open?'up':'down');
+    c.append('line').attr('x1',d=>x(d.i)+bw/2).attr('x2',d=>x(d.i)+bw/2)
+      .attr('y1',d=>y(d.high)).attr('y2',d=>y(d.low)).attr('stroke-width',1);
+    c.append('rect').attr('x',d=>x(d.i))
+      .attr('y',d=>y(Math.max(d.open,d.close))).attr('width',bw)
+      .attr('height',d=>Math.max(1.2,Math.abs(y(d.open)-y(d.close)))).attr('stroke-width',1);
+
+    if(interactive){
+      const ch=svg.append('g').attr('class','crosshair').style('opacity',0);
+      const vline=ch.append('line').attr('y1',M.t).attr('y2',priceBottom);
+      const hline=ch.append('line').attr('x1',M.l).attr('x2',w-M.r);
+      const dot=ch.append('circle').attr('r',3.5);
+      const tt=document.getElementById('tt');
+      svg.append('rect').attr('x',M.l).attr('y',M.t)
+        .attr('width',w-M.r-M.l).attr('height',priceBottom-M.t)
+        .attr('fill','transparent').style('cursor','crosshair')
+        .on('mousemove',function(ev){
+          const [mx]=d3.pointer(ev,svg.node());
+          let idx=Math.round((mx-M.l-bw/2)/x.step());
+          idx=Math.max(0,Math.min(n-1,idx));
+          const d=data[idx];
+          const cx=x(d.i)+bw/2, cy=y(d.close);
+          ch.style('opacity',1);
+          vline.attr('x1',cx).attr('x2',cx);
+          hline.attr('y1',cy).attr('y2',cy);
+          dot.attr('cx',cx).attr('cy',cy);
+          const chg=(d.close-d.open), pct=chg/d.open*100, up=chg>=0;
+          tt.style.opacity=1;
+          tt.innerHTML=
+            `<div class="d">${fmtDate(d.dt)}</div>`+
+            `<div class="r"><span>O</span><b>${f2(d.open)}</b></div>`+
+            `<div class="r"><span>H</span><b>${f2(d.high)}</b></div>`+
+            `<div class="r"><span>L</span><b>${f2(d.low)}</b></div>`+
+            `<div class="r"><span>C</span><b>${f2(d.close)}</b></div>`+
+            `<div class="chg" style="color:${up?'var(--data-up)':'var(--data-down)'}">`+
+            `${up?'+':''}${f2(chg)} (${up?'+':''}${pct.toFixed(2)}%)</div>`;
+          const rect=svg.node().getBoundingClientRect();
+          const scale=rect.width/w;
+          let px=cx*scale+14; if(px>rect.width-130) px=cx*scale-132;
+          tt.style.left=px+'px';
+          tt.style.top=Math.max(4,cy*scale-10)+'px';
+        })
+        .on('mouseleave',function(){ ch.style('opacity',0); document.getElementById('tt').style.opacity=0; });
+    }
+  }
+
+  draw('c-min',{w:300,h:170,n:24,axes:'min'});
+  draw('c-int',{w:480,h:300,n:34,grid:true,axes:'full',interactive:true});
+
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

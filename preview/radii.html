@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Radii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;box-sizing:border-box;align-content:center}
+  .it{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .box{width:72px;height:72px;background:var(--bg-surface);border:.5px solid var(--border-default)}
+  .name{font-family:var(--font-ui);font-size:11px;color:var(--text-primary)}
+  .val{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);letter-spacing:.5px}
+</style>
+</head><body>
+  <div class="it"><div class="box" style="border-radius:0"></div><div class="name">none</div><div class="val">code, quotes</div></div>
+  <div class="it"><div class="box" style="border-radius:4px"></div><div class="name">sm · 4px</div><div class="val">tags, buttons</div></div>
+  <div class="it"><div class="box" style="border-radius:8px"></div><div class="name">md · 8px</div><div class="val">cards</div></div>
+  <div class="it"><div class="box" style="border-radius:12px"></div><div class="name">lg · 12px</div><div class="val">surfaces</div></div>
+</body></html>

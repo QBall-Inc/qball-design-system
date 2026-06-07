@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Spacing scale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:24px 32px;display:flex;flex-direction:column;justify-content:center;gap:10px;box-sizing:border-box}
+  .row{display:grid;grid-template-columns:80px 60px 1fr;gap:14px;align-items:center;font-family:var(--font-ui);font-size:12px}
+  .name{color:var(--text-primary)}
+  .val{color:var(--text-muted)}
+  .bar{height:10px;background:var(--color-signal);border-radius:2px}
+</style>
+</head><body>
+  <div class="row"><div class="name">xs</div><div class="val">4px</div><div class="bar" style="width:4px"></div></div>
+  <div class="row"><div class="name">sm</div><div class="val">8px</div><div class="bar" style="width:8px"></div></div>
+  <div class="row"><div class="name">md</div><div class="val">16px</div><div class="bar" style="width:16px"></div></div>
+  <div class="row"><div class="name">lg</div><div class="val">32px</div><div class="bar" style="width:32px"></div></div>
+  <div class="row"><div class="name">xl</div><div class="val">64px</div><div class="bar" style="width:64px"></div></div>
+  <div class="row"><div class="name">2xl</div><div class="val">128px</div><div class="bar" style="width:128px"></div></div>
+</body></html>

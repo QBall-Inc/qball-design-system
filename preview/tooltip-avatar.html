@@ -1,0 +1,89 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Tooltip & Avatars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:20px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:-8px}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);
+    padding:26px 22px;display:flex;align-items:center;gap:40px;flex-wrap:wrap}
+  .demo{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .demo span.cap{font-size:10.5px;color:var(--text-muted)}
+  .triggerline{font-size:13px;color:var(--text-secondary);line-height:1.7;max-width:340px}
+  .triggerline .u{border-bottom:1px dotted var(--text-muted)}
+  .avset{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · tooltip · avatar</div>
+      <h3>Tooltips & avatars</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <span class="state">tooltip — hover or focus (shown pinned here)</span>
+  <div class="panel" style="gap:48px">
+    <div class="demo">
+      <span class="tip" tabindex="0">
+        <button class="iconbtn" style="background:var(--bg-surface)" aria-label="Info">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        </button>
+        <span class="tip__pop" style="opacity:1">Delayed ~15 min on the hobby tier.</span>
+      </span>
+      <span class="cap">on an icon button</span>
+    </div>
+    <div class="demo">
+      <p class="triggerline">Closing price was <span class="tip" tabindex="0"><span class="u" style="color:var(--text-primary);font-family:var(--font-display)">1,024.88</span><span class="tip__pop" style="opacity:1">Last sale · Nasdaq · 3:42pm ET</span></span> at the bell.</p>
+      <span class="cap">inline on a value</span>
+    </div>
+  </div>
+
+  <span class="state">avatars — image · initials (sage / neutral) · sizes · status · group</span>
+  <div class="panel">
+    <div class="avset">
+      <div class="demo"><span class="avatar avatar--xl avatar--round" style="background:var(--signal-bg);color:var(--color-signal)">AK</span><span class="cap">xl · round</span></div>
+      <div class="demo"><span class="avatar avatar--lg">AK</span><span class="cap">lg · sage</span></div>
+      <div class="demo"><span class="avatar avatar--lg avatar--neutral">JD</span><span class="cap">lg · neutral</span></div>
+      <div class="demo"><span class="avatar">AK</span><span class="cap">base</span></div>
+      <div class="demo"><span class="avatar avatar--sm">AK</span><span class="cap">sm</span></div>
+      <div class="demo">
+        <span class="avatar avatar--lg avatar--round" style="background:var(--signal-bg);color:var(--color-signal)">AK<span class="avatar__status"></span></span>
+        <span class="cap">with status</span>
+      </div>
+      <div class="demo">
+        <span class="avatar-group">
+          <span class="avatar avatar--round" style="background:var(--signal-bg);color:var(--color-signal)">AK</span>
+          <span class="avatar avatar--round avatar--neutral">JD</span>
+          <span class="avatar avatar--round" style="background:var(--data-info-bg);color:var(--data-info)">+3</span>
+        </span>
+        <span class="cap">group</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

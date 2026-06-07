@@ -1,0 +1,114 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Data Table — Watchlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;
+    font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;
+    border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);
+    background:var(--bg-primary);overflow:hidden}
+  .panel__bar{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 16px 12px}
+  .panel__bar .ttl{font-family:var(--font-heading);font-size:14px;font-weight:600;color:var(--text-primary)}
+  .panel__bar .cnt{font-family:var(--font-display);font-size:12px;color:var(--text-muted)}
+  table{margin:0}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · data table</div>
+      <h3>Watchlist — density, numerics, semantics</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel__bar">
+      <span class="ttl">Watchlist</span>
+      <span class="cnt">6 symbols</span>
+    </div>
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th class="num">Last</th>
+          <th class="num">Day</th>
+          <th>Week</th>
+          <th>Alert</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+<script>
+  const DATA=[
+    {sym:'AAPL',co:'Apple Inc.',       last:198.42, day:1.24,  wk:3.1,  alert:['signal','price &gt; 200']},
+    {sym:'NVDA',co:'NVIDIA Corp.',     last:1024.88,day:4.62,  wk:8.4,  alert:['up','▲ +5% today']},
+    {sym:'TSLA',co:'Tesla Inc.',       last:178.10, day:-2.34, wk:-4.7, alert:['down','▼ −5% day']},
+    {sym:'MSFT',co:'Microsoft Corp.',  last:432.55, day:0.04,  wk:0.6,  alert:null},
+    {sym:'AMD', co:'Adv. Micro Dev.',  last:162.33, day:-0.92, wk:-1.2, alert:['warn','vol spike']},
+    {sym:'META',co:'Meta Platforms',   last:502.10, day:2.05,  wk:5.3,  alert:['info','earnings 06/12']},
+  ];
+  const f2=d3.format(',.2f');
+  function dirClass(v){return v>0.05?'up':(v<-0.05?'down':'flat')}
+  function sign(v){return (v>0?'+':'')+v.toFixed(2)+'%'}
+
+  function spark(wk,seed){
+    const w=72,h=24,n=22;
+    let s=seed; const rand=()=>{s=(s*9301+49297)%233280;return s/233280;};
+    const pts=[]; let v=0; const drift=wk/n;
+    for(let i=0;i<n;i++){ v+=drift+(rand()-0.5)*1.4; pts.push(v); }
+    const x=d3.scaleLinear().domain([0,n-1]).range([1,w-1]);
+    const y=d3.scaleLinear().domain([d3.min(pts),d3.max(pts)]).range([h-2,2]);
+    const line=d3.line().x((d,i)=>x(i)).y(d=>y(d)).curve(d3.curveMonotoneX);
+    const col= wk>0.05?'var(--data-up)':(wk<-0.05?'var(--data-down)':'var(--data-flat)');
+    return `<svg class="dt__spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`+
+           `<path d="${line(pts)}" fill="none" stroke="${col}" stroke-width="1.5" `+
+           `stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+
+  const REMOVE=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
+
+  document.getElementById('rows').innerHTML = DATA.map((d,i)=>{
+    const dc=dirClass(d.day);
+    const alert = d.alert
+      ? `<span class="badge badge--${d.alert[0]}">${d.alert[1]}</span>`
+      : `<span style="color:var(--text-muted);font-size:12px">—</span>`;
+    return `<tr>
+      <td><span class="sym">${d.sym}</span><span class="co">${d.co}</span></td>
+      <td class="num">${f2(d.last)}</td>
+      <td class="num ${dc}">${sign(d.day)}</td>
+      <td>${spark(d.wk, 3+i*7)}</td>
+      <td>${alert}</td>
+      <td class="num"><button class="dt__remove" aria-label="Remove ${d.sym}">${REMOVE}</button></td>
+    </tr>`;
+  }).join('');
+
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Form · Input & subscribe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Syne&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:24px 32px;display:flex;flex-direction:column;justify-content:center;gap:14px;box-sizing:border-box}
+  .label{font-family:var(--font-ui);font-size:10px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .field{display:flex;gap:8px;align-items:center;max-width:520px}
+  input[type=email]{flex:1;font-family:var(--font-ui);font-size:13px;padding:9px 12px;border:1px solid var(--border-strong);background:var(--bg-primary);color:var(--text-primary);border-radius:4px;outline:none}
+  input[type=email]:focus{border-color:var(--color-signal)}
+  input[type=email]::placeholder{color:var(--text-muted)}
+</style>
+</head><body>
+  <div class="label">Subscribe</div>
+  <div class="field">
+    <input type="email" placeholder="you@somewhere.com">
+    <button class="btn btn--tertiary">Get the next post</button>
+  </div>
+  <div class="caption" style="color:var(--text-muted)">~1 EMAIL EVERY 4–6 WEEKS · NO TRACKING</div>
+</body></html>

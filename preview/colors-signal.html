@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Colors — Signal & Highlight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;box-sizing:border-box;align-content:center}
+  .sw{display:flex;flex-direction:column;gap:6px}
+  .chip{aspect-ratio:1.4;border-radius:6px;display:flex;align-items:flex-end;padding:8px;font-family:var(--font-ui);font-size:10px}
+  .name{font-family:var(--font-ui);font-size:11px;color:var(--text-primary);letter-spacing:.3px}
+  .hex{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);letter-spacing:.5px}
+</style>
+</head><body>
+  <div class="sw"><div class="chip" style="background:#3F6B5B;color:#F7F3EE">light</div><div class="name">Sage (signal)</div><div class="hex">#3F6B5B</div></div>
+  <div class="sw"><div class="chip" style="background:#5B9E87;color:#1E1D1B">dark</div><div class="name">Sage (signal)</div><div class="hex">#5B9E87</div></div>
+  <div class="sw"><div class="chip" style="background:#B45309;color:#F7F3EE">light</div><div class="name">Amber (highlight)</div><div class="hex">#B45309</div></div>
+  <div class="sw"><div class="chip" style="background:#D97706;color:#1E1D1B">dark</div><div class="name">Amber (highlight)</div><div class="hex">#D97706</div></div>
+</body></html>

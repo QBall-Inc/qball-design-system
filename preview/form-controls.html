@@ -1,0 +1,108 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Form Field & Text Input</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px 28px}
+  .cell{display:flex;flex-direction:column;gap:8px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · text input + field</div>
+      <h3>Field wrapper and input states</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="cell">
+      <span class="state">default + helper</span>
+      <div class="field">
+        <label class="field__label" for="f1">Email address</label>
+        <input class="input" id="f1" type="email" placeholder="you@somewhere.com">
+        <span class="field__help">We send a magic link, no password.</span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">focus</span>
+      <div class="field">
+        <label class="field__label" for="f2">Ticker symbol</label>
+        <input class="input" id="f2" value="NVDA" style="border-color:var(--color-signal)">
+        <span class="field__help">Type-ahead matches on symbol.</span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">required + error</span>
+      <div class="field">
+        <label class="field__label" for="f3">Email address <span class="field__req">*</span></label>
+        <input class="input input--error" id="f3" value="not-an-email" aria-invalid="true">
+        <span class="field__error">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          Enter a valid email address.
+        </span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">disabled</span>
+      <div class="field">
+        <label class="field__label" for="f4">Account email</label>
+        <input class="input" id="f4" value="ashay@ashaykubal.com" disabled>
+        <span class="field__help">Managed by your provider.</span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">numeric variant</span>
+      <div class="field">
+        <label class="field__label" for="f5">Alert threshold</label>
+        <input class="input num" id="f5" inputmode="decimal" value="200.00">
+        <span class="field__help">USD. Berkeley Mono tabular figures.</span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">with affordance</span>
+      <div class="field">
+        <label class="field__label" for="f6">Search</label>
+        <div class="input-wrap">
+          <input class="input" id="f6" placeholder="Add a ticker…">
+          <button class="input-wrap__affix" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+        </div>
+        <span class="field__help">Trailing icon / action slot.</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

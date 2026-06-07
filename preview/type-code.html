@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Type — Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:24px 32px;display:flex;flex-direction:column;justify-content:center;gap:8px;box-sizing:border-box}
+  .label{font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  pre{margin:0}
+  .kw{color:var(--color-signal)}
+  .str{color:var(--color-highlight)}
+  .cm{color:var(--text-muted)}
+</style>
+</head><body>
+  <div class="label">benchmark.ts</div>
+  <pre><code><span class="cm">// load the smallest model first</span>
+<span class="kw">const</span> model = <span class="kw">await</span> loadEmbedding(<span class="str">"bge-small-en-v1.5"</span>);
+<span class="kw">const</span> vec = <span class="kw">await</span> model.encode(<span class="str">"hello world"</span>);</code></pre>
+</body></html>

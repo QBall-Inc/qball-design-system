@@ -1,0 +1,157 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Auth — Magic Link Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .cell{display:flex;flex-direction:column}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+  .frame{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);
+    padding:30px 22px;flex:1;display:flex;align-items:center;justify-content:center}
+  .stocky-icon{width:46px;height:46px}
+</style>
+<template id="stocky-tpl">
+  <span class="stocky-icon" role="img" aria-label="Stocky"><svg viewBox="0 0 32 32" fill="none">
+    <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M16 8 11.5 3"/><path d="M16 8 20.5 3"/></g>
+    <circle cx="11.5" cy="3" r="1.4" fill="currentColor"/><circle cx="20.5" cy="3" r="1.4" fill="currentColor"/>
+    <rect x="4" y="8" width="24" height="20" rx="4.5" stroke="currentColor" stroke-width="1.6"/>
+    <rect class="stocky-screen" x="7" y="11" width="18" height="13.5" rx="2.5"/>
+    <rect class="stocky-scan" x="7.6" y="11.4" width="16.8" height="1.3" rx="0.6"/>
+    <circle class="stocky-eye" cx="12.6" cy="17.6" r="1.95"/><circle class="stocky-eye stocky-eye--r" cx="19.4" cy="17.6" r="1.95"/>
+    <circle cx="11.95" cy="16.95" r="0.6" fill="rgba(255,255,255,.85)"/><circle cx="18.75" cy="16.95" r="0.6" fill="rgba(255,255,255,.85)"/>
+    <path d="M9.5 28v2M22.5 28v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </svg></span>
+</template>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · auth</div>
+      <h3>Magic-link flow — no passwords</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- 1 · request (idle) -->
+    <div class="cell">
+      <span class="state">1 · request link</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="auth__mark" data-stocky></span>
+          <h2 class="auth__title">Sign in to Stocky</h2>
+          <p class="auth__sub">We'll email you a one-time link. No password to remember.</p>
+          <div class="auth__form">
+            <div class="field" style="max-width:none">
+              <input class="input" type="email" placeholder="you@somewhere.com" value="ashay@ashaykubal.com">
+            </div>
+            <button class="btn btn--primary" style="justify-content:center">Email me a link</button>
+          </div>
+          <p class="auth__foot">By continuing you agree to the terms.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · submitting -->
+    <div class="cell">
+      <span class="state">2 · sending</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="auth__mark" data-stocky></span>
+          <h2 class="auth__title">Sign in to Stocky</h2>
+          <p class="auth__sub">We'll email you a one-time link. No password to remember.</p>
+          <div class="auth__form">
+            <div class="field" style="max-width:none">
+              <input class="input" type="email" value="ashay@ashaykubal.com" disabled>
+            </div>
+            <button class="btn btn--primary btn--loading" style="justify-content:center"><span>Sending…</span></button>
+          </div>
+          <p class="auth__foot">By continuing you agree to the terms.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · check your email -->
+    <div class="cell">
+      <span class="state">3 · check your email</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="auth__icon auth__icon--mail">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <h2 class="auth__title">Check your email</h2>
+          <p class="auth__sub">We sent a sign-in link to <b>ashay@ashaykubal.com</b>. It expires in 15 minutes.</p>
+          <p class="auth__foot">Didn't get it? <button class="auth__link">Resend</button> · <button class="auth__link">Use a different email</button></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · verifying -->
+    <div class="cell">
+      <span class="state">4 · verifying</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="spinner spinner--lg" style="margin-bottom:4px"></span>
+          <h2 class="auth__title">Signing you in…</h2>
+          <p class="auth__sub">Verifying your link. This only takes a moment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · success -->
+    <div class="cell">
+      <span class="state">5 · success</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="auth__icon auth__icon--ok">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.8 10A10 10 0 1 1 17 3.3"/><path d="m9 11 3 3L22 4"/></svg>
+          </span>
+          <h2 class="auth__title">You're in</h2>
+          <p class="auth__sub">Taking you to your watchlist…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · expired / invalid -->
+    <div class="cell">
+      <span class="state">6 · expired or invalid</span>
+      <div class="frame">
+        <div class="auth">
+          <span class="auth__icon auth__icon--err">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          </span>
+          <h2 class="auth__title">This link expired</h2>
+          <p class="auth__sub">Sign-in links last 15 minutes and work once. Request a fresh one.</p>
+          <div class="auth__form"><button class="btn btn--primary" style="justify-content:center">Email me a new link</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const svgTpl=document.getElementById('stocky-tpl').content.querySelector('svg');
+  document.querySelectorAll('[data-stocky]').forEach(s=>{s.appendChild(svgTpl.cloneNode(true));});
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

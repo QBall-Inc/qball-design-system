@@ -1,0 +1,127 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>AI Conversation — Terminal Transcript</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+
+  /* ---- terminal conversation component ---- */
+  .term{display:flex;flex-direction:column;max-width:560px;
+    font-family:var(--font-display);background:var(--bg-primary);
+    border:1px solid var(--border-strong);border-radius:var(--radius-lg);overflow:hidden}
+  .term__head{padding:11px 14px;border-bottom:.5px solid var(--border-default);
+    display:flex;align-items:center;gap:8px;font-family:var(--font-ui)}
+  .term__caret{font-family:var(--font-display);color:var(--color-signal);font-weight:700;font-size:13px}
+  .term__title{font-size:11.5px;color:var(--text-muted);letter-spacing:.5px}
+  .term__body{padding:4px 14px;display:flex;flex-direction:column;font-size:12.5px;line-height:1.65}
+  .term__sep{height:0;border:0;border-top:.5px solid var(--border-default);margin:0}
+  .turn{display:grid;grid-template-columns:56px 1fr;gap:8px;align-items:start;padding:11px 0}
+  .pre-you{color:var(--color-signal);font-weight:600;white-space:nowrap}
+  .pre-bot{color:var(--color-highlight);font-weight:700;white-space:nowrap}
+  .t-you{color:var(--text-primary)}
+  .t-bot{color:var(--text-secondary)}
+  .n{color:var(--data-up);font-weight:600}
+  .bul{color:var(--text-muted)}
+  .cursor{display:inline-block;width:7px;height:14px;background:var(--color-signal);
+    vertical-align:text-bottom;margin-left:2px;animation:cdblink 1s steps(1) infinite}
+  .term__composer{padding:11px 14px 4px;border-top:.5px solid var(--border-default);
+    display:grid;grid-template-columns:56px 1fr;gap:8px;align-items:start}
+  .term__prompt{color:var(--color-signal);font-weight:600;white-space:nowrap;line-height:1.65;padding-top:9px}
+  .term__input{font-family:var(--font-display);font-size:12.5px;line-height:1.65;border:0;
+    border-bottom:1px solid var(--border-strong);padding:9px 4px;min-height:22px;
+    background:transparent;color:var(--text-primary);outline:none;width:100%;
+    resize:none;overflow:hidden;box-sizing:border-box}
+  .term__disc{padding:8px 14px 12px;font-family:var(--font-ui);font-size:10px;
+    color:var(--text-muted);text-align:left;line-height:1.45}
+  @keyframes cdblink{0%,50%{opacity:1}51%,100%{opacity:0}}
+  @keyframes cdpulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · AI conversation</div>
+      <h3>Terminal transcript — Stocky</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme" title="Per-card theme toggle is for preview only — in a real app, theme switching lives in the global app shell / user menu.">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <p style="margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-muted);max-width:560px">Note: the light/dark toggle above is a preview convenience. Theme switching is a global control and lives in the app shell (see the App Shell component), not on individual surfaces.</p>
+
+  <div class="term">
+    <div class="term__head">
+      <span class="term__caret">›_</span>
+      <span class="term__title">stocky — NVDA session</span>
+    </div>
+    <div class="term__body">
+      <div class="turn">
+        <span class="pre-you">you&nbsp;›</span>
+        <span class="t-you">What’s driving NVDA’s move this week?</span>
+      </div>
+      <hr class="term__sep">
+      <div class="turn">
+        <span class="pre-bot">stocky&nbsp;›</span>
+        <span class="t-bot">
+          NVDA closed at <span class="n">1,024.88</span>, up <span class="n">+8.4%</span> on the week
+          <span class="gwrap" tabindex="0"><span class="ground-wave ground-wave--source">[source]</span>
+            <span class="gtip gtip--cited gtip--below gtip--alignR">
+              <span class="gtip__k">Source</span>Live last-sale quote from the market data feed. <span class="gtip__src">Nasdaq · 30 May 3:42pm ET</span>
+            </span>
+          </span>.<br>
+          <span class="bul">—</span> Stronger-than-expected data-center demand<br>
+          <span class="bul">—</span> Analyst target raised to 1,200
+          <span class="gwrap" tabindex="0"><span class="ground-wave ground-wave--unverified">[unverified]</span>
+            <span class="gtip gtip--unverified gtip--below gtip--alignR">
+              <span class="gtip__k">Unverified</span>Pulled from the model, not a confirmed source. Treat with caution.
+            </span>
+          </span><br>
+          Momentum looks firmly bullish — but bulls get humbled too.
+        </span>
+      </div>
+      <hr class="term__sep">
+      <div class="turn">
+        <span class="pre-you">you&nbsp;›</span>
+        <span class="t-you">Should I buy?</span>
+      </div>
+      <hr class="term__sep">
+      <div class="turn">
+        <span class="pre-bot">stocky&nbsp;›</span>
+        <span class="t-bot">Reading the tape<span class="cursor"></span></span>
+      </div>
+    </div>
+    <div class="term__composer">
+      <span class="term__prompt">you&nbsp;›</span>
+      <textarea class="term__input" rows="1" placeholder="type a question…"></textarea>
+    </div>
+    <div class="term__disc">Stocky is AI and can get things wrong — not financial advice. Double-check before you trade.</div>
+  </div>
+
+<script>
+  // auto-grow composer
+  const ta=document.querySelector('.term__input');
+  const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};
+  ta.addEventListener('input',grow);
+  // theme toggle
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

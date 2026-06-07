@@ -1,0 +1,117 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Candlestick — Color</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<style>
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg-primary);box-sizing:border-box;
+    padding:24px 28px;display:flex;flex-direction:column;gap:16px;
+    font-family:var(--font-ui);
+  }
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;
+    text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;
+    font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;
+    padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;
+    transition:background var(--dur-base) var(--ease-out),color var(--dur-base) var(--ease-out)}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+
+  figure{margin:0;display:flex;flex-direction:column;gap:10px}
+  svg{width:100%;height:auto;display:block;
+    border:.5px solid var(--border-default);border-radius:var(--radius-md);
+    background:var(--bg-surface)}
+  .axis text{font-family:var(--font-display);font-size:9.5px;fill:var(--text-muted)}
+  .axis .domain{stroke:var(--border-strong)}
+  .axis line{stroke:var(--border-default)}
+  .up{fill:var(--data-up);stroke:var(--data-up)}
+  .down{fill:var(--data-down);stroke:var(--data-down)}
+
+  .legend{display:flex;gap:20px;align-items:center;font-size:12px;color:var(--text-secondary)}
+  .legend .k{display:inline-flex;align-items:center;gap:7px}
+  .legend .sw{width:11px;height:14px;border-radius:2px}
+  .legend .hex{font-family:var(--font-display);font-size:11px;color:var(--text-muted);margin-left:2px}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Candlestick · color</div>
+      <h3>Traditional green up, red down</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <figure>
+    <svg id="chart" class="c-trad"></svg>
+    <div class="legend">
+      <span class="k"><span class="sw" style="background:var(--data-up)"></span> up / close ≥ open <span class="hex" id="hx-up">#2E7D4F</span></span>
+      <span class="k"><span class="sw" style="background:var(--data-down)"></span> down / close &lt; open <span class="hex" id="hx-dn">#B5342B</span></span>
+    </div>
+  </figure>
+
+<script>
+  function genData(n, seed){
+    let s=seed; const rand=()=>{s=(s*9301+49297)%233280;return s/233280;};
+    let price=128; const out=[];
+    const start=new Date(2026,3,1);
+    for(let i=0;i<n;i++){
+      const open=price;
+      const close=Math.max(6, open+(rand()-0.46)*6);
+      const high=Math.max(open,close)+rand()*3;
+      const low=Math.min(open,close)-rand()*3;
+      const dt=new Date(start); dt.setDate(start.getDate()+i);
+      out.push({i,dt,open,high,low,close});
+      price=close;
+    }
+    return out;
+  }
+  const fmtDate=d3.timeFormat('%b %d');
+  const W=560,H=240,M={t:14,r:10,b:22,l:34};
+  function draw(){
+    const data=genData(34, 11);
+    const svg=d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
+    svg.selectAll('*').remove();
+    const x=d3.scaleBand().domain(data.map(d=>d.i)).range([M.l,W-M.r]).padding(0.3);
+    const y=d3.scaleLinear().domain([d3.min(data,d=>d.low),d3.max(data,d=>d.high)]).nice()
+      .range([H-M.b,M.t]);
+    const bw=x.bandwidth();
+    const ay=svg.append('g').attr('class','axis').attr('transform',`translate(${M.l},0)`)
+      .call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat(d3.format('~s')));
+    ay.select('.domain').remove();
+    const ax=svg.append('g').attr('class','axis').attr('transform',`translate(0,${H-M.b})`)
+      .call(d3.axisBottom(x).tickValues(x.domain().filter((d,i)=>i%6===0))
+        .tickSize(0).tickFormat(i=>fmtDate(data[i].dt)));
+    ax.select('.domain').remove();
+    const c=svg.append('g').selectAll('g').data(data).join('g')
+      .attr('class',d=>d.close>=d.open?'up':'down');
+    c.append('line').attr('x1',d=>x(d.i)+bw/2).attr('x2',d=>x(d.i)+bw/2)
+      .attr('y1',d=>y(d.high)).attr('y2',d=>y(d.low)).attr('stroke-width',1);
+    c.append('rect').attr('x',d=>x(d.i))
+      .attr('y',d=>y(Math.max(d.open,d.close))).attr('width',bw)
+      .attr('height',d=>Math.max(1.2,Math.abs(y(d.open)-y(d.close)))).attr('stroke-width',1);
+  }
+  draw();
+
+  const btns=document.querySelectorAll('[data-theme-set]');
+  const up={light:'#2E7D4F',dark:'#4FB07A'}, dn={light:'#B5342B',dark:'#E2705F'};
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    const t=b.getAttribute('data-theme-set');
+    document.documentElement.setAttribute('data-theme',t);
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+    document.getElementById('hx-up').textContent=up[t];
+    document.getElementById('hx-dn').textContent=dn[t];
+  }));
+</script>
+</body></html>

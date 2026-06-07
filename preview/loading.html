@@ -1,0 +1,89 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Loading — Spinner & Skeleton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);padding:18px;background:var(--bg-primary)}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:12px}
+  .spin-row{display:flex;align-items:center;gap:26px;margin-bottom:16px}
+  .spin-cell{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .spin-cell span{font-size:10px;color:var(--text-muted)}
+  .note{font-size:10.5px;line-height:1.5;color:var(--text-muted);margin:10px 0 0}
+
+  /* skeleton: watchlist-row shape */
+  .skrow{display:grid;grid-template-columns:32px 1fr 64px 52px;gap:12px;align-items:center;
+    padding:11px 0;border-bottom:.5px solid var(--border-default)}
+  .skrow:last-child{border-bottom:0}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · loading</div>
+      <h3>Spinner and skeleton</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <span class="state">spinner · indeterminate waits</span>
+      <div class="spin-row">
+        <div class="spin-cell"><span class="spinner spinner--sm"></span><span>sm</span></div>
+        <div class="spin-cell"><span class="spinner"></span><span>base</span></div>
+        <div class="spin-cell"><span class="spinner spinner--lg"></span><span>lg</span></div>
+      </div>
+      <div class="load-inline"><span class="spinner spinner--sm"></span> Fetching quotes…</div>
+      <p class="note">Use only for true indeterminate waits (a submit in flight, an SSE reconnect). For content, prefer the skeleton →</p>
+    </div>
+
+    <div class="panel">
+      <span class="state">skeleton · content placeholder (watchlist)</span>
+      <div class="skrow">
+        <span class="skel skel--circle" style="width:32px;height:32px"></span>
+        <span><span class="skel skel--title" style="width:46%"></span><span class="skel skel--text" style="width:64%"></span></span>
+        <span class="skel skel--line" style="width:100%"></span>
+        <span class="skel skel--line" style="width:100%"></span>
+      </div>
+      <div class="skrow">
+        <span class="skel skel--circle" style="width:32px;height:32px"></span>
+        <span><span class="skel skel--title" style="width:38%"></span><span class="skel skel--text" style="width:72%"></span></span>
+        <span class="skel skel--line" style="width:100%"></span>
+        <span class="skel skel--line" style="width:100%"></span>
+      </div>
+      <div class="skrow">
+        <span class="skel skel--circle" style="width:32px;height:32px"></span>
+        <span><span class="skel skel--title" style="width:52%"></span><span class="skel skel--text" style="width:58%"></span></span>
+        <span class="skel skel--line" style="width:100%"></span>
+        <span class="skel skel--line" style="width:100%"></span>
+      </div>
+      <p class="note">Mirrors the real row layout so content doesn't jump on load. Shimmer respects reduced-motion.</p>
+    </div>
+  </div>
+
+<script>
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

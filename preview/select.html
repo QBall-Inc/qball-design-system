@@ -1,0 +1,135 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Select / Dropdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,200px));gap:24px 28px;align-items:start}
+  .cell{display:flex;flex-direction:column;gap:8px;min-height:220px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .lbl{font-size:11px;font-weight:500;letter-spacing:.5px;color:var(--text-secondary)}
+
+  /* custom select layout (control styles come from components.css) */
+  .cselect{position:relative}
+  .cselect > .select{text-align:left;display:flex;align-items:center}
+  .cselect .menu{position:absolute;left:0;top:calc(100% + 4px);width:100%;z-index:10}
+  .cselect .menu[hidden]{display:none}
+  .note{font-size:10.5px;line-height:1.5;color:var(--text-muted);max-width:560px}
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · select</div>
+      <h3>Custom dropdown — on-palette hover &amp; select</h3>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="cell">
+      <span class="state">default / closed</span>
+      <span class="lbl">Alert type</span>
+      <div class="cselect" data-select>
+        <button class="select" aria-haspopup="listbox" aria-expanded="false">
+          <span data-value>Price threshold</span>
+        </button>
+        <div class="menu" role="listbox" hidden>
+          <div class="menu__item" role="option" aria-selected="true">Price threshold
+            <svg class="menu__check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="menu__item" role="option">Percent change</div>
+          <div class="menu__item" role="option">Volume spike</div>
+        </div>
+      </div>
+      <span class="note">Click to open. Hover = sage text, selection = sage tint + check.</span>
+    </div>
+
+    <div class="cell">
+      <span class="state">open</span>
+      <span class="lbl">Alert direction</span>
+      <div class="cselect" data-select data-open>
+        <button class="select" aria-haspopup="listbox" aria-expanded="true">
+          <span data-value>Crosses below</span>
+        </button>
+        <div class="menu" role="listbox">
+          <div class="menu__item" role="option">Crosses above</div>
+          <div class="menu__item" role="option" aria-selected="true">Crosses below
+            <svg class="menu__check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="menu__item" role="option">Either way</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <span class="state">disabled</span>
+      <span class="lbl">Sort by</span>
+      <div class="cselect">
+        <button class="select" disabled>
+          <span>Day change %</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">All three are the same custom component — no native <code>&lt;select&gt;</code>, so the open list never falls back to the OS blue highlight. Hover and selection are driven entirely by the sage signal token.</p>
+
+<script>
+  function closeAll(except){
+    document.querySelectorAll('[data-select]').forEach(s=>{
+      if(s===except) return;
+      s.querySelector('.menu').hidden=true;
+      s.querySelector('.select').setAttribute('aria-expanded','false');
+    });
+  }
+  document.querySelectorAll('[data-select]').forEach(sel=>{
+    const trigger=sel.querySelector('.select');
+    const menu=sel.querySelector('.menu');
+    const valueEl=sel.querySelector('[data-value]');
+    trigger.addEventListener('click',e=>{
+      e.stopPropagation();
+      const open=menu.hidden===false;
+      closeAll(sel);
+      menu.hidden=open;
+      trigger.setAttribute('aria-expanded', String(!open));
+    });
+    menu.querySelectorAll('.menu__item').forEach(item=>{
+      item.addEventListener('click',()=>{
+        menu.querySelectorAll('.menu__item').forEach(i=>{ i.removeAttribute('aria-selected'); i.querySelector('.menu__check')?.remove(); });
+        item.setAttribute('aria-selected','true');
+        if(!item.querySelector('.menu__check')){
+          item.insertAdjacentHTML('beforeend','<svg class="menu__check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>');
+        }
+        valueEl.textContent=item.childNodes[0].textContent.trim();
+        menu.hidden=true;
+        trigger.setAttribute('aria-expanded','false');
+      });
+    });
+  });
+  document.addEventListener('click',()=>closeAll(null));
+
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

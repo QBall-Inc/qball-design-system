@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Code block</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);padding:20px 28px;display:flex;flex-direction:column;justify-content:center;gap:6px;box-sizing:border-box}
+  .file{font-family:var(--font-code);font-size:12px;color:var(--text-muted)}
+  pre{margin:0}
+  .kw{color:var(--color-signal)}
+  .str{color:var(--color-highlight)}
+  .cm{color:var(--text-muted)}
+</style>
+</head><body>
+  <div class="file">harness/evals.ts</div>
+  <pre><code><span class="cm">// run a single eval and assert on the output</span>
+<span class="kw">export async function</span> assertExact(name: <span class="kw">string</span>, expected: <span class="kw">string</span>) {
+  <span class="kw">const</span> result = <span class="kw">await</span> runEval(name);
+  <span class="kw">if</span> (result.completion !== expected) <span class="kw">throw new</span> Error(<span class="str">"mismatch"</span>);
+}</code></pre>
+</body></html>
