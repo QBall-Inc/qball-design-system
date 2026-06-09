@@ -19,7 +19,7 @@ each class's states), `reference/component-audit.md` (the original build/extend/
   **D3.js** for the candlestick (and inline SVG sparklines). This is the stack Stocky targets; keep the
   library framework-agnostic at the token layer so other projects can reuse it.
 - **Wire tokens first:** `@import "tailwindcss"; @import "./tokens/theme.css"; @import
-  "./colors_and_type.css";` — the last brings the `@font-face` + semantic element styles (h1–h4, p,
+  "./colors_and_type.css";` — the last brings the font custom properties + semantic element styles (h1–h4, p,
   blockquote, code, a, `.num`). Then build components with Tailwind utilities mapped to the theme
   (`bg-surface`, `text-signal`, `border-strong`, `font-display`, `rounded-md`, `text-up`…).
 - **Two valid strategies — pick per component, don't mix within one:**
@@ -109,8 +109,8 @@ each class's states), `reference/component-audit.md` (the original build/extend/
 ## 7. Suggested library structure
 
 ```
-@aksys/tokens     → theme.css + tokens.json + colors_and_type.css + fonts/   (no React; reusable everywhere)
-@aksys/react      → the components above (depends on @aksys/tokens + Radix)
+@qball-inc/tokens → theme.css + colors_and_type.css + components.css + tokens.json   (no React; reusable everywhere)
+@qball-inc/react  → the components above (depends on @qball-inc/tokens + Radix)
   primitives/     Button Input Select Switch Segmented Field Search ...
   data/           DataTable Stat Meter Badge Sparkline Candlestick Tooltip Avatar
   overlay/        Modal Toast Callout Skeleton Spinner StateFig
@@ -125,8 +125,10 @@ against the matching `preview/*.html` and the `gallery.html` contact sheet.
 
 ## 8. Build order
 
-1. `@aksys/tokens` — wire `theme.css`, port `@font-face` (Berkeley Mono self-hosted, others via
-   `@fontsource`), confirm light/dark flips on `data-theme`.
+1. `@qball-inc/tokens` — wire `theme.css` + `colors_and_type.css` + `components.css`; the public
+   display face is Fira Code via the `--font-display` fallback stack (Berkeley Mono is the intended
+   face, restored per README in private builds — never bundled in this package), confirm light/dark
+   flips on `data-theme`.
 2. Primitives (Button → Input/Field → Select → Switch → Segmented → Search). Verify against previews.
 3. Overlays (Modal/AlertDialog → Toast → Callout → Skeleton/Spinner → StateFig).
 4. Data (DataTable → Stat/Meter/Badge → Sparkline → **Candlestick (D3)** → Tooltip/Avatar).

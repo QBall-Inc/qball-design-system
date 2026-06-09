@@ -1,17 +1,21 @@
 {
   "name": "@qball-inc/tokens",
   "version": "0.0.0",
-  "description": "QBall Design System tokens — CSS custom properties + DTCG JSON (placeholder; the verbatim-extracted publishable surface lands in WP-B-1.1).",
+  "description": "QBall Design System tokens — framework-agnostic CSS custom properties, component classes, and a DTCG/Style-Dictionary JSON mirror. Zero build step; public default display face is Fira Code (Berkeley Mono restored per README in private builds).",
   "license": "Apache-2.0",
   "private": false,
   "type": "module",
-  "exports": {},
+  "exports": {
+    ".": "./tokens.json",
+    "./theme.css": "./theme.css",
+    "./colors-and-type.css": "./colors_and_type.css",
+    "./components.css": "./components.css",
+    "./tokens.json": "./tokens.json"
+  },
   "files": [
     "theme.css",
     "colors_and_type.css",
     "components.css",
-    "tokens.json",
-    "package.json",
-    "README.md"
+    "tokens.json"
   ]
 }
