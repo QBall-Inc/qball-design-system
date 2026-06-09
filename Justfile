@@ -1,8 +1,8 @@
 # QBall Design System — Justfile.
-# `build` + `test` are no-op stubs; the per-package build/test harnesses land in
-# WP-B-2.0 and the component WPs. `license-check` is the enforceable WP-B-0.2
-# dual-assertion font-binary gate (scripts/license-check.sh); `ci` mirrors the
-# GitHub Actions gate chain for local parity.
+# `build` runs each publishable package's tsup harness (dual ESM/CJS + dts);
+# `test` runs each package's vitest suite. `license-check` is the enforceable
+# WP-B-0.2 dual-assertion font-binary gate (scripts/license-check.sh); `ci`
+# mirrors the GitHub Actions gate chain for local parity.
 #
 # Recipes are single-line shell invocations on purpose: `just` runs them via
 # the configured shell (no shebang temp-file), so the /mnt/c exec-bit stripping
@@ -39,13 +39,13 @@ format:
 format-check:
     prettier --check .
 
-# Build stub — per-package dual-ESM/CJS build harness lands in WP-B-2.0.
+# Build every publishable package that defines a build script (dual ESM/CJS + dts via tsup).
 build:
-    @echo "build: no-op stub (build harness lands in WP-B-2.0)"
+    pnpm --filter "@qball-inc/*" --if-present run build
 
-# Test stub — component test harness lands with the first component WP.
+# Run every publishable package test suite that defines a test script (vitest).
 test:
-    @echo "test: no-op stub (test harness lands in WP-B-2.x)"
+    pnpm --filter "@qball-inc/*" --if-present run test
 
 # License-clean (font-binary) dual-assertion gate: npm pack tarballs + committed tree (WP-B-0.2, RB-1).
 license-check:

@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "echo \"test: no-op stub (component test harness lands in WP-B-2.x)\"",
+    "test": "pnpm --filter \"@qball-inc/*\" --if-present run test",
     "license-check": "bash scripts/license-check.sh",
     "ci": "pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check"
   },

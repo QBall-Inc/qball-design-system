@@ -1,13 +1,60 @@
 {
   "name": "@qball-inc/react",
   "version": "0.0.0",
-  "description": "QBall Design System React components (placeholder; the dual ESM/CJS build harness + DOM/JSX tsconfig deltas land in WP-B-2.0).",
+  "description": "QBall Design System React components — token-driven, framework-agnostic at the CSS layer. Dual ESM/CJS build with TypeScript declarations.",
   "license": "Apache-2.0",
   "private": false,
   "type": "module",
-  "exports": {},
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@qball-inc/tokens": "workspace:*",
+    "cmdk": "^1.0.4",
+    "sonner": "^1.7.1"
+  },
+  "peerDependencies": {
+    "d3": ">=7",
+    "lucide-react": ">=0.400.0",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "d3": {
+      "optional": true
+    },
+    "lucide-react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.8"
+  }
 }

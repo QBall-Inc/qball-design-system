@@ -1,5 +1,5 @@
-// Placeholder source so `tsc --noEmit` has an input on the empty scaffold tree.
-// WP-B-2.0 adds the build harness (dual ESM/CJS + .d.ts), the DOM/JSX tsconfig
-// deltas (lib: [ES2022, DOM, DOM.Iterable], jsx: react-jsx) over the base, and a
-// smoke component proving the consumer-import path end-to-end.
-export {};
+// Public barrel for @qball-inc/react. Component families re-export from here as
+// they land (WP-B-2.1+); for now it exposes the WP-B-2.0 smoke primitive that
+// proves the dual ESM/CJS + dts + consumer-import path.
+export { Surface } from "./smoke/Surface";
+export type { SurfaceProps } from "./smoke/Surface";
