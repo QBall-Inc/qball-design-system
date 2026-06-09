@@ -1,0 +1,10 @@
+{
+  "name": "@qball-inc/tokens",
+  "version": "0.0.0",
+  "description": "QBall Design System tokens — CSS custom properties + DTCG JSON (placeholder; the verbatim-extracted publishable surface lands in WP-B-1.1).",
+  "license": "Apache-2.0",
+  "private": false,
+  "type": "module",
+  "exports": {},
+  "files": []
+}

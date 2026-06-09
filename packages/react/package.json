@@ -1,0 +1,10 @@
+{
+  "name": "@qball-inc/react",
+  "version": "0.0.0",
+  "description": "QBall Design System React components (placeholder; the dual ESM/CJS build harness + DOM/JSX tsconfig deltas land in WP-B-2.0).",
+  "license": "Apache-2.0",
+  "private": false,
+  "type": "module",
+  "exports": {},
+  "files": []
+}

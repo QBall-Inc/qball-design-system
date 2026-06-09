@@ -1,0 +1,24 @@
+node_modules/
+dist/
+build/
+coverage/
+
+# Generated lockfile — managed by pnpm, never prettier-formatted.
+pnpm-lock.yaml
+
+# Pre-existing DS-packet / gallery content — served and maintained as-authored
+# (browser HTML/CSS + design docs). Out of the workspace format scope; preserve
+# verbatim per WP-B-0.1 (D-09). The npm packages (packages/*) ARE formatted.
+/colors_and_type.css
+/components.css
+/index.html
+/gallery.html
+tokens/
+preview/
+assets/
+reference/
+/DESIGN.md
+/COMPONENT-LIBRARY.md
+/CAVEATS.md
+/FONTS.md
+/SKILL.md

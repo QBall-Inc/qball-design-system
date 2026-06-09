@@ -45,6 +45,27 @@ reference/               — usage guide + upstream foundations + historical aud
   lists the states to implement. Verify each build against the matching `preview/*.html` / `gallery.html`.
 - **Theme:** set `data-theme="light|dark"` on `<html>`; tokens swap. Light and dark are both first-class.
 
+## Packages (npm)
+
+This repo is a **pnpm workspace** that publishes the design system as two versioned,
+public packages under the `@qball-inc` scope (Apache-2.0):
+
+- **`@qball-inc/tokens`** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
+- **`@qball-inc/react`** — the framework-agnostic component layer as a React library.
+
+```bash
+# Not yet published — v1 packages are in active development (see CHANGELOG.md).
+pnpm add @qball-inc/tokens @qball-inc/react
+```
+
+> **Status:** the packages are **not yet published**. The drop-in `colors_and_type.css` /
+> `components.css` / `tokens/` sources above are the canonical reference today; the npm
+> packages extract that same surface verbatim. Until v1.0.0 ships, consume the CSS directly.
+
+Workspace layout: `packages/tokens/` and `packages/react/`. Local development uses
+`pnpm install` at the repo root + the `Justfile` recipes (`just typecheck`, `just lint`,
+`just build`, `just test`).
+
 ## Display font
 
 > **The display font ships as Fira Code in this repository.** The system's intended display
@@ -57,7 +78,7 @@ To restore Berkeley Mono after cloning:
 1. Purchase a license from **U.S. Graphics Company** — https://usgraphics.com/typefaces/berkeley-mono
    (a Website License Grant + Web Fonts module is required to serve it as a web font).
 2. Drop the `.woff2` files into `fonts/`.
-3. Re-add the `@font-face` declarations in `colors_and_type.css` (see the *Display font* comment there).
+3. Re-add the `@font-face` declarations in `colors_and_type.css` (see the _Display font_ comment there).
 4. Put `'Berkeley Mono'` first in `--font-display` in `colors_and_type.css`, `tokens/theme.css`,
    and `tokens.json`.
 
@@ -76,4 +97,4 @@ and loaded from Google Fonts by the host page.
 ## Version
 
 **v1.0.0** — token layer + application component layer. Treat the token + component files as a pinned
-dependency; see `CAVEATS.md` → *Versioning* before changing any value.
+dependency; see `CAVEATS.md` → _Versioning_ before changing any value.

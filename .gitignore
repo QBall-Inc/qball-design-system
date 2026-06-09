@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Test / coverage
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor / OS noise
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Font binaries — NEVER commit (embed-in-deploy, never-in-source posture).
+# Berkeley Mono is licensed and injected at deploy time only (WP-B-5.1); the
+# enforceable dual-assertion NFR1 gate (tarball + committed tree) lands in
+# WP-B-0.2. This is the belt-and-suspenders, clean-by-construction baseline.
+*.woff2
+*.woff
+*.ttf
+*.otf
+fonts/
