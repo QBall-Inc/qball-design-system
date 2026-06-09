@@ -29,4 +29,7 @@ coverage/
 *.woff
 *.ttf
 *.otf
+*.eot
+*.pfb
+*.pfm
 fonts/

@@ -6,5 +6,12 @@
   "private": false,
   "type": "module",
   "exports": {},
-  "files": []
+  "files": [
+    "theme.css",
+    "colors_and_type.css",
+    "components.css",
+    "tokens.json",
+    "package.json",
+    "README.md"
+  ]
 }

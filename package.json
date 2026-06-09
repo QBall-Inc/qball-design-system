@@ -14,7 +14,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "echo \"test: no-op stub (component test harness lands in WP-B-2.x)\"",
+    "license-check": "bash scripts/license-check.sh",
+    "ci": "pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

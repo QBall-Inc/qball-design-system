@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # NFR1 dual-assertion font-license gate (RB-1) — the primary legal
+      # safeguard, so it runs first after install to fail fast before the
+      # heavier typecheck/lint/test. gate (a) npm pack tarballs + gate (b)
+      # committed tree. Berkeley is never committed; injected only at
+      # Pages-deploy (WP-B-5.1). No git-history scan (clean-by-construction).
+      - name: License-clean gate (font binaries)
+        run: pnpm run license-check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
