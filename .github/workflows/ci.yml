@@ -48,3 +48,12 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # WP-B-2.0a consumer distribution gate (RB-2) — the Strategy-2 shipped-CSS
+      # delivery contract becomes a blocking pre-merge check. Packs the @qball-inc
+      # tarballs (pnpm pack rewrites workspace:* to a real version, matching the
+      # publish path), installs them into the throwaway fixtures/consumer app,
+      # builds, and asserts .btn delivery + its self-contained token vars + the
+      # optional token utility + a single Tailwind base block + a negative control.
+      - name: Consumer distribution gate
+        run: pnpm run consumer-validate

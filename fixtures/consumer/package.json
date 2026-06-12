@@ -1,0 +1,30 @@
+{
+  "name": "qball-consumer-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WP-B-2.0a throwaway consumer harness — installs the PACKED @qball-inc tarballs (not workspace:*) and proves Strategy-2 component delivery + the optional token-utility path in one real Vite + React 18 app. Not a workspace member (AR15).",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@qball-inc/react": "file:./qball-inc-react-0.0.0.tgz",
+    "@qball-inc/tokens": "file:./qball-inc-tokens-0.0.0.tgz",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@qball-inc/tokens": "file:./qball-inc-tokens-0.0.0.tgz"
+    }
+  }
+}

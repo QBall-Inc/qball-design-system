@@ -17,7 +17,8 @@
     "format:check": "prettier --check .",
     "test": "pnpm --filter \"@qball-inc/*\" --if-present run test",
     "license-check": "bash scripts/license-check.sh",
-    "ci": "pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check"
+    "consumer-validate": "bash fixtures/consumer/scripts/validate-consumer.sh",
+    "ci": "pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run consumer-validate"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

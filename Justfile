@@ -51,6 +51,16 @@ test:
 license-check:
     bash scripts/license-check.sh
 
-# Full local gate (mirrors CI): typecheck -> lint -> test -> license-check.
-ci: typecheck lint test license-check
+# Consumer distribution gate (WP-B-2.0a, RB-2): packs the @qball-inc tarballs the
+# way the npm publish path will (pnpm pack rewrites workspace:* -> a real version,
+# NOT the @source utility-purge model), installs them into the throwaway
+# fixtures/consumer app, and asserts the Strategy-2 component CSS (.btn) delivers +
+# its token vars resolve self-contained + the optional token utility generates +
+# a single Tailwind base block + a negative control. Multi-line shell lives in the
+# committed script (WSL exec-bit pattern), invoked via bash.
+consumer-validate:
+    bash fixtures/consumer/scripts/validate-consumer.sh
+
+# Full local gate (mirrors CI): typecheck -> lint -> test -> license-check -> consumer-validate.
+ci: typecheck lint test license-check consumer-validate
     @echo "ci: all gates passed"

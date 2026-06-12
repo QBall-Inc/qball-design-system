@@ -72,6 +72,10 @@ export default tseslint.config(
       "preview/**",
       "assets/**",
       "reference/**",
+      // WP-B-2.0a throwaway consumer harness — a standalone Vite + React 18 app
+      // with its own tsconfig, built/asserted only via `just consumer-validate`.
+      // Not a workspace member; lives outside the library lint scope.
+      "fixtures/**",
     ],
   },
   // Plain JS / config files: JS recommended only (no type-aware rules).

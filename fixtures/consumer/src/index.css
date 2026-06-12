@@ -1,0 +1,22 @@
+/* WP-B-2.0a consumer fixture stylesheet — proves the two-pronged distribution
+   model coexists in one real app (see plan_v1.md S71 distribution reconciliation).
+
+   AC-4 (OPTIONAL token-utility surface, additive): `@import "tailwindcss"` brings
+   the single base/reset (AC-7); the token @theme makes token utilities (e.g.
+   bg-surface) available to the CONSUMER's own markup; `@source` opts the installed
+   component dist into Tailwind's scan as a documented forward-safety belt (inert
+   today — no component emits utilities under the S70 D-08 className-wrapper model). */
+@import "tailwindcss";
+@import "@qball-inc/tokens/theme.css";
+
+/* AC-3 (REQUIRED component CSS — Strategy-2, canonical): these two stylesheets
+   alone style the entire component inventory (every component is a className
+   wrapper). Cascade order is colors-and-type first, then components. Removing
+   them leaves <Button> unstyled — exactly what the AC-8 negative control asserts,
+   which is why each carries the AC-3-COMPONENT-CSS sentinel the control strips. */
+@import "@qball-inc/tokens/colors-and-type.css"; /* AC-3-COMPONENT-CSS */
+@import "@qball-inc/tokens/components.css"; /* AC-3-COMPONENT-CSS */
+
+/* @source must follow the @import block (CSS requires imports first); Tailwind
+   consumes this directive and removes it from the output. */
+@source "../node_modules/@qball-inc/react/dist";
