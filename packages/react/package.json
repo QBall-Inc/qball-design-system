@@ -28,11 +28,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@qball-inc/tokens": "workspace:*",
-    "cmdk": "^1.0.4",
-    "sonner": "^1.7.1"
+    "@qball-inc/tokens": "workspace:*"
   },
   "peerDependencies": {
+    "@radix-ui/react-slot": ">=1.1.0",
     "d3": ">=7",
     "lucide-react": ">=0.400.0",
     "react": ">=18",
@@ -47,6 +46,7 @@
     }
   },
   "devDependencies": {
+    "@radix-ui/react-slot": "^1.1.1",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
