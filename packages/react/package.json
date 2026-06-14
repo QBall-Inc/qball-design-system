@@ -31,6 +31,7 @@
     "@qball-inc/tokens": "workspace:*"
   },
   "peerDependencies": {
+    "@radix-ui/react-select": ">=2.0.0",
     "@radix-ui/react-slot": ">=1.1.0",
     "d3": ">=7",
     "lucide-react": ">=0.400.0",
@@ -46,8 +47,10 @@
     }
   },
   "devDependencies": {
+    "@radix-ui/react-select": "^2.3.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
