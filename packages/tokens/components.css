@@ -210,6 +210,16 @@
 .segmented button:hover { color: var(--text-secondary); }
 .segmented button[aria-pressed="true"] { background: var(--signal-bg); color: var(--color-signal); }
 
+/* ----- Scrim / overlay backdrop --------------------------------
+   The dim veil behind a modal/dialog — the brand's no-shadow lift
+   partner. Full-viewport fixed layer; no blur (the preview oracle
+   dims with a flat tone). Reused by the WP-B-3.7 Scrim atom. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim);
+}
+
 /* ----- Modal / dialog ------------------------------------------
    No shadow. Lifted off the page by a heavier border + dim scrim
    (the brand's stated alternative to elevation). 12px radius is

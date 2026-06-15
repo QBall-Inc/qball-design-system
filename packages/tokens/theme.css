@@ -46,6 +46,7 @@
   --color-border-strong: rgba(0,0,0,0.14);
   --color-signal-bg: rgba(63,107,91,0.10);
   --color-highlight-bg: rgba(180,83,9,0.10);
+  --color-scrim: rgba(20,20,20,0.45);  /* modal/overlay scrim (theme-independent) */
 
   /* finance / data palette — SEMANTICS ONLY, never wayfinding */
   --color-up: #2E7D4F;  --color-down: #B5342B;  --color-warn: #9A7D0F;

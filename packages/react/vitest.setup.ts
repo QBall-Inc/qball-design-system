@@ -15,6 +15,19 @@ beforeAll(() => {
     unobserve(): void {}
     disconnect(): void {}
   };
+  // Sonner (Toast) reads matchMedia for prefers-reduced-motion / theme; jsdom
+  // does not implement it. Shim a non-matching query so the real Sonner runtime
+  // mounts (T1 — environment shim, not a stand-in for the SUT).
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
 });
 
 // Unmount and clear the jsdom container after every test so multi-test files

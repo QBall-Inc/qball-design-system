@@ -29,9 +29,12 @@
   },
   "dependencies": {
     "@qball-inc/tokens": "workspace:*",
-    "cmdk": "^1.1.1"
+    "cmdk": "^1.1.1",
+    "sonner": "^1.7.4"
   },
   "peerDependencies": {
+    "@radix-ui/react-alert-dialog": ">=1.1.0",
+    "@radix-ui/react-dialog": ">=1.1.0",
     "@radix-ui/react-select": ">=2.0.0",
     "@radix-ui/react-slot": ">=1.1.0",
     "d3": ">=7",
@@ -48,6 +51,8 @@
     }
   },
   "devDependencies": {
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-dialog": "^1.1.16",
     "@radix-ui/react-select": "^2.3.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@testing-library/react": "^16.1.0",

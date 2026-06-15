@@ -25,3 +25,19 @@ export { SecretInput } from "./primitives/SecretInput";
 export type { SecretInputProps } from "./primitives/SecretInput";
 export { Search } from "./primitives/Search";
 export type { SearchProps, SearchItem } from "./primitives/Search";
+
+// Overlays I — Modal + Toast + Callout.
+export {
+  Modal,
+  ModalTrigger,
+  ModalContent,
+  ModalTitle,
+  ModalDescription,
+  ModalClose,
+  AlertModal,
+} from "./overlay/Modal";
+export type { ModalContentProps, AlertModalProps } from "./overlay/Modal";
+export { Toaster, toast } from "./overlay/Toast";
+export type { ToastOptions, ToasterProps } from "./overlay/Toast";
+export { Callout } from "./overlay/Callout";
+export type { CalloutProps, CalloutVariant } from "./overlay/Callout";
