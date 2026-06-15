@@ -41,3 +41,11 @@ export { Toaster, toast } from "./overlay/Toast";
 export type { ToastOptions, ToasterProps } from "./overlay/Toast";
 export { Callout } from "./overlay/Callout";
 export type { CalloutProps, CalloutVariant } from "./overlay/Callout";
+
+// Overlays II — Skeleton + Spinner + StateFig (Empty/Error).
+export { Skeleton } from "./overlay/Skeleton";
+export type { SkeletonProps, SkeletonShape } from "./overlay/Skeleton";
+export { Spinner } from "./overlay/Spinner";
+export type { SpinnerProps, SpinnerSize } from "./overlay/Spinner";
+export { EmptyStateFig, ErrorStateFig } from "./overlay/StateFig";
+export type { EmptyStateFigProps, ErrorStateFigProps } from "./overlay/StateFig";

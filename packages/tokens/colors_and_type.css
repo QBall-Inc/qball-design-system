@@ -409,6 +409,11 @@ a:hover, .link:hover {
 .btn--tertiary.btn--loading::after,
 .btn--ghost.btn--loading::after { color: var(--color-signal); }
 @keyframes btn-spin { to { transform: rotate(360deg); } }
+/* Reduced-motion: stop the loop entirely (static ring, no spin) — NFR5. The
+   button is still visibly disabled (transparent label, blocked pointer). */
+@media (prefers-reduced-motion: reduce) {
+  .btn--loading::after { animation: none; }
+}
 
 .card {
   background: var(--bg-surface);
