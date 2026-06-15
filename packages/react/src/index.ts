@@ -19,3 +19,9 @@ export { Switch } from "./primitives/Switch";
 export type { SwitchProps } from "./primitives/Switch";
 export { Segmented, SegmentedItem } from "./primitives/Segmented";
 export type { SegmentedProps, SegmentedItemProps } from "./primitives/Segmented";
+
+// Primitives III — SecretInput + Search.
+export { SecretInput } from "./primitives/SecretInput";
+export type { SecretInputProps } from "./primitives/SecretInput";
+export { Search } from "./primitives/Search";
+export type { SearchProps, SearchItem } from "./primitives/Search";

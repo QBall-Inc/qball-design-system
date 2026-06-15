@@ -28,7 +28,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@qball-inc/tokens": "workspace:*"
+    "@qball-inc/tokens": "workspace:*",
+    "cmdk": "^1.1.1"
   },
   "peerDependencies": {
     "@radix-ui/react-select": ">=2.0.0",
