@@ -421,6 +421,13 @@ a:hover, .link:hover {
   border-radius: var(--radius-md);
   padding: var(--space-md);
 }
+/* Interactive / selectable card states — WP-B-3.3. A selectable card lifts its
+   border to sage on hover; the selected card carries a sage border + faint sage
+   tint. Static content cards (the default) keep the plain .card border. Lift via
+   border weight + tonal surface (No-Shadows); the 0.5px hairline width is kept. */
+.card--interactive { cursor: pointer; }
+.card--interactive:hover { border-color: var(--color-signal); }
+.card--selected { border-color: var(--color-signal); background: var(--signal-bg); }
 
 hr, .rule {
   border: 0;

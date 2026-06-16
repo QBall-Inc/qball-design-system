@@ -49,3 +49,15 @@ export { Spinner } from "./overlay/Spinner";
 export type { SpinnerProps, SpinnerSize } from "./overlay/Spinner";
 export { EmptyStateFig, ErrorStateFig } from "./overlay/StateFig";
 export type { EmptyStateFigProps, ErrorStateFigProps } from "./overlay/StateFig";
+
+// Data I — Stat + Meter + Badge + Card + Divider (Tabs deferred, WP-B-3.3).
+export { Stat } from "./data/Stat";
+export type { StatProps, StatDirection } from "./data/Stat";
+export { Meter } from "./data/Meter";
+export type { MeterProps, MeterVariant } from "./data/Meter";
+export { Badge } from "./data/Badge";
+export type { BadgeProps, BadgeVariant } from "./data/Badge";
+export { Card } from "./data/Card";
+export type { CardProps } from "./data/Card";
+export { Divider } from "./data/Divider";
+export type { DividerProps } from "./data/Divider";

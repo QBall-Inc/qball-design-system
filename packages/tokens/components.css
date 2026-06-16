@@ -30,6 +30,13 @@
 .badge--info     { color: var(--data-info);       background: var(--data-info-bg); }
 .badge--signal   { color: var(--color-signal);    background: var(--signal-bg); }
 .badge--highlight{ color: var(--color-highlight);  background: var(--highlight-bg); }
+/* Semantic status (success/error) + finance flat — WP-B-3.3. Mirror the
+   toast--success/error mapping: success = gain green, error = loss red; flat is
+   neutral stone on the base surface. Color is paired with a non-color cue in the
+   Badge component for the finance variants (FR4). */
+.badge--success  { color: var(--data-up);          background: var(--data-up-bg); }
+.badge--error    { color: var(--data-down);        background: var(--data-down-bg); }
+.badge--flat     { color: var(--data-flat); }
 .badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
 /* ----- Data table ----------------------------------------------
