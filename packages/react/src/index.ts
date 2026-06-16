@@ -61,3 +61,11 @@ export { Card } from "./data/Card";
 export type { CardProps } from "./data/Card";
 export { Divider } from "./data/Divider";
 export type { DividerProps } from "./data/Divider";
+
+// Data II — Sparkline + Tooltip + Avatar.
+export { Sparkline } from "./data/Sparkline";
+export type { SparklineProps, SparklineDirection } from "./data/Sparkline";
+export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./data/Tooltip";
+export type { TooltipContentProps } from "./data/Tooltip";
+export { Avatar, AvatarGroup } from "./data/Avatar";
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarStatus } from "./data/Avatar";

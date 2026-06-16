@@ -664,6 +664,23 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 }
 .tip:hover .tip__pop, .tip:focus-within .tip__pop { opacity: 1; }
 
+/* Portal variant of .tip__pop for the React <Tooltip> (Radix). The React
+   tooltip portals its content to <body> so it escapes transformed ancestors
+   (the .dock uses transform + backdrop-filter); a node at <body> cannot be
+   positioned by the parent-anchored .tip__pop rules, so this class carries the
+   SAME inverted-bubble visual MINUS positioning — Radix's popper owns placement
+   and Radix mounts the content only while open (no opacity/pointer-events gate).
+   Same look as the .tip__pop oracle (background var(--text-primary), no shadow).
+   The caret is Radix's <Tooltip.Arrow>, filled to match the bubble. */
+.tip-pop {
+  width: max-content; max-width: 220px; text-align: center;
+  background: var(--text-primary); color: var(--bg-primary);
+  border-radius: var(--radius-sm); padding: 7px 10px;
+  font-family: var(--font-ui); font-size: 11px; line-height: 1.45;
+  z-index: 30;
+}
+.tip-pop__arrow { fill: var(--text-primary); }
+
 /* ----- Sparkline frame -----------------------------------------
    The sparkline itself is drawn (SVG/canvas) by the app; this is
    the sizing + caption wrapper and the trend coloring helpers. */
@@ -701,6 +718,13 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   position: absolute; right: -1px; bottom: -1px; width: 9px; height: 9px;
   border-radius: 50%; border: 1.5px solid var(--bg-primary); background: var(--data-up);
 }
+/* Status variants. Base .avatar__status is online (gain green). These are
+   presence states, not finance signals, so the dot shape itself is the cue —
+   no paired arrow needed (see Avatar JSDoc). Tokens reused from the palette:
+   offline = neutral stone, busy = loss red, away = caution gold. */
+.avatar__status--offline { background: var(--data-flat); }
+.avatar__status--busy    { background: var(--data-down); }
+.avatar__status--away    { background: var(--data-warn); }
 .avatar { position: relative; }
 
 /* ----- Auth surfaces -------------------------------------------
