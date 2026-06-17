@@ -119,6 +119,43 @@
    hover-reveal .dt__remove visible. Default remains hover-reveal (the oracle). */
 .dt--actions-visible .dt__remove { opacity: 1; }
 
+/* Mobile card-list reflow (WP-B-3.5a): at narrow widths the table reflows into
+   stacked cards — thead hidden, each row a card, each cell a label-above-value
+   line via td[data-label]::before (the component sets data-label from the column
+   header / meta.label, since CSS cannot read thead text). Keyed to the .dt-wrap
+   host's CONTAINER width (container-type: inline-size) so it reflows when the
+   table sits in a narrow column, not only on a narrow viewport. Purely additive:
+   the desktop .dt surface above is unchanged and >640px renders identically. */
+.dt-wrap { container-type: inline-size; }
+
+@container (max-width: 640px) {
+  .dt thead { display: none; }
+  .dt tbody tr {
+    display: block;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .dt tbody tr:last-child { border-bottom: 0; }
+  /* Each cell becomes its own block line; numerics drop the right-align so the
+     label+value reads left-aligned. Finance .up/.down/.flat color is inherited
+     (no override) and the [aria-selected] sage tint still tints the whole card. */
+  .dt tbody td,
+  .dt tbody td.num { display: block; text-align: left; padding: 4px 0; border-bottom: 0; }
+  .dt tbody td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 12.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  /* No hover on touch: pin the row actions visible AND enlarge to a comfortable
+     tap target (the desktop 26px hover-reveal control is too small for touch). */
+  .dt tbody .dt__remove { opacity: 1; width: 44px; height: 44px; }
+}
+
 /* ----- Form field wrapper --------------------------------------
    Label + control + helper + error. Drives 400/422 validation. */
 .field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; font-family: var(--font-ui); }

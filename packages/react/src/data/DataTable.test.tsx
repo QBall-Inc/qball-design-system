@@ -237,4 +237,98 @@ describe("DataTable", () => {
     expect(pkg.peerDependenciesMeta?.["@tanstack/react-table"]?.optional).toBe(true);
     expect(pkg.dependencies?.["@tanstack/react-table"]).toBeUndefined();
   });
+
+  // ---- Mobile card-list reflow (WP-B-3.5a) ----
+
+  it("wraps the table in a .dt-wrap container host without breaking table resolution (AC-8 / AC-10e)", () => {
+    const { container } = render(<DataTable columns={COLUMNS} data={DATA} />);
+    // the new host wraps the table...
+    expect(container.querySelector(".dt-wrap > table.dt")).not.toBeNull();
+    // ...and the WP-B-3.5 descendant query still resolves (regression guard)
+    expect(container.querySelector("table")?.classList.contains("dt")).toBe(true);
+  });
+
+  it("sets data-label on each body cell from its string column header (AC-10a)", () => {
+    const { getByText } = render(<DataTable columns={COLUMNS} data={DATA} />);
+    const cells = getByText("AAPL").closest("tr")?.querySelectorAll("td");
+    expect(cells?.[0]?.getAttribute("data-label")).toBe("Symbol");
+    expect(cells?.[1]?.getAttribute("data-label")).toBe("Last");
+    expect(cells?.[2]?.getAttribute("data-label")).toBe("Day");
+  });
+
+  it("uses meta.label as the data-label when the header is a non-string ReactNode (AC-10b)", () => {
+    interface PriceRow {
+      sym: string;
+      px: number;
+    }
+    const cols: ColumnDef<PriceRow, unknown>[] = [
+      { accessorKey: "sym", header: "Symbol" },
+      // non-string (ReactNode) header → mobile label must come from meta.label
+      {
+        accessorKey: "px",
+        header: () => <span>Price</span>,
+        meta: { numeric: true, label: "Price" },
+      },
+    ];
+    const { getByText } = render(<DataTable columns={cols} data={[{ sym: "AAPL", px: 198.42 }]} />);
+    expect(getByText("198.42").closest("td")?.getAttribute("data-label")).toBe("Price");
+  });
+
+  it("omits data-label when a non-string header has no meta.label (documented empty-label case)", () => {
+    interface PriceRow {
+      sym: string;
+      px: number;
+    }
+    const cols: ColumnDef<PriceRow, unknown>[] = [
+      { accessorKey: "sym", header: "Symbol" },
+      { accessorKey: "px", header: () => <span>Price</span> }, // no meta.label
+    ];
+    const { getByText } = render(<DataTable columns={cols} data={[{ sym: "AAPL", px: 198.42 }]} />);
+    expect(getByText("198.42").closest("td")?.hasAttribute("data-label")).toBe(false);
+  });
+
+  it("keeps the finance dual-signal (color + sign) alongside its data-label in card mode (AC-4)", () => {
+    const { getByText } = render(<DataTable columns={COLUMNS} data={DATA} />);
+    const upCell = getByText("+1.24%").closest("td");
+    expect(upCell?.classList.contains("up")).toBe(true); // color class retained
+    expect(upCell?.textContent?.startsWith("+")).toBe(true); // sign cue retained
+    expect(upCell?.getAttribute("data-label")).toBe("Day"); // mobile label present
+  });
+
+  it("the actions cell carries no data-label (its header is empty) (AC-5)", () => {
+    const { container } = render(
+      <DataTable
+        columns={COLUMNS}
+        data={DATA}
+        actions={(row) => <button className="dt__remove">{row.sym}</button>}
+      />,
+    );
+    const actionsCell = container.querySelector("tbody .dt__remove")?.closest("td");
+    expect(actionsCell).not.toBeNull();
+    expect(actionsCell?.hasAttribute("data-label")).toBe(false);
+  });
+
+  // ---- CSS-source contracts for the reflow (jsdom does not apply @container) ----
+
+  it("CSS contract: the .dt-wrap host establishes an inline-size container (AC-8)", () => {
+    expect(ruleBody(componentsCss, ".dt-wrap")).toMatch(/container-type:\s*inline-size/);
+  });
+
+  it("CSS contract: the reflow is keyed to a <=640px container query (AC-8)", () => {
+    expect(componentsCss).toMatch(/@container\s*\(max-width:\s*640px\)/);
+  });
+
+  it("CSS contract: the reflow surfaces the header via td[data-label]::before content: attr(data-label) (AC-8)", () => {
+    expect(ruleBody(componentsCss, ".dt tbody td[data-label]::before")).toMatch(
+      /content:\s*attr\(data-label\)/,
+    );
+  });
+
+  it("CSS contract: the reflow hides the thead (AC-8)", () => {
+    expect(ruleBody(componentsCss, ".dt thead")).toMatch(/display:\s*none/);
+  });
+
+  it("CSS contract: the reflow pins the row actions visible — no hover on touch (AC-5)", () => {
+    expect(ruleBody(componentsCss, ".dt tbody .dt__remove")).toMatch(/opacity:\s*1/);
+  });
 });

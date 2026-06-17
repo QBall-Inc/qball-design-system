@@ -62,6 +62,15 @@ declare module "@tanstack/react-table" {
      * (`+1.24%` / `−2.34%`), matching the oracle's `sign()`.
      */
     financeFormat?: (value: number) => string;
+    /**
+     * Mobile card-list label (WP-B-3.5a). At <=640px (container width) the table
+     * reflows to stacked cards and each cell surfaces its column header inline via
+     * `td::before { content: attr(data-label) }`. CSS cannot read thead text, so the
+     * label is sourced from a `data-label` attribute the component sets: the column's
+     * `header` when it is a plain string, else this `meta.label`. A column with a
+     * non-string (ReactNode) header and NO `meta.label` renders an empty mobile label.
+     */
+    label?: string;
   }
 }
 
@@ -225,14 +234,20 @@ export function DataTable<TData>({
     return table.getRowModel().rows.map((row) => (
       <tr key={row.id} aria-selected={selectable ? row.getIsSelected() : undefined}>
         {row.getVisibleCells().map((cell) => {
-          const meta = cell.column.columnDef.meta;
+          const { columnDef } = cell.column;
+          const meta = columnDef.meta;
+          // Mobile card-list label (WP-B-3.5a): the string header, else `meta.label`.
+          // A falsy result (empty string / undefined) sets no `data-label`, so the
+          // reflow `td[data-label]::before` skips it (actions cell, unlabeled headers).
+          const headerLabel = typeof columnDef.header === "string" ? columnDef.header : meta?.label;
+          const dataLabel = headerLabel || undefined;
           if (meta?.finance) {
             const raw = cell.getValue();
             if (typeof raw === "number") {
               const direction = financeDirection(raw);
               const format = meta.financeFormat ?? defaultFinanceFormat;
               return (
-                <td key={cell.id} className={`num ${direction}`}>
+                <td key={cell.id} data-label={dataLabel} className={`num ${direction}`}>
                   {format(raw)}
                 </td>
               );
@@ -241,7 +256,11 @@ export function DataTable<TData>({
           // Default / fallback cell. A `finance` column lands here when its value
           // is not a number — keep the right-aligned `.num` treatment in that case.
           return (
-            <td key={cell.id} className={meta?.numeric || meta?.finance ? "num" : undefined}>
+            <td
+              key={cell.id}
+              data-label={dataLabel}
+              className={meta?.numeric || meta?.finance ? "num" : undefined}
+            >
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </td>
           );
@@ -250,22 +269,27 @@ export function DataTable<TData>({
     ));
   }
 
+  // The `.dt-wrap` host carries `container-type: inline-size` so the mobile
+  // card-list reflow (WP-B-3.5a) keys off the TABLE's own width, not the viewport.
+  // `className` / `dt` / `dt--actions-visible` stay on the <table> (public contract).
   return (
-    <table className={tableClass} aria-busy={loading || undefined}>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header, colIndex) => (
-              <th key={header.id} className={columnIsNumeric[colIndex] ? "num" : undefined}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>{renderBody()}</tbody>
-    </table>
+    <div className="dt-wrap">
+      <table className={tableClass} aria-busy={loading || undefined}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header, colIndex) => (
+                <th key={header.id} className={columnIsNumeric[colIndex] ? "num" : undefined}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>{renderBody()}</tbody>
+      </table>
+    </div>
   );
 }
