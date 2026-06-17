@@ -75,3 +75,7 @@ export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarStatus } from "./
 // `@tanstack/react-table` peer, so consumers import it from there directly.
 export { DataTable } from "./data/DataTable";
 export type { DataTableProps, DataTableColumnMeta } from "./data/DataTable";
+
+// Data IV — Candlestick (D3 island over the optional `d3` peer; token-driven color).
+export { Candlestick } from "./data/Candlestick";
+export type { CandlestickProps, CandlestickDatum, CandlestickRange } from "./data/Candlestick";
