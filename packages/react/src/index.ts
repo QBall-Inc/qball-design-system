@@ -69,3 +69,9 @@ export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./data
 export type { TooltipContentProps } from "./data/Tooltip";
 export { Avatar, AvatarGroup } from "./data/Avatar";
 export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarStatus } from "./data/Avatar";
+
+// Data III — DataTable (TanStack Table headless core + the shipped .dt surface).
+// `ColumnDef` is intentionally NOT re-exported: it belongs to the optional
+// `@tanstack/react-table` peer, so consumers import it from there directly.
+export { DataTable } from "./data/DataTable";
+export type { DataTableProps, DataTableColumnMeta } from "./data/DataTable";

@@ -9,7 +9,7 @@ export default defineConfig({
   format: ["esm", "cjs"],
   dts: true,
   tsconfig: "./tsconfig.build.json",
-  external: ["react", "react-dom", /^@radix-ui\//, "lucide-react", "d3"],
+  external: ["react", "react-dom", /^@radix-ui\//, /^@tanstack\//, "lucide-react", "d3"],
   clean: true,
   treeshake: true,
   sourcemap: true,

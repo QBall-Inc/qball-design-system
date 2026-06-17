@@ -107,6 +107,18 @@
 .dt tbody tr:hover .dt__remove { opacity: 1; }
 .dt__remove:hover { color: var(--data-down); background: var(--data-down-bg); }
 
+/* Selected row (WP-B-3.5, owner decision D-03): sage-tinted selection — the
+   system's active accent, matching .card--interactive and the segmented
+   aria-pressed cue. Background-only keeps it DESIGN-conformant (no box-shadow,
+   no border-induced layout shift) and overrides the neutral :hover tint so a
+   selected row stays sage even on hover. */
+.dt tbody tr[aria-selected="true"],
+.dt tbody tr[aria-selected="true"]:hover { background: var(--signal-bg); }
+
+/* Always-visible row actions (WP-B-3.5): opt-in modifier that pins the
+   hover-reveal .dt__remove visible. Default remains hover-reveal (the oracle). */
+.dt--actions-visible .dt__remove { opacity: 1; }
+
 /* ----- Form field wrapper --------------------------------------
    Label + control + helper + error. Drives 400/422 validation. */
 .field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; font-family: var(--font-ui); }
