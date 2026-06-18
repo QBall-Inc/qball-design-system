@@ -266,6 +266,66 @@
 .segmented button:hover { color: var(--text-secondary); }
 .segmented button[aria-pressed="true"] { background: var(--signal-bg); color: var(--color-signal); }
 
+/* ----- Tabs ----------------------------------------------------
+   Page-level section switcher. Distinct from .segmented (a compact,
+   boxed inline toggle): Tabs are an UNDERLINE list for larger content
+   regions. Active = sage label + sage underline sitting on the list's
+   hairline baseline; inactive = muted; hover lifts to secondary. Active
+   weight is held constant (no bold) so switching tabs causes no layout
+   shift. Styled on aria-selected (which the React Tabs wrapper sets),
+   matching the .segmented aria-pressed / .menu__item aria-selected cue. */
+.tabs { font-family: var(--font-ui); }
+
+.tab-list {
+  display: flex;
+  gap: var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tab {
+  appearance: none; -webkit-appearance: none;
+  margin: 0 0 -1px;                 /* overlap the list rule so the active underline replaces it */
+  padding: var(--space-sm) 0;
+  background: transparent;
+  border: 0; border-bottom: 2px solid transparent;
+  font-family: inherit; font-size: var(--size-button);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out);
+}
+.tab:hover:not(:disabled) { color: var(--text-secondary); }
+.tab[aria-selected="true"] {
+  color: var(--color-signal);
+  border-bottom-color: var(--color-signal);
+}
+.tab:disabled, .tab[data-disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.tab-panel { padding-top: var(--space-md); color: var(--text-secondary); }
+
+/* ----- Shared focus ring ---------------------------------------
+   The library's single sage keyboard-focus ring (:focus-visible only,
+   so pointer clicks stay clean). Retrofits every interactive surface
+   that previously relied on the UA outline. One treatment, two offset
+   contexts: OUTSET for standalone controls; INSET where a container
+   would clip the ring (.segmented is overflow:hidden; the .menu /
+   .dropdown / .notif panels scroll). Additive — leaves the existing
+   border-color :focus on .input / .select / .switch untouched. */
+.btn:focus-visible,
+.iconbtn:focus-visible,
+.tab:focus-visible,
+.appnav a:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+.segmented button:focus-visible,
+.menu__item:focus-visible,
+.dropdown__row:focus-visible,
+.notif__item:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: -2px;
+}
+
 /* ----- Scrim / overlay backdrop --------------------------------
    The dim veil behind a modal/dialog — the brand's no-shadow lift
    partner. Full-viewport fixed layer; no blur (the preview oracle

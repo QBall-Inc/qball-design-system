@@ -1,0 +1,110 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Tabs & Focus Ring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- imports the SHIPPED tokens surface directly (single source of truth); the stale
+     root ./*.css copies are retired in WP-B-3.3b. .tab*/focus-ring ship in components.css. -->
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:22px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);padding:18px 20px}
+  .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .note{font-size:11px;color:var(--text-muted);line-height:1.5}
+
+  /* Tabs (.tab/.tab-list/.tab-panel) + the shared sage :focus-visible ring now
+     SHIP in packages/tokens/components.css (imported above) — this specimen
+     renders the real shipped CSS, no inline duplication. The one preview-only
+     rule below makes the focus ring visible without tabbing. */
+  .ring-demo { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · tabs · focus-ring</div>
+      <h3>Tabs &amp; the shared sage focus ring</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <!-- ===================== Tabs ===================== -->
+  <span class="state">tabs — underline · active · hover · disabled</span>
+  <div class="panel">
+    <div class="tabs">
+      <div class="tab-list" role="tablist" aria-label="Position detail">
+        <button class="tab" role="tab" aria-selected="true"  id="t1" aria-controls="p1">Overview</button>
+        <button class="tab" role="tab" aria-selected="false" id="t2" aria-controls="p2">Holdings</button>
+        <button class="tab" role="tab" aria-selected="false" id="t3" aria-controls="p3">Activity</button>
+        <button class="tab" role="tab" aria-selected="false" disabled>Filings</button>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="p1" aria-labelledby="t1">
+        Overview panel — the active tab carries the sage label and the sage underline on the list baseline.
+        Inactive tabs read muted; hover lifts to secondary. The disabled “Filings” tab is dimmed.
+      </div>
+      <div class="tab-panel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+        Holdings panel — each trigger controls its own panel; only the active panel is shown.
+      </div>
+      <div class="tab-panel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+        Activity panel — recent orders, fills, and alerts for this position.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== Focus ring ===================== -->
+  <span class="state">focus ring — sage <code>:focus-visible</code> across interactive surfaces</span>
+  <div class="panel">
+    <p class="note">Press <strong>Tab</strong> to walk the controls and see the real sage <code>:focus-visible</code> ring.
+      The first button shows the ring statically (<code>.ring-demo</code>) so the treatment is visible at a glance.
+      Outset for standalone controls; inset where a container would clip (segmented).</p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn btn--primary ring-demo">Primary (ring shown)</button>
+      <button class="btn btn--secondary">Secondary</button>
+      <button class="iconbtn" aria-label="More">⋯</button>
+      <div class="segmented" role="group" aria-label="Range">
+        <button aria-pressed="true">1D</button>
+        <button aria-pressed="false">1W</button>
+        <button aria-pressed="false">1M</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.documentElement.dataset.theme = b.dataset.themeSet;
+        document.querySelectorAll('[data-theme-set]').forEach(function (x) {
+          x.setAttribute('aria-pressed', String(x === b));
+        });
+      });
+    });
+    // Demo-only: clicking a tab moves the active cue + shows its panel (the React
+    // component uses Radix state, which wires aria-controls / panel toggling for us).
+    document.querySelectorAll('.tab-list .tab:not([disabled])').forEach(function (t) {
+      t.addEventListener('click', function () {
+        t.parentElement.querySelectorAll('.tab').forEach(function (x) {
+          x.setAttribute('aria-selected', String(x === t));
+        });
+        var target = t.getAttribute('aria-controls');
+        document.querySelectorAll('.tab-panel').forEach(function (p) {
+          p.hidden = p.id !== target;
+        });
+      });
+    });
+  </script>
+</body></html>

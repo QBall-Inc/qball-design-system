@@ -50,7 +50,7 @@ export type { SpinnerProps, SpinnerSize } from "./overlay/Spinner";
 export { EmptyStateFig, ErrorStateFig } from "./overlay/StateFig";
 export type { EmptyStateFigProps, ErrorStateFigProps } from "./overlay/StateFig";
 
-// Data I — Stat + Meter + Badge + Card + Divider (Tabs deferred, WP-B-3.3).
+// Data I — Stat + Meter + Badge + Card + Divider (Tabs split to WP-B-3.3a — see Data I-b below).
 export { Stat } from "./data/Stat";
 export type { StatProps, StatDirection } from "./data/Stat";
 export { Meter } from "./data/Meter";
@@ -61,6 +61,11 @@ export { Card } from "./data/Card";
 export type { CardProps } from "./data/Card";
 export { Divider } from "./data/Divider";
 export type { DividerProps } from "./data/Divider";
+
+// Data I-b — Tabs (Radix Tabs over the shipped .tab* surface + the shared sage
+// focus ring; deferred from WP-B-3.3, landed WP-B-3.3a).
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./data/Tabs";
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from "./data/Tabs";
 
 // Data II — Sparkline + Tooltip + Avatar.
 export { Sparkline } from "./data/Sparkline";
