@@ -2,6 +2,18 @@
   "name": "@qball-inc/tokens",
   "version": "0.0.0",
   "description": "QBall Design System tokens — framework-agnostic CSS custom properties, component classes, and a DTCG/Style-Dictionary JSON mirror. Zero build step; public default display face is Fira Code (Berkeley Mono restored per README in private builds).",
+  "keywords": [
+    "design-tokens",
+    "design-system",
+    "css",
+    "css-variables",
+    "css-custom-properties",
+    "dtcg",
+    "style-dictionary",
+    "tokens",
+    "theme",
+    "monospace"
+  ],
   "license": "Apache-2.0",
   "private": false,
   "type": "module",

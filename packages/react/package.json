@@ -2,6 +2,18 @@
   "name": "@qball-inc/react",
   "version": "0.0.0",
   "description": "QBall Design System React components — token-driven, framework-agnostic at the CSS layer. Dual ESM/CJS build with TypeScript declarations.",
+  "keywords": [
+    "react",
+    "component-library",
+    "design-system",
+    "ui-components",
+    "react-components",
+    "radix-ui",
+    "typescript",
+    "ui-kit",
+    "design-tokens",
+    "accessible-components"
+  ],
   "license": "Apache-2.0",
   "private": false,
   "type": "module",
