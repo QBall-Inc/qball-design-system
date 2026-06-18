@@ -30,7 +30,7 @@
 .badge--info     { color: var(--data-info);       background: var(--data-info-bg); }
 .badge--signal   { color: var(--color-signal);    background: var(--signal-bg); }
 .badge--highlight{ color: var(--color-highlight);  background: var(--highlight-bg); }
-/* Semantic status (success/error) + finance flat — WP-B-3.3. Mirror the
+/* Semantic status (success/error) + finance flat. Mirror the
    toast--success/error mapping: success = gain green, error = loss red; flat is
    neutral stone on the base surface. Color is paired with a non-color cue in the
    Badge component for the finance variants (FR4). */
@@ -107,7 +107,7 @@
 .dt tbody tr:hover .dt__remove { opacity: 1; }
 .dt__remove:hover { color: var(--data-down); background: var(--data-down-bg); }
 
-/* Selected row (WP-B-3.5, owner decision D-03): sage-tinted selection — the
+/* Selected row (owner decision): sage-tinted selection — the
    system's active accent, matching .card--interactive and the segmented
    aria-pressed cue. Background-only keeps it DESIGN-conformant (no box-shadow,
    no border-induced layout shift) and overrides the neutral :hover tint so a
@@ -115,11 +115,11 @@
 .dt tbody tr[aria-selected="true"],
 .dt tbody tr[aria-selected="true"]:hover { background: var(--signal-bg); }
 
-/* Always-visible row actions (WP-B-3.5): opt-in modifier that pins the
+/* Always-visible row actions: opt-in modifier that pins the
    hover-reveal .dt__remove visible. Default remains hover-reveal (the oracle). */
 .dt--actions-visible .dt__remove { opacity: 1; }
 
-/* Mobile card-list reflow (WP-B-3.5a): at narrow widths the table reflows into
+/* Mobile card-list reflow: at narrow widths the table reflows into
    stacked cards — thead hidden, each row a card, each cell a label-above-value
    line via td[data-label]::before (the component sets data-label from the column
    header / meta.label, since CSS cannot read thead text). Keyed to the .dt-wrap
@@ -269,7 +269,7 @@
 /* ----- Scrim / overlay backdrop --------------------------------
    The dim veil behind a modal/dialog — the brand's no-shadow lift
    partner. Full-viewport fixed layer; no blur (the preview oracle
-   dims with a flat tone). Reused by the WP-B-3.7 Scrim atom. */
+   dims with a flat tone). Reused by the Scrim overlay component. */
 .scrim {
   position: fixed;
   inset: 0;
