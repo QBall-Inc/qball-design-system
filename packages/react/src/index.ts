@@ -104,3 +104,13 @@ export { ThemeToggle } from "./chrome/ThemeToggle";
 export type { ThemeToggleProps, Theme } from "./chrome/ThemeToggle";
 export { Scrim } from "./chrome/Scrim";
 export type { ScrimProps } from "./chrome/Scrim";
+
+// Chrome II — CommandDock (floating command island) + NotificationCenter (bell dropdown).
+export { CommandDock } from "./chrome/CommandDock";
+export type { CommandDockProps, CommandAction } from "./chrome/CommandDock";
+export { NotificationCenter } from "./chrome/NotificationCenter";
+export type {
+  NotificationCenterProps,
+  NotificationItemData,
+  NotificationKind,
+} from "./chrome/NotificationCenter";
