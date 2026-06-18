@@ -56,7 +56,7 @@
   --highlight-bg:    rgba(180, 83, 9, 0.10);
   /* Modal/overlay scrim — the brand's no-shadow lift partner (dims the page
      behind a dialog). Theme-independent dark veil, matching the preview cards;
-     consumed by the .scrim class and the WP-B-3.7 Scrim atom. */
+     consumed by the .scrim class and the Scrim overlay component. */
   --color-scrim:     rgba(20, 20, 20, 0.45);
 
   /* ===== Finance / data palette (traditional hues, warm-tuned) =====

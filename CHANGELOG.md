@@ -3,6 +3,19 @@
 All notable changes to `@qball-inc/tokens` and `@qball-inc/react` are recorded here.
 The versioning contract (token / type-stack / radius-scale changes = MAJOR; additive
 component / variant = MINOR) is defined in `CAVEATS.md` and enforced via Changesets
-(wired in WP-B-5.3).
+in the release pipeline.
 
-_No releases yet._
+## @qball-inc/tokens 0.1.0 — 2026-06-18
+
+First public release of the token layer, as early-access `0.x`. Ships the token surface
+extracted verbatim from the design system: framework-agnostic CSS custom properties
+(`theme.css`, `colors_and_type.css`), the shipped component classes (`components.css`),
+and the DTCG / Style-Dictionary JSON mirror (`tokens.json`). Zero build step; the public
+default display face is Fira Code (Berkeley Mono is restored in private builds per README).
+
+While on `0.x` the token surface may still gain or adjust tokens on the road to `1.0.0`.
+The strict semver contract (any token-value / type-stack / radius / spacing change = MAJOR)
+defined in `CAVEATS.md` takes effect at `1.0.0`, when `@qball-inc/tokens` and
+`@qball-inc/react` are published together.
+
+`@qball-inc/react` is not yet published — it is still gaining component families ahead of v1.
