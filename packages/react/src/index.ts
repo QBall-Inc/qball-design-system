@@ -79,3 +79,28 @@ export type { DataTableProps, DataTableColumnMeta } from "./data/DataTable";
 // Data IV — Candlestick (D3 island over the optional `d3` peer; token-driven color).
 export { Candlestick } from "./data/Candlestick";
 export type { CandlestickProps, CandlestickDatum, CandlestickRange } from "./data/Candlestick";
+
+// Chrome I — AppBar (+ NotificationBell) + UserMenu + ThemeToggle + Scrim.
+export { AppBar, NotificationBell } from "./chrome/AppBar";
+export type { AppBarProps, NotificationBellProps } from "./chrome/AppBar";
+export {
+  UserMenu,
+  UserMenuTrigger,
+  UserMenuContent,
+  UserMenuHeader,
+  UserMenuGroup,
+  UserMenuItem,
+  UserMenuSeparator,
+} from "./chrome/UserMenu";
+export type {
+  UserMenuTriggerProps,
+  UserMenuContentProps,
+  UserMenuHeaderProps,
+  UserMenuGroupProps,
+  UserMenuItemProps,
+  UserMenuSeparatorProps,
+} from "./chrome/UserMenu";
+export { ThemeToggle } from "./chrome/ThemeToggle";
+export type { ThemeToggleProps, Theme } from "./chrome/ThemeToggle";
+export { Scrim } from "./chrome/Scrim";
+export type { ScrimProps } from "./chrome/Scrim";

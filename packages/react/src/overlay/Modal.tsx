@@ -150,6 +150,14 @@ export const ModalContent = forwardRef<ElementRef<typeof Dialog.Content>, ModalC
   ) {
     return (
       <Dialog.Portal>
+        {/*
+          Scroll-lock is owned HERE by Radix Dialog's built-in react-remove-scroll
+          (robust: scrollbar-width compensation, iOS, nested locks). This overlay already
+          shares the `.scrim` class with the standalone <Scrim> atom (WP-B-3.7); Scrim is
+          the scroll-lock owner for NON-Radix / custom overlays. Intentionally NOT delegated
+          to <Scrim> — replacing Radix's lock with a manual overflow:hidden would regress
+          (WP-B-3.7 / D-07).
+        */}
         <Dialog.Overlay className="scrim" />
         <Dialog.Content
           ref={ref}
