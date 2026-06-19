@@ -119,3 +119,18 @@ export type {
   NotificationItemData,
   NotificationKind,
 } from "./chrome/NotificationCenter";
+
+// AI I — Terminal (conversation transcript) + Composer (input + send) + the
+// useStreaming SSE state machine (WP-B-4.1a). GroundingFlag is WP-B-4.1b.
+export { Terminal } from "./ai/Terminal";
+export type {
+  TerminalProps,
+  TerminalMessage,
+  TerminalRole,
+  StreamToken,
+  StreamError,
+} from "./ai/Terminal";
+export { Composer } from "./ai/Composer";
+export type { ComposerProps } from "./ai/Composer";
+export { useStreaming, parseStreamFrame, streamFromResponse } from "./ai/Streaming";
+export type { StreamEvent, UseStreamingResult } from "./ai/Streaming";

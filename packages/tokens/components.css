@@ -884,6 +884,112 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 .digest--read .digest__dot { display: none; }
 .digest__skel { display: flex; flex-direction: column; gap: 9px; }
 
+/* ----- AI conversation terminal (WP-B-4.1a) --------------------
+   The Stocky terminal transcript surface + its inline composer.
+   Ported from the conversation-terminal oracle; the generic helpers
+   (turn / prefixes / cursor / number / bullet) are BEM-namespaced
+   under .term__* so the published bundle never ships a bare global
+   .cursor / .n / .turn. The persistent AI disclaimer is the shipped
+   <Callout> (owner decision S86), NOT a terminal-local style.
+   Monospace display face; lift via border weight, no shadow. */
+.term {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  font-family: var(--font-display);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.term__head {
+  padding: 11px 14px;
+  border-bottom: 0.5px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+}
+.term__caret { font-family: var(--font-display); color: var(--color-signal); font-weight: 700; font-size: 13px; }
+.term__title { font-size: 11.5px; color: var(--text-muted); letter-spacing: 0.5px; }
+.term__body {
+  padding: 4px 14px;
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  line-height: 1.65;
+  overflow-y: auto;
+}
+.term__sep { height: 0; border: 0; border-top: 0.5px solid var(--border-default); margin: 0; }
+.term__turn {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 8px;
+  align-items: start;
+  padding: 11px 0;
+}
+.term__pre--you { color: var(--color-signal); font-weight: 600; white-space: nowrap; }
+.term__pre--bot { color: var(--color-highlight); font-weight: 700; white-space: nowrap; }
+.term__txt--you { color: var(--text-primary); }
+.term__txt--bot { color: var(--text-secondary); }
+.term__num { color: var(--data-up); font-weight: 600; }
+.term__bul { color: var(--text-muted); }
+.term__cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: var(--color-signal);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: term-blink 1s steps(1) infinite;
+}
+.term__composer {
+  padding: 11px 14px 4px;
+  border-top: 0.5px solid var(--border-default);
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 8px;
+  align-items: start;
+}
+.term__prompt { color: var(--color-signal); font-weight: 600; white-space: nowrap; line-height: 1.65; padding-top: 9px; }
+.term__input {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  line-height: 1.65;
+  border: 0;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 9px 4px;
+  min-height: 22px;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.term__input:focus { border-bottom-color: var(--color-signal); }
+.term__input:disabled { opacity: 0.5; cursor: not-allowed; }
+.term__send { align-self: center; }
+.term__send:disabled { opacity: 0.4; cursor: not-allowed; }
+.term__keyhint {
+  grid-column: 2 / -1;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  padding: 2px 4px 4px;
+}
+/* The persistent disclaimer is the shipped <Callout> (owner S86); this is a
+   layout-only modifier that insets the bordered note inside the terminal footer
+   so it does not double-border against the .term edge. */
+.term__disc { margin: 6px 14px 12px; }
+/* An error row (also a <Callout>) surfaced inline in the transcript body. */
+.term__errrow { margin: 8px 0 2px; }
+@keyframes term-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .term__cursor { animation: none; }
+}
+
 /* ----- Scrollbar (design-system default) ------------------------
    Thin, unobtrusive, token-driven. Track is transparent; the thumb
    uses the strong border token and darkens on hover. Applies to any
