@@ -134,3 +134,5 @@ export { Composer } from "./ai/Composer";
 export type { ComposerProps } from "./ai/Composer";
 export { useStreaming, parseStreamFrame, streamFromResponse } from "./ai/Streaming";
 export type { StreamEvent, UseStreamingResult } from "./ai/Streaming";
+export { GroundingFlag } from "./ai/GroundingFlag";
+export type { GroundingFlagProps, GroundingVariant } from "./ai/GroundingFlag";

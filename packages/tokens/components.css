@@ -314,6 +314,7 @@
 .btn:focus-visible,
 .iconbtn:focus-visible,
 .tab:focus-visible,
+.gwrap:focus-visible,
 .appnav a:focus-visible {
   outline: 2px solid var(--color-signal);
   outline-offset: 2px;
@@ -505,6 +506,22 @@
 .gtip__src { color: var(--anno-source); font-family: var(--font-display); }
 .gtip--cited .gtip__k { color: var(--anno-source); }
 .gtip--unverified .gtip__k { color: var(--color-highlight); }
+
+/* Portal variant of .gtip for the React <GroundingFlag> (Radix). Same reason as
+   .tip-pop: the React tooltip portals its content to <body> to escape transformed
+   ancestors (the .dock / a Modal), and a node at <body> cannot be positioned by
+   the parent-anchored .gtip rules — Radix's popper owns placement and mounts the
+   content only while open (no opacity/pointer-events gate). So this class carries
+   the SAME light guardrail-bubble visual as the .gtip oracle (light surface, 1px
+   border) MINUS positioning. The .gtip__k / .gtip__src / .gtip--cited|--unverified
+   descendants compose in unchanged. No caret — the .gtip oracle has none. */
+.gtip-pop {
+  width: max-content; max-width: 232px; text-align: left;
+  background: var(--bg-primary); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 9px 11px;
+  font-family: var(--font-ui); font-size: 11px; line-height: 1.5; color: var(--text-secondary);
+  z-index: 30;
+}
 
 /* canonical inline chips */
 .ground {
