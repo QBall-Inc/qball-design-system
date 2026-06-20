@@ -1,0 +1,171 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>Tool-use / skill indicator — state matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  html,body{margin:0;height:100%}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
+    display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .pnote{margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-muted);max-width:600px}
+
+  /* ---- state matrix layout ---- */
+  .matrix{display:grid;grid-template-columns:108px minmax(280px, max-content) 1fr;gap:0;max-width:840px;
+    border:1px solid var(--border-default);border-radius:var(--radius-lg);overflow:hidden}
+  .matrix > div{padding:13px 16px;border-top:.5px solid var(--border-default);min-width:0}
+  .mh{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);
+    border-top:0!important;background:transparent}
+  .m-state{font-family:var(--font-display);font-size:12px;color:var(--text-primary);font-weight:600}
+  .m-state small{display:block;font-family:var(--font-ui);font-weight:400;font-size:10px;
+    color:var(--text-muted);margin-top:3px;letter-spacing:.2px}
+  .m-cell{display:flex;align-items:center}
+  .m-desc{font-family:var(--font-ui);font-size:11px;line-height:1.5;color:var(--text-secondary)}
+
+  /* ---- the indicator chip (.tuf — proposed class family) ---- */
+  /* static state matrix — the state-change transition (200ms / --ease-out) is specified
+     in docs/tool-use-indicator-design.md §4; it is not exercised by these mounted chips */
+  .tuf{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;
+    border:1px solid var(--border-default);border-radius:var(--radius-sm);
+    background:transparent;font-family:var(--font-ui);font-size:11.5px;line-height:1}
+  .tuf__glyph{display:inline-flex;width:16px;height:16px;flex:0 0 16px;color:currentColor}
+  .tuf__glyph svg{width:16px;height:16px;display:block}
+  .tuf__label{color:var(--text-primary);white-space:nowrap}
+  .tuf__label .verb{color:currentColor;font-weight:600}
+  .tuf__meta{font-size:10px;color:var(--text-muted);white-space:nowrap}
+  .tuf__cursor{display:inline-block;width:6px;height:12px;background:currentColor;
+    vertical-align:text-bottom;margin-left:2px;animation:tuf-blink 1s steps(1) infinite}
+
+  /* per-state color + tint (color drives the glyph + verb via currentColor) */
+  /* idle/pending = neutral --bg-surface fill + hairline border (pre-result states);
+     running/success/error/partial = a state-matched tint, border-free (result/active states) */
+  .tuf[data-state="idle"]    {color:var(--text-muted); background:var(--bg-surface)}
+  .tuf[data-state="pending"] {color:var(--color-info); background:var(--bg-surface)}
+  .tuf[data-state="running"] {color:var(--color-signal); background:var(--signal-bg);
+                              border-color:transparent}
+  .tuf[data-state="success"] {color:var(--color-success); background:var(--signal-bg);
+                              border-color:transparent}
+  .tuf[data-state="error"]   {color:var(--color-error); background:var(--data-down-bg);
+                              border-color:transparent}
+  .tuf[data-state="partial"] {color:var(--data-warn); background:var(--data-warn-bg);
+                              border-color:transparent}
+
+  @keyframes tuf-blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+  /* reduced-motion: the running spinner + streaming cursor stop; state stays legible
+     via glyph + color + label (matches shipped .spinner / .term__cursor contract) */
+  @media (prefers-reduced-motion: reduce){
+    .spinner{animation:none}
+    .tuf__cursor{animation:none}
+  }
+</style>
+</head><body>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Component · AI conversation</div>
+      <h3>Tool-use / skill indicator — state matrix</h3>
+    </div>
+    <div class="seg-th" role="group" aria-label="Theme" title="Per-card theme toggle is for preview only — in a real app, theme switching lives in the global app shell / user menu.">
+      <button data-theme-set="light" aria-pressed="true">light</button>
+      <button data-theme-set="dark" aria-pressed="false">dark</button>
+    </div>
+  </div>
+
+  <p class="pnote">The lifecycle chip for a skill / tool call in the terminal transcript (e.g. <code>news-research</code>, <code>sec-filings-lookup</code>). Sage leads (<span style="color:var(--color-signal)">running</span>); finance caution (<span style="color:var(--data-warn)">partial</span>) always pairs its color with a glyph + the word "partial". No shadows, no emoji, radius 4px. Toggle light/dark above — every state is token-driven.</p>
+
+  <div class="matrix">
+    <div class="mh">State</div>
+    <div class="mh">Indicator</div>
+    <div class="mh">When it shows</div>
+
+    <!-- idle -->
+    <div class="m-state">idle<small>--text-muted</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="idle">
+        <span class="tuf__glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></svg></span>
+        <span class="tuf__label">no skill active</span>
+      </span>
+    </div>
+    <div class="m-desc">No tool running — the indicator is collapsed/absent. No animation (idle never loops).</div>
+
+    <!-- pending -->
+    <div class="m-state">pending<small>--color-info</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="pending">
+        <span class="tuf__glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg></span>
+        <span class="tuf__label">news-research · <span class="verb">queued</span></span>
+      </span>
+    </div>
+    <div class="m-desc">Skill dispatched, BullMQ job queued, not yet executing. Static clock glyph; single 120ms fade-in on appear.</div>
+
+    <!-- running -->
+    <div class="m-state">running<small>--color-signal</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="running">
+        <span class="tuf__glyph"><span class="spinner spinner--sm" aria-hidden="true"></span></span>
+        <span class="tuf__label">news-research · <span class="verb">running</span></span>
+        <span class="tuf__meta">3.1s</span>
+      </span>
+    </div>
+    <div class="m-desc">Job executing / SSE tokens streaming. Reuses the shipped <code>.spinner</code> — the one sanctioned loop (or the streaming cursor, next row).</div>
+
+    <!-- running · streaming variant -->
+    <div class="m-state">running<small>· streaming</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="running">
+        <span class="tuf__label">analyzing filings<span class="tuf__cursor"></span></span>
+      </span>
+    </div>
+    <div class="m-desc">Streaming-cursor variant — reuses the terminal's <code>.term__cursor</code> blink. Under reduced-motion the cursor is solid (no blink).</div>
+
+    <!-- success -->
+    <div class="m-state">success<small>--color-success</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="success">
+        <span class="tuf__glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+        <span class="tuf__label">news-research · <span class="verb">done</span></span>
+        <span class="tuf__meta">6 sources</span>
+      </span>
+    </div>
+    <div class="m-desc">Job complete, result appended to the transcript. Static check glyph; 200ms cross-fade in. No loop.</div>
+
+    <!-- error -->
+    <div class="m-state">error<small>--color-error</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="error">
+        <span class="tuf__glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></span>
+        <span class="tuf__label">sec-filings-lookup · <span class="verb">failed</span></span>
+      </span>
+    </div>
+    <div class="m-desc">Job failed — hard error surfaced to the user. Static x-circle glyph; 200ms fade-in. No loop.</div>
+
+    <!-- partial -->
+    <div class="m-state">partial<small>--data-warn</small></div>
+    <div class="m-cell">
+      <span class="tuf" data-state="partial">
+        <span class="tuf__glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 2.7 20h18.6L12 4.5Z"/><path d="M12 10v4.6"/><path d="M12 17.7v.01"/></svg></span>
+        <span class="tuf__label">news-research · <span class="verb">partial</span></span>
+        <span class="tuf__meta">rate-limited</span>
+      </span>
+    </div>
+    <div class="m-desc"><strong>FR4-critical.</strong> Degraded result (rate-limited / stale feed). Caution gold <em>always</em> pairs with the glyph <em>and</em> the word "partial"/"rate-limited" — color never carries the meaning alone.</div>
+  </div>
+
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>
