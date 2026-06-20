@@ -136,3 +136,7 @@ export { useStreaming, parseStreamFrame, streamFromResponse } from "./ai/Streami
 export type { StreamEvent, UseStreamingResult } from "./ai/Streaming";
 export { GroundingFlag } from "./ai/GroundingFlag";
 export type { GroundingFlagProps, GroundingVariant } from "./ai/GroundingFlag";
+// AI II — MarkdownRenderer: sanitized, token-styled markdown for streamed
+// assistant text (WP-B-4.2). Allowlist + urlTransform safe-rendering boundary.
+export { MarkdownRenderer, ALLOWED_ELEMENTS } from "./ai/MarkdownRenderer";
+export type { MarkdownRendererProps } from "./ai/MarkdownRenderer";

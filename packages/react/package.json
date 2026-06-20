@@ -42,6 +42,7 @@
   "dependencies": {
     "@qball-inc/tokens": "workspace:*",
     "cmdk": "^1.1.1",
+    "react-markdown": "^10.1.0",
     "sonner": "^1.7.4"
   },
   "peerDependencies": {

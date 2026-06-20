@@ -315,7 +315,8 @@
 .iconbtn:focus-visible,
 .tab:focus-visible,
 .gwrap:focus-visible,
-.appnav a:focus-visible {
+.appnav a:focus-visible,
+.link:focus-visible {
   outline: 2px solid var(--color-signal);
   outline-offset: 2px;
 }
