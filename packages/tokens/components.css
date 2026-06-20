@@ -1008,6 +1008,60 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   .term__cursor { animation: none; }
 }
 
+/* ----- Tool-use / skill indicator (.tuf) — WP-B-4.4 -------------------
+   The lifecycle chip for a skill/tool call inside the AI terminal transcript,
+   built from the WP-B-4.3 signed-off design + preview/tool-use-indicator.html.
+   A transient, status-bearing chip: it reports state, it is not a control.
+   `data-state` drives the per-state color + tint, and the color flows to the
+   leading glyph + verb via currentColor. The glyph is the primary NON-color cue
+   (FR4); `partial` (caution gold) ALWAYS pairs its color with the glyph + the
+   literal word. Sage leads (running); amber stays reserved for grounding. No
+   shadow, no emoji, radius --radius-sm. The running loop reuses the shipped
+   .spinner (the one sanctioned loop) and the streaming variant reuses the
+   shipped .term__cursor — neither is re-declared here. */
+.tuf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  line-height: 1;
+  /* §4 motion: appear = 120ms opacity fade-in; state change = 200ms color/tint
+     cross-fade. Both stop under reduced-motion below. Fades, not slides. */
+  animation: tuf-appear var(--duration-fast) var(--ease-out);
+  transition:
+    color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+.tuf__glyph { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; color: currentColor; }
+.tuf__glyph svg { width: 16px; height: 16px; display: block; }
+.tuf__label { color: var(--text-primary); white-space: nowrap; }
+.tuf__verb { color: currentColor; font-weight: 600; }
+.tuf__meta { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+
+/* Per-state color + tint (color drives the glyph + verb via currentColor).
+   idle/pending = neutral --bg-surface fill + hairline (pre-result states);
+   running/success/error/partial = a state-matched tint, border-free.
+   The idle rule completes the public .tuf state set for direct-CSS consumers +
+   the gallery specimen; the React ToolUseIndicator collapses idle to a null render. */
+.tuf[data-state="idle"]    { color: var(--text-muted);    background: var(--bg-surface); }
+.tuf[data-state="pending"] { color: var(--color-info);    background: var(--bg-surface); }
+.tuf[data-state="running"] { color: var(--color-signal);  background: var(--color-signal-bg); border-color: transparent; }
+.tuf[data-state="success"] { color: var(--color-success); background: var(--color-signal-bg); border-color: transparent; }
+.tuf[data-state="error"]   { color: var(--color-error);   background: var(--color-down-bg);   border-color: transparent; }
+.tuf[data-state="partial"] { color: var(--color-warn);    background: var(--color-warn-bg);   border-color: transparent; }
+
+@keyframes tuf-appear { from { opacity: 0; } to { opacity: 1; } }
+/* Reduced-motion: stop the appear fade + state-change cross-fade; the running
+   .spinner / .term__cursor self-stop via their own shipped rules above. NFR5. */
+@media (prefers-reduced-motion: reduce) {
+  .tuf { animation: none; transition: none; }
+}
+
 /* ----- Scrollbar (design-system default) ------------------------
    Thin, unobtrusive, token-driven. Track is transparent; the thumb
    uses the strong border token and darkens on hover. Applies to any

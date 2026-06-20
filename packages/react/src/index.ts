@@ -140,3 +140,14 @@ export type { GroundingFlagProps, GroundingVariant } from "./ai/GroundingFlag";
 // assistant text (WP-B-4.2). Allowlist + urlTransform safe-rendering boundary.
 export { MarkdownRenderer, ALLOWED_ELEMENTS } from "./ai/MarkdownRenderer";
 export type { MarkdownRendererProps } from "./ai/MarkdownRenderer";
+// AI IV — ToolUseIndicator: the skill/tool-call lifecycle chip in the terminal
+// transcript (WP-B-4.4, built from the WP-B-4.3 signed-off design). Token-CSS
+// .tuf wrapper; reuses the shipped .spinner / .term__cursor for the running loop.
+export { ToolUseIndicator } from "./ai/ToolUseIndicator";
+export type { ToolUseIndicatorProps, ToolUseState } from "./ai/ToolUseIndicator";
+
+// Briefings — DigestCard: the LLM market-briefing card over the shipped .digest
+// family (WP-B-4.4). Composes Skeleton (loading) + EmptyStateFig (empty); hosts
+// GroundingFlag markers inline in the body prose.
+export { DigestCard } from "./briefings/DigestCard";
+export type { DigestCardProps, DigestState } from "./briefings/DigestCard";
