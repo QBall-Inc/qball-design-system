@@ -47,6 +47,11 @@ build:
 test:
     pnpm --filter "@qball-inc/*" --if-present run test
 
+# Icon-system codegen drift gate (WP-B-4b.2-B1): the committed src/icons/generated/**
+# must match what generate-icons.mjs reproduces from pinned lucide-react@1.17.0 + the manifest.
+generate-icons-check:
+    pnpm --filter "@qball-inc/react" run generate:icons:check
+
 # License-clean (font-binary) dual-assertion gate: npm pack tarballs + committed tree (WP-B-0.2, RB-1).
 license-check:
     bash scripts/license-check.sh
@@ -61,6 +66,6 @@ license-check:
 consumer-validate:
     bash fixtures/consumer/scripts/validate-consumer.sh
 
-# Full local gate (mirrors CI): typecheck -> lint -> test -> license-check -> consumer-validate.
-ci: typecheck lint test license-check consumer-validate
+# Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> license-check -> consumer-validate.
+ci: generate-icons-check typecheck lint test license-check consumer-validate
     @echo "ci: all gates passed"

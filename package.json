@@ -18,7 +18,8 @@
     "test": "pnpm --filter \"@qball-inc/*\" --if-present run test",
     "license-check": "bash scripts/license-check.sh",
     "consumer-validate": "bash fixtures/consumer/scripts/validate-consumer.sh",
-    "ci": "pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run consumer-validate"
+    "generate:icons:check": "pnpm --filter \"@qball-inc/react\" run generate:icons:check",
+    "ci": "pnpm run generate:icons:check && pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run consumer-validate"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

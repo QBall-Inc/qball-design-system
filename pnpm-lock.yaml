@@ -41,9 +41,6 @@ importers:
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      lucide-react:
-        specifier: '>=0.400.0'
-        version: 1.17.0(react@18.3.1)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@18.3.31)(react@18.3.1)
@@ -99,9 +96,15 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      esbuild:
+        specifier: ^0.21.5
+        version: 0.21.5
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
+      lucide-react:
+        specifier: 1.17.0
+        version: 1.17.0(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1

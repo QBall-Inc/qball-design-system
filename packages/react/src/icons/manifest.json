@@ -1,0 +1,27 @@
+{
+  "$comment": "Curation manifest for the @qball-inc/react icon system. Single source of truth for scripts/generate-icons.mjs and the icons contract test. `name` is the CANONICAL lucide kebab id. `alias` records a friendly lucide alias-stub name that re-exports the same glyph (e.g. filter -> funnel); it is re-exported as a named alias and keyed in the registry. `exportName` overrides the default PascalCase named export when it would collide with an existing non-icon component (e.g. the `search` icon vs the Search input primitive). WP-B-4b.2-B1 ships this curated slice; WP-B-4b.2-B2 expands to the full 76 UI set + the AI and Brand tracks. Every shipped name is a 1.0 stability contract.",
+  "icons": [
+    { "name": "chevron-down", "category": "navigation" },
+    { "name": "arrow-up-right", "category": "navigation" },
+    { "name": "external-link", "category": "navigation" },
+    { "name": "x", "category": "navigation" },
+    { "name": "menu", "category": "navigation" },
+    { "name": "search", "category": "actions", "exportName": "SearchIcon" },
+    { "name": "plus", "category": "actions" },
+    { "name": "check", "category": "actions" },
+    { "name": "funnel", "category": "actions", "alias": "filter" },
+    { "name": "settings", "category": "actions" },
+    { "name": "send", "category": "actions" },
+    { "name": "copy", "category": "actions" },
+    { "name": "info", "category": "status" },
+    { "name": "triangle-alert", "category": "status" },
+    { "name": "circle-check", "category": "status" },
+    { "name": "circle-question-mark", "category": "status", "alias": "circle-help" },
+    { "name": "loader", "category": "status" },
+    { "name": "trending-up", "category": "finance" },
+    { "name": "trending-down", "category": "finance" },
+    { "name": "chart-line", "category": "finance" },
+    { "name": "notebook-pen", "category": "media" },
+    { "name": "code-xml", "category": "media" }
+  ]
+}

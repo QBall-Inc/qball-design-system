@@ -40,6 +40,13 @@ jobs:
       - name: License-clean gate (font binaries)
         run: pnpm run license-check
 
+      # Icon-system codegen drift gate (WP-B-4b.2-B1) — the committed generated
+      # icons (src/icons/generated/**) must match what scripts/generate-icons.mjs
+      # reproduces from the pinned lucide-react@1.17.0 + the manifest. Runs before
+      # typecheck so a stale commit or an un-regenerated pack bump fails loudly.
+      - name: Icon codegen drift gate
+        run: pnpm run generate:icons:check
+
       - name: Typecheck
         run: pnpm typecheck
 

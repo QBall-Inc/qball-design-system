@@ -37,7 +37,9 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "generate:icons:check": "node scripts/generate-icons.mjs --check"
   },
   "dependencies": {
     "@qball-inc/tokens": "workspace:*",
@@ -88,7 +90,9 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "d3": "^7.9.0",
+    "esbuild": "^0.21.5",
     "jsdom": "^25.0.1",
+    "lucide-react": "1.17.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsup": "^8.3.5",
