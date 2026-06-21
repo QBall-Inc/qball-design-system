@@ -90,13 +90,13 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "d3": "^7.9.0",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.28.1",
     "jsdom": "^25.0.1",
     "lucide-react": "1.17.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsup": "^8.3.5",
-    "vitest": "^2.1.8",
+    "vitest": "^3.2.6",
     "vitest-canvas-mock": "^0.3.3"
   }
 }

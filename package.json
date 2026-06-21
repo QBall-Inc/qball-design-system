@@ -21,6 +21,12 @@
     "generate:icons:check": "pnpm --filter \"@qball-inc/react\" run generate:icons:check",
     "ci": "pnpm run generate:icons:check && pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run consumer-validate"
   },
+  "pnpm": {
+    "overrides": {
+      "form-data@>=4.0.0 <4.0.6": ">=4.0.6",
+      "esbuild@<0.28.1": ">=0.28.1"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/node": "^20.17.0",
