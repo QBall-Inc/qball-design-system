@@ -32,7 +32,8 @@
   },
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "MARKS.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -95,6 +96,7 @@
     "lucide-react": "1.17.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "simple-icons": "16.24.0",
     "tsup": "^8.3.5",
     "vitest": "^3.2.6",
     "vitest-canvas-mock": "^0.3.3"

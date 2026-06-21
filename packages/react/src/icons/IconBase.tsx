@@ -4,6 +4,13 @@ import type { IconProps } from "./icon-props";
 interface IconBaseProps extends IconProps {
   /** The icon geometry (paths/circles/lines), supplied by the generated component. */
   children: ReactNode;
+  /**
+   * Filled (brand-logo) idiom: `fill="currentColor"` and no stroke, for the filled
+   * brand marks (§4/§12). Default is the DS stroke idiom (`fill="none"` +
+   * `stroke="currentColor"`) used by every UI + AI icon. Internal — not on the
+   * public `IconProps`; each brand component opts in.
+   */
+  filled?: boolean;
 }
 
 /**
@@ -33,6 +40,7 @@ export function IconBase({
   className,
   title,
   children,
+  filled = false,
   ...rest
 }: IconBaseProps) {
   const titleId = useId();
@@ -43,11 +51,11 @@ export function IconBase({
       viewBox="0 0 24 24"
       width={size}
       height={size}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill={filled ? "currentColor" : "none"}
+      stroke={filled ? undefined : "currentColor"}
+      strokeWidth={filled ? undefined : strokeWidth}
+      strokeLinecap={filled ? undefined : "round"}
+      strokeLinejoin={filled ? undefined : "round"}
       className={cls}
       {...rest}
       role={labelled ? "img" : undefined}

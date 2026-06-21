@@ -19,7 +19,8 @@
     "license-check": "bash scripts/license-check.sh",
     "consumer-validate": "bash fixtures/consumer/scripts/validate-consumer.sh",
     "generate:icons:check": "pnpm --filter \"@qball-inc/react\" run generate:icons:check",
-    "ci": "pnpm run generate:icons:check && pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run consumer-validate"
+    "spdx-check": "node scripts/spdx-check.mjs",
+    "ci": "pnpm run generate:icons:check && pnpm typecheck && pnpm lint && pnpm test && pnpm run license-check && pnpm run spdx-check && pnpm run consumer-validate"
   },
   "pnpm": {
     "overrides": {

@@ -165,14 +165,19 @@ export { useCanvas2D } from "./primitives/backgrounds/useCanvas2D";
 export type { BackgroundProps } from "./primitives/backgrounds/types";
 export type { CanvasDraw, CanvasFrame } from "./primitives/backgrounds/useCanvas2D";
 
-// Icon System I — UI track (WP-B-4b.2-B1). Build-time codegen from lucide-react
-// (a devDep) into our OWN committed inline-SVG components — ZERO runtime lucide
-// dependency. Per-icon named exports (`import { TrendingUp }`) tree-shake off the
-// single barrel; the opt-in `<Icon name>` registry is dynamic (retains the whole
-// set). currentColor-only; `aria-hidden` by default, `title`/`aria-label` flips to
-// `role="img"` + `<title>`. Single barrel — NO `./icons` subpath in v1.
+// Icon System — three tracks (WP-B-4b.2). Build-time codegen from lucide-react
+// (UI + AI marks, ISC) and simple-icons (brand marks, CC0) — both devDeps — into our
+// OWN committed inline-SVG components, ZERO runtime icon-pack dependency; plus
+// hand-authored AI original art + converted brand assets. Per-icon named exports
+// (`import { TrendingUp }`) tree-shake off the single barrel. currentColor-only;
+// `aria-hidden` by default, `title`/`aria-label` flips to `role="img"` + `<title>`.
+// Single barrel — NO `./icons` subpath in v1. AC-4 registry split: the UI + AI tracks
+// own the dynamic `<Icon name>` registry + the canonical `IconName` union; brand marks
+// are named exports under their own `BrandIconName` union (logos are not icons).
 export * from "./icons/generated";
 export { Icon } from "./icons/Icon";
 export { ICON_NAMES } from "./icons/generated/registry";
 export type { IconName } from "./icons/generated/registry";
+export { BRAND_ICON_NAMES } from "./icons/generated/registry";
+export type { BrandIconName } from "./icons/generated/registry";
 export type { IconProps } from "./icons/icon-props";

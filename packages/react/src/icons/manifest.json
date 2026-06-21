@@ -1,27 +1,214 @@
 {
-  "$comment": "Curation manifest for the @qball-inc/react icon system. Single source of truth for scripts/generate-icons.mjs and the icons contract test. `name` is the CANONICAL lucide kebab id. `alias` records a friendly lucide alias-stub name that re-exports the same glyph (e.g. filter -> funnel); it is re-exported as a named alias and keyed in the registry. `exportName` overrides the default PascalCase named export when it would collide with an existing non-icon component (e.g. the `search` icon vs the Search input primitive). WP-B-4b.2-B1 ships this curated slice; WP-B-4b.2-B2 expands to the full 76 UI set + the AI and Brand tracks. Every shipped name is a 1.0 stability contract.",
+  "$comment": "Curation manifest for the @qball-inc/react icon system. Single source of truth for scripts/generate-icons.mjs and the icons contract test. `name` is the CANONICAL kebab id (the registry key + the base of the PascalCase export). `track` is `ui` (default), `ai`, or `brand`. `source` is `lucide` (default — codegen from lucide-react `__iconNode`), `authored` (hand-committed original-art .tsx, NOT generated), or `asset` (hand-committed converted brand asset). `lucideName` overrides the lucide id to pull geometry FROM when it differs from `name` (e.g. `ai-sparkle` <- lucide `sparkles`). `alias` records a friendly lucide alias-stub name re-exported as a named alias + keyed in the registry (e.g. filter -> funnel). `exportName` overrides the default PascalCase named export when it would collide with an existing non-icon component (e.g. the `search` icon vs the Search input primitive). `category` is organizational only (it groups the gallery; it is NOT a name prefix). AC-4 registry split: the UI + AI tracks own the dynamic `<Icon name>` registry + the canonical `IconName` union; brand marks are PascalCase named exports under their own `BrandIconName` union (NOT in the icon registry). WP-B-4b.2-B1 shipped a 22-icon UI slice; WP-B-4b.2-B2 expands UI to the full 76 (§8) and adds the AI + Brand tracks. Every shipped name is a 1.0 stability contract (§11).",
   "icons": [
+    { "name": "chevron-up", "category": "navigation" },
     { "name": "chevron-down", "category": "navigation" },
+    { "name": "chevron-left", "category": "navigation" },
+    { "name": "chevron-right", "category": "navigation" },
+    { "name": "arrow-up", "category": "navigation" },
+    { "name": "arrow-down", "category": "navigation" },
+    { "name": "arrow-left", "category": "navigation" },
+    { "name": "arrow-right", "category": "navigation" },
     { "name": "arrow-up-right", "category": "navigation" },
     { "name": "external-link", "category": "navigation" },
-    { "name": "x", "category": "navigation" },
     { "name": "menu", "category": "navigation" },
+    { "name": "x", "category": "navigation" },
+
     { "name": "search", "category": "actions", "exportName": "SearchIcon" },
     { "name": "plus", "category": "actions" },
-    { "name": "check", "category": "actions" },
-    { "name": "funnel", "category": "actions", "alias": "filter" },
-    { "name": "settings", "category": "actions" },
-    { "name": "send", "category": "actions" },
+    { "name": "minus", "category": "actions" },
+    { "name": "square-pen", "category": "actions" },
+    { "name": "trash-2", "category": "actions" },
+    { "name": "download", "category": "actions" },
+    { "name": "upload", "category": "actions" },
     { "name": "copy", "category": "actions" },
+    { "name": "share-2", "category": "actions" },
+    { "name": "funnel", "category": "actions", "alias": "filter" },
+    { "name": "arrow-up-down", "category": "actions" },
+    { "name": "settings", "category": "actions" },
+    { "name": "refresh-cw", "category": "actions" },
+    { "name": "check", "category": "actions" },
+    { "name": "send", "category": "actions" },
+    { "name": "eye", "category": "actions" },
+    { "name": "eye-off", "category": "actions" },
+    { "name": "bell", "category": "actions" },
+    { "name": "bell-off", "category": "actions" },
+    { "name": "ellipsis", "category": "actions" },
+    { "name": "ellipsis-vertical", "category": "actions" },
+    { "name": "save", "category": "actions" },
+
     { "name": "info", "category": "status" },
     { "name": "triangle-alert", "category": "status" },
+    { "name": "circle-x", "category": "status" },
     { "name": "circle-check", "category": "status" },
-    { "name": "circle-question-mark", "category": "status", "alias": "circle-help" },
+    { "name": "clock", "category": "status" },
     { "name": "loader", "category": "status" },
+    { "name": "sun", "category": "status" },
+    { "name": "moon", "category": "status" },
+    { "name": "lock", "category": "status" },
+    { "name": "lock-open", "category": "status" },
+    { "name": "circle-question-mark", "category": "status", "alias": "circle-help" },
+    { "name": "ban", "category": "status" },
+    { "name": "check-check", "category": "status" },
+    { "name": "octagon-alert", "category": "status" },
+
+    { "name": "play", "category": "media" },
+    { "name": "pause", "category": "media" },
+    { "name": "square", "category": "media" },
+    { "name": "globe", "category": "media" },
+    { "name": "image", "category": "media" },
+    { "name": "file", "category": "media" },
+    { "name": "link", "category": "media" },
+    { "name": "package", "category": "media" },
+    { "name": "rocket", "category": "media" },
+    { "name": "grid-3x3", "category": "media" },
+    { "name": "notebook-pen", "category": "media" },
+    { "name": "code-xml", "category": "media" },
+
     { "name": "trending-up", "category": "finance" },
     { "name": "trending-down", "category": "finance" },
     { "name": "chart-line", "category": "finance" },
-    { "name": "notebook-pen", "category": "media" },
-    { "name": "code-xml", "category": "media" }
+    { "name": "chart-column", "category": "finance" },
+    { "name": "chart-candlestick", "category": "finance" },
+    { "name": "chart-pie", "category": "finance" },
+    { "name": "wallet", "category": "finance" },
+    { "name": "briefcase", "category": "finance" },
+    { "name": "calendar", "category": "finance" },
+    { "name": "bookmark", "category": "finance" },
+    { "name": "percent", "category": "finance" },
+    { "name": "dollar-sign", "category": "finance" },
+    { "name": "activity", "category": "finance" },
+    { "name": "target", "category": "finance" },
+    { "name": "scale", "category": "finance" },
+    { "name": "banknote", "category": "finance" },
+
+    {
+      "name": "ai-sparkle",
+      "category": "ai",
+      "track": "ai",
+      "source": "lucide",
+      "lucideName": "sparkles"
+    },
+    { "name": "bot", "category": "ai", "track": "ai", "source": "lucide" },
+    { "name": "bot-message-square", "category": "ai", "track": "ai", "source": "lucide" },
+    { "name": "cpu", "category": "ai", "track": "ai", "source": "lucide" },
+    { "name": "agent-stocky", "category": "ai", "track": "ai", "source": "authored" },
+    { "name": "agent-orb", "category": "ai", "track": "ai", "source": "authored" },
+    { "name": "agent-droid", "category": "ai", "track": "ai", "source": "authored" },
+    { "name": "agent-hex", "category": "ai", "track": "ai", "source": "authored" },
+
+    {
+      "name": "github",
+      "category": "brand-dev",
+      "track": "brand",
+      "source": "simple-icons",
+      "exportName": "GitHub"
+    },
+    {
+      "name": "npm",
+      "category": "brand-dev",
+      "track": "brand",
+      "source": "simple-icons",
+      "exportName": "NPM"
+    },
+    { "name": "figma", "category": "brand-dev", "track": "brand", "source": "simple-icons" },
+    { "name": "notion", "category": "brand-dev", "track": "brand", "source": "simple-icons" },
+    { "name": "vercel", "category": "brand-dev", "track": "brand", "source": "simple-icons" },
+    {
+      "name": "chromestore",
+      "category": "brand-dev",
+      "track": "brand",
+      "source": "simple-icons",
+      "slug": "chromewebstore",
+      "exportName": "ChromeWebStore"
+    },
+    {
+      "name": "vscode",
+      "category": "brand-dev",
+      "track": "brand",
+      "source": "asset",
+      "exportName": "VSCode"
+    },
+    { "name": "linear", "category": "brand-dev", "track": "brand", "source": "simple-icons" },
+
+    {
+      "name": "linkedin",
+      "category": "brand-social",
+      "track": "brand",
+      "source": "asset",
+      "exportName": "LinkedIn"
+    },
+    {
+      "name": "x-twitter",
+      "category": "brand-social",
+      "track": "brand",
+      "source": "simple-icons",
+      "slug": "x"
+    },
+    {
+      "name": "youtube",
+      "category": "brand-social",
+      "track": "brand",
+      "source": "simple-icons",
+      "exportName": "YouTube"
+    },
+    { "name": "google", "category": "brand-social", "track": "brand", "source": "simple-icons" },
+    { "name": "reddit", "category": "brand-social", "track": "brand", "source": "simple-icons" },
+
+    {
+      "name": "openai",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "asset",
+      "exportName": "OpenAI"
+    },
+    { "name": "anthropic", "category": "brand-ai", "track": "brand", "source": "simple-icons" },
+    { "name": "claude", "category": "brand-ai", "track": "brand", "source": "simple-icons" },
+    {
+      "name": "gemini",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "simple-icons",
+      "slug": "googlegemini"
+    },
+    {
+      "name": "deepseek",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "simple-icons",
+      "exportName": "DeepSeek"
+    },
+    {
+      "name": "moonshot",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "simple-icons",
+      "slug": "moonshotai"
+    },
+    {
+      "name": "glm",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "asset",
+      "exportName": "GLM"
+    },
+    {
+      "name": "mistral",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "simple-icons",
+      "slug": "mistralai"
+    },
+    { "name": "perplexity", "category": "brand-ai", "track": "brand", "source": "simple-icons" },
+    {
+      "name": "huggingface",
+      "category": "brand-ai",
+      "track": "brand",
+      "source": "simple-icons",
+      "exportName": "HuggingFace"
+    },
+    { "name": "ollama", "category": "brand-ai", "track": "brand", "source": "simple-icons" },
+    { "name": "qwen", "category": "brand-ai", "track": "brand", "source": "simple-icons" },
+    { "name": "meta", "category": "brand-ai", "track": "brand", "source": "simple-icons" }
   ]
 }

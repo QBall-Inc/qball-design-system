@@ -1,8 +1,17 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Filter, Funnel, SearchIcon, TrendingUp } from "./generated";
+import {
+  Filter,
+  Funnel,
+  SearchIcon,
+  TrendingUp,
+  GitHub,
+  LinkedIn,
+  AiSparkle,
+  AgentStocky,
+} from "./generated";
 import { Icon } from "./Icon";
-import { ICON_NAMES, ICON_REGISTRY } from "./generated/registry";
+import { ICON_NAMES, ICON_REGISTRY, BRAND_ICON_NAMES, BRAND_REGISTRY } from "./generated/registry";
 import { icons as manifestIcons } from "./manifest.json";
 
 interface ManifestIcon {
@@ -10,6 +19,9 @@ interface ManifestIcon {
   category: string;
   alias?: string;
   exportName?: string;
+  track?: string;
+  source?: string;
+  slug?: string;
 }
 
 /** Pull the rendered <svg> out of a container, failing loudly if none rendered. */
@@ -116,24 +128,78 @@ describe("icon — registry, alias, and collision override", () => {
 });
 
 describe("icon — manifest ↔ registry contract", () => {
-  const expected = new Set<string>();
-  for (const icon of manifestIcons as ManifestIcon[]) {
-    expected.add(icon.name);
-    if (icon.alias) expected.add(icon.alias);
+  const all = manifestIcons as ManifestIcon[];
+  // AC-4: the UI + AI tracks own the <Icon name> registry + IconName; the brand
+  // track has its own BrandIconName union (a missing track defaults to ui).
+  const iconEntries = all.filter(
+    (i) => i.track === undefined || i.track === "ui" || i.track === "ai",
+  );
+  const brandEntries = all.filter((i) => i.track === "brand");
+
+  const expectedIcons = new Set<string>();
+  for (const icon of iconEntries) {
+    expectedIcons.add(icon.name);
+    if (icon.alias) expectedIcons.add(icon.alias);
   }
+  const expectedBrands = new Set(brandEntries.map((i) => i.name));
 
-  it("ICON_NAMES is exactly the manifest set (canonical + aliases), no missing/extra/dupes", () => {
-    expect(new Set(ICON_NAMES)).toEqual(expected);
-    expect(ICON_NAMES.length).toBe(expected.size);
+  it("ICON_NAMES is exactly the UI+AI manifest set (canonical + aliases), no missing/extra/dupes", () => {
+    expect(new Set(ICON_NAMES)).toEqual(expectedIcons);
+    expect(ICON_NAMES.length).toBe(expectedIcons.size);
   });
 
-  it("ICON_REGISTRY keys are exactly the manifest set", () => {
-    expect(new Set(Object.keys(ICON_REGISTRY))).toEqual(expected);
+  it("ICON_REGISTRY keys are exactly the UI+AI manifest set", () => {
+    expect(new Set(Object.keys(ICON_REGISTRY))).toEqual(expectedIcons);
   });
 
-  it("every registered name renders a real 24-viewBox <svg>", () => {
+  it("BRAND_ICON_NAMES + BRAND_REGISTRY are exactly the brand manifest set", () => {
+    expect(new Set(BRAND_ICON_NAMES)).toEqual(expectedBrands);
+    expect(BRAND_ICON_NAMES.length).toBe(expectedBrands.size);
+    expect(new Set(Object.keys(BRAND_REGISTRY))).toEqual(expectedBrands);
+  });
+
+  it("brand names are disjoint from the icon registry (AC-4 — logos are not icons)", () => {
+    for (const b of BRAND_ICON_NAMES) expect(ICON_NAMES as readonly string[]).not.toContain(b);
+    // the brand `x-twitter` does NOT collide with the UI close `x`.
+    expect(BRAND_ICON_NAMES as readonly string[]).toContain("x-twitter");
+    expect(ICON_NAMES as readonly string[]).toContain("x");
+  });
+
+  it("every registered icon name renders a real 24-viewBox <svg>", () => {
     for (const name of ICON_NAMES) {
       const svg = svgOf(render(<Icon name={name} />).container);
+      expect(svg.getAttribute("viewBox")).toBe("0 0 24 24");
+    }
+  });
+
+  it("every brand mark renders a real 24-viewBox <svg>", () => {
+    for (const name of BRAND_ICON_NAMES) {
+      const Mark = BRAND_REGISTRY[name];
+      const svg = svgOf(render(<Mark />).container);
+      expect(svg.getAttribute("viewBox")).toBe("0 0 24 24");
+    }
+  });
+});
+
+describe("icon — track idioms (stroke UI/AI vs filled brand)", () => {
+  it("a codegen brand mark (github) is filled with currentColor, not stroked", () => {
+    const svg = svgOf(render(<GitHub />).container);
+    expect(svg.getAttribute("fill")).toBe("currentColor");
+    expect(svg.getAttribute("stroke")).toBeNull();
+    expect(svg.querySelectorAll("path").length).toBeGreaterThan(0);
+  });
+
+  it("the in-repo linkedin mark keeps the stroke idiom (fill=none, stroke=currentColor)", () => {
+    const svg = svgOf(render(<LinkedIn />).container);
+    expect(svg.getAttribute("fill")).toBe("none");
+    expect(svg.getAttribute("stroke")).toBe("currentColor");
+  });
+
+  it("the AI track renders in the stroke idiom: ai-sparkle (codegen) + agent-stocky (original art)", () => {
+    for (const node of [<AiSparkle />, <AgentStocky />]) {
+      const svg = svgOf(render(node).container);
+      expect(svg.getAttribute("fill")).toBe("none");
+      expect(svg.getAttribute("stroke")).toBe("currentColor");
       expect(svg.getAttribute("viewBox")).toBe("0 0 24 24");
     }
   });

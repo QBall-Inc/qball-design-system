@@ -10,11 +10,12 @@ import { describe, expect, it } from "vitest";
 // fileURLToPath(import.meta.url) throws in vitest's runner.
 const GENERATED = resolve(process.cwd(), "src/icons/generated");
 
-/** The first path `d` of a generated icon — a unique fingerprint for bundle checks. */
-function firstPathD(name: string): string {
-  const src = readFileSync(resolve(GENERATED, `ui/${name}.tsx`), "utf8");
+/** The first path `d` of a generated icon (track-qualified, e.g. `ui/funnel`,
+ * `ai/bot`, `brand/github`) — a unique fingerprint for bundle checks. */
+function firstPathD(relPath: string): string {
+  const src = readFileSync(resolve(GENERATED, `${relPath}.tsx`), "utf8");
   const d = src.match(/d="([^"]+)"/)?.[1];
-  if (!d) throw new Error(`no path geometry found in ${name}.tsx`);
+  if (!d) throw new Error(`no path geometry found in ${relPath}.tsx`);
   return d;
 }
 
@@ -44,8 +45,11 @@ describe("icon tree-shaking (real esbuild build)", () => {
     const code = out.text;
 
     // The imported icon's geometry IS present...
-    expect(code).toContain(firstPathD("funnel"));
-    // ...and an un-imported icon's unique geometry is shaken OUT.
-    expect(code).not.toContain(firstPathD("trending-up"));
+    expect(code).toContain(firstPathD("ui/funnel"));
+    // ...and an un-imported icon's unique geometry is shaken OUT — across ALL three
+    // tracks on the now-comprehensive barrel (UI + AI + brand).
+    expect(code).not.toContain(firstPathD("ui/trending-up"));
+    expect(code).not.toContain(firstPathD("ai/bot"));
+    expect(code).not.toContain(firstPathD("brand/github"));
   });
 });

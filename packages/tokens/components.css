@@ -462,6 +462,23 @@
   .skel { animation: none; background: var(--bg-surface); }
 }
 
+/* ----- AI sparkle shimmer — the icon system's ONLY animated icon ----
+   Signals ACTIVE AI. Apply the `ic-ai-shimmer` class to <AiSparkle> (it
+   merges after the base `ic`): a gentle opacity/scale twinkle paced by
+   the --duration-slow token. Reduced-motion collapses it to one static
+   sparkle (no loop) — the binding DESIGN.md Motion contract (§7a). */
+.ic-ai-shimmer {
+  transform-origin: center;
+  animation: ic-ai-shimmer calc(var(--duration-slow) * 4) ease-in-out infinite;
+}
+@keyframes ic-ai-shimmer {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.92); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ic-ai-shimmer { animation: none; opacity: 1; }
+}
+
 /* ----- Empty / error / status states ---------------------------
    Centered figure: icon chip, headline, supporting line, action.
    --error reserves the red for genuine failures; --empty stays
