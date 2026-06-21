@@ -1,3 +1,9 @@
+// Canvas 2D context mock — jsdom does not implement HTMLCanvasElement.getContext,
+// so it returns null and the canvas-background primitives' useCanvas2D hook would
+// no-op (its null-context guard). This shim provides a recording 2D context so the
+// draw loop actually runs in tests (WP-B-4b.1). It is a test-only environment shim
+// (a dev dependency), not a stand-in for any system under test (T1).
+import "vitest-canvas-mock";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeAll, vi } from "vitest";
 

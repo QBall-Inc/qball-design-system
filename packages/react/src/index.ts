@@ -151,3 +151,16 @@ export type { ToolUseIndicatorProps, ToolUseState } from "./ai/ToolUseIndicator"
 // GroundingFlag markers inline in the body prose.
 export { DigestCard } from "./briefings/DigestCard";
 export type { DigestCardProps, DigestState } from "./briefings/DigestCard";
+
+// Site & Media Primitives I — Canvas background primitives (WP-B-4b.1). Token-driven
+// animated <canvas> backgrounds (GridBg dot matrix / AsciiBg falling streams /
+// GlyphsBg drifting glyphs) + the useCanvas2D driver. SSR-safe (inert <canvas> on
+// the server); reads --color-signal / --color-highlight / --font-display at paint
+// time (no hardcoded color fallbacks); honors prefers-reduced-motion as a true
+// short-circuit (one static frame, no animation loop).
+export { GridBg } from "./primitives/backgrounds/GridBg";
+export { AsciiBg } from "./primitives/backgrounds/AsciiBg";
+export { GlyphsBg } from "./primitives/backgrounds/GlyphsBg";
+export { useCanvas2D } from "./primitives/backgrounds/useCanvas2D";
+export type { BackgroundProps } from "./primitives/backgrounds/types";
+export type { CanvasDraw, CanvasFrame } from "./primitives/backgrounds/useCanvas2D";
