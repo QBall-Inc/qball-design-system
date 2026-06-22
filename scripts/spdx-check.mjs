@@ -66,10 +66,19 @@ const genFiles = (track) => {
 };
 
 // 3 — codegen provenance headers: ui+ai cite lucide ISC; brand cites simple-icons CC0.
-const headerExpectations = [
-  { files: [...genFiles("ui"), ...genFiles("ai")], needle: "lucide-react@", spdx: "(ISC)" },
-  { files: genFiles("brand"), needle: "simple-icons@", spdx: "(CC0-1.0)" },
-];
+// Named (not positional) so the brand-count guard + success log below can't silently
+// bind to the wrong track if a third pack is ever added or the order shifts.
+const lucideHeaders = {
+  files: [...genFiles("ui"), ...genFiles("ai")],
+  needle: "lucide-react@",
+  spdx: "(ISC)",
+};
+const simpleIconsHeaders = {
+  files: genFiles("brand"),
+  needle: "simple-icons@",
+  spdx: "(CC0-1.0)",
+};
+const headerExpectations = [lucideHeaders, simpleIconsHeaders];
 for (const { files, needle, spdx } of headerExpectations) {
   for (const file of files) {
     const head = readFileSync(file, "utf8").split("\n")[0];
@@ -78,7 +87,7 @@ for (const { files, needle, spdx } of headerExpectations) {
     }
   }
 }
-if (headerExpectations[1].files.length === 0) {
+if (simpleIconsHeaders.files.length === 0) {
   fail("No generated brand marks found — the simple-icons codegen produced nothing.");
 }
 
@@ -110,6 +119,6 @@ if (failures.length) {
 }
 console.log(
   `spdx-check OK — packs pinned + licensed (${Object.keys(PACKS).join(", ")}); ` +
-    `${headerExpectations[0].files.length} lucide + ${headerExpectations[1].files.length} simple-icons headers; ` +
+    `${lucideHeaders.files.length} lucide + ${simpleIconsHeaders.files.length} simple-icons headers; ` +
     `${assetFiles.length} nominative assets; MARKS.md ships.`,
 );
