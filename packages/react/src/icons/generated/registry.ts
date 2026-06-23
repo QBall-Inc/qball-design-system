@@ -10,6 +10,9 @@ import { ArrowDown } from "./ui/arrow-down";
 import { ArrowLeft } from "./ui/arrow-left";
 import { ArrowRight } from "./ui/arrow-right";
 import { ArrowUpRight } from "./ui/arrow-up-right";
+import { ArrowUpLeft } from "./ui/arrow-up-left";
+import { ArrowDownRight } from "./ui/arrow-down-right";
+import { ArrowDownLeft } from "./ui/arrow-down-left";
 import { ExternalLink } from "./ui/external-link";
 import { Menu } from "./ui/menu";
 import { X } from "./ui/x";
@@ -39,6 +42,7 @@ import { Info } from "./ui/info";
 import { TriangleAlert } from "./ui/triangle-alert";
 import { CircleX } from "./ui/circle-x";
 import { CircleCheck } from "./ui/circle-check";
+import { CircleCheckBig } from "./ui/circle-check-big";
 import { Clock } from "./ui/clock";
 import { Loader } from "./ui/loader";
 import { Sun } from "./ui/sun";
@@ -123,6 +127,9 @@ export type IconName =
   | "arrow-left"
   | "arrow-right"
   | "arrow-up-right"
+  | "arrow-up-left"
+  | "arrow-down-right"
+  | "arrow-down-left"
   | "external-link"
   | "menu"
   | "x"
@@ -153,6 +160,7 @@ export type IconName =
   | "triangle-alert"
   | "circle-x"
   | "circle-check"
+  | "circle-check-big"
   | "clock"
   | "loader"
   | "sun"
@@ -212,6 +220,9 @@ export const ICON_NAMES = [
   "arrow-left",
   "arrow-right",
   "arrow-up-right",
+  "arrow-up-left",
+  "arrow-down-right",
+  "arrow-down-left",
   "external-link",
   "menu",
   "x",
@@ -242,6 +253,7 @@ export const ICON_NAMES = [
   "triangle-alert",
   "circle-x",
   "circle-check",
+  "circle-check-big",
   "clock",
   "loader",
   "sun",
@@ -305,6 +317,9 @@ export const ICON_REGISTRY: Record<IconName, ComponentType<IconProps>> = {
   "arrow-left": ArrowLeft,
   "arrow-right": ArrowRight,
   "arrow-up-right": ArrowUpRight,
+  "arrow-up-left": ArrowUpLeft,
+  "arrow-down-right": ArrowDownRight,
+  "arrow-down-left": ArrowDownLeft,
   "external-link": ExternalLink,
   menu: Menu,
   x: X,
@@ -335,6 +350,7 @@ export const ICON_REGISTRY: Record<IconName, ComponentType<IconProps>> = {
   "triangle-alert": TriangleAlert,
   "circle-x": CircleX,
   "circle-check": CircleCheck,
+  "circle-check-big": CircleCheckBig,
   clock: Clock,
   loader: Loader,
   sun: Sun,
