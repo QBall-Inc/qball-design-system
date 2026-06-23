@@ -1,6 +1,8 @@
 import { forwardRef, useEffect, useState } from "react";
 import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 
+import { Bell } from "../icons/generated";
+
 /**
  * AppBar — the application top bar.
  *
@@ -28,25 +30,6 @@ import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
  * Glass + hide styles are applied as inline structural styles (no hex, no box-shadow) —
  * DESIGN_DENY clean; `backdrop-filter` here is the sanctioned chrome-glass use.
  */
-
-function BellIcon() {
-  return (
-    <svg
-      width="19"
-      height="19"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-      <path d="M21 19H3a2 2 0 0 0 2-2V9a7 7 0 0 1 14 0v8a2 2 0 0 0 2 2" />
-    </svg>
-  );
-}
 
 export interface NotificationBellProps extends ComponentPropsWithoutRef<"button"> {
   /**
@@ -76,7 +59,7 @@ export const NotificationBell = forwardRef<HTMLButtonElement, NotificationBellPr
         aria-label={ariaLabel ?? "Notifications"}
         {...rest}
       >
-        {children ?? <BellIcon />}
+        {children ?? <Bell size={19} />}
         {unreadCount !== undefined && unreadCount >= 1 ? (
           <span className="badge-count">{unreadCount}</span>
         ) : null}

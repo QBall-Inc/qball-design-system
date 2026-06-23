@@ -2,6 +2,8 @@ import * as Popover from "@radix-ui/react-popover";
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ComponentPropsWithoutRef, FormEvent, ReactNode } from "react";
 
+import { Plus, SearchIcon } from "../icons/generated";
+
 /**
  * CommandDock — the floating command island (the app's bottom-center action cluster).
  *
@@ -33,43 +35,6 @@ import type { ComponentPropsWithoutRef, FormEvent, ReactNode } from "react";
  * The "Ask Stocky" popover is a MINIMAL composer + the BYO-key gate (`aiEnabled`); the full
  * conversation terminal (transcript, streaming) is WP-B-4.1a's scope and composes in later.
  */
-
-function SearchIcon() {
-  return (
-    <svg
-      width="21"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  );
-}
 
 /**
  * The Stocky CRT-bot mascot, painted with the shipped `.stocky-icon` family (the screen tone, the
@@ -241,7 +206,7 @@ export const CommandDock = forwardRef<HTMLDivElement, CommandDockProps>(function
       {/* Search — a command palette: a search input over the filterable actions list. */}
       <Popover.Root open={openId === "search"} onOpenChange={(o) => handleOpenChange("search", o)}>
         <Popover.Trigger className="btn btn--ghost btn--icon" aria-label="Search">
-          <SearchIcon />
+          <SearchIcon size={21} />
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
@@ -266,7 +231,7 @@ export const CommandDock = forwardRef<HTMLDivElement, CommandDockProps>(function
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <span className="input-wrap__affix" aria-hidden="true">
-                    <SearchIcon />
+                    <SearchIcon size={21} />
                   </span>
                 </div>
               </div>
@@ -352,7 +317,7 @@ export const CommandDock = forwardRef<HTMLDivElement, CommandDockProps>(function
       {/* Add — the primary action; an add input + optional filtered suggestions. */}
       <Popover.Root open={openId === "add"} onOpenChange={(o) => handleOpenChange("add", o)}>
         <Popover.Trigger className="btn btn--primary btn--icon" aria-label="Add stock">
-          <PlusIcon />
+          <Plus size={22} strokeWidth={1.8} />
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content className="dock-pop" side="top" sideOffset={POP_SIDE_OFFSET}>
@@ -377,7 +342,7 @@ export const CommandDock = forwardRef<HTMLDivElement, CommandDockProps>(function
                     }}
                   />
                   <span className="input-wrap__affix" aria-hidden="true">
-                    <PlusIcon />
+                    <Plus size={22} strokeWidth={1.8} />
                   </span>
                 </div>
               </div>

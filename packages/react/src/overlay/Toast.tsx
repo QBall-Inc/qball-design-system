@@ -2,6 +2,8 @@ import { Toaster as SonnerToaster, toast as sonnerToast } from "sonner";
 import type { ToasterProps } from "sonner";
 import type { ReactNode } from "react";
 
+import { CircleCheckBig, CircleX, Info, TriangleAlert, X } from "../icons/generated";
+
 /**
  * Toast — transient notifications built on Sonner, painted with the shipped
  * `@qball-inc/tokens` `.toast` classes from the `preview/toast.html` oracle.
@@ -38,71 +40,21 @@ export interface ToastOptions {
   dismissLabel?: string;
 }
 
+// Variant → B2 generated glyph (17px, stroke 1.6): success → circle-check-big,
+// warning → triangle-alert, error → circle-x, info → info-circle. The icon is the
+// FR4 non-color cue; the `.toast__icon` wrapper owns the semantic accent color.
 function VariantIcon({ variant }: { variant: ToastVariant }) {
-  const common = {
-    width: 17,
-    height: 17,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
   switch (variant) {
     case "success":
-      return (
-        <svg {...common}>
-          <path d="M21.8 10A10 10 0 1 1 17 3.3" />
-          <path d="m9 11 3 3L22 4" />
-        </svg>
-      );
+      return <CircleCheckBig size={17} strokeWidth={1.6} />;
     case "warning":
-      return (
-        <svg {...common}>
-          <path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z" />
-          <path d="M12 9v4" />
-          <path d="M12 17h.01" />
-        </svg>
-      );
+      return <TriangleAlert size={17} strokeWidth={1.6} />;
     case "error":
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="m15 9-6 6" />
-          <path d="m9 9 6 6" />
-        </svg>
-      );
+      return <CircleX size={17} strokeWidth={1.6} />;
     case "info":
     default:
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
-        </svg>
-      );
+      return <Info size={17} strokeWidth={1.6} />;
   }
-}
-
-function CloseIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
 }
 
 function ToastCard({
@@ -130,7 +82,7 @@ function ToastCard({
         {description !== undefined ? <p className="toast__msg">{description}</p> : null}
       </div>
       <button type="button" className="toast__x" aria-label={dismissLabel} onClick={onDismiss}>
-        <CloseIcon />
+        <X size={14} strokeWidth={1.6} />
       </button>
     </div>
   );

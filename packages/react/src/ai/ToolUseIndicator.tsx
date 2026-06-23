@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Check, CircleX, Clock, TriangleAlert } from "../icons/generated";
+
 /**
  * ToolUseIndicator — the compact, inline lifecycle chip for a skill / tool call
  * inside the AI terminal transcript (the WP-B-4.1a `Terminal`). It names the
@@ -79,70 +81,26 @@ const DEFAULT_VERB: Record<Exclude<ToolUseState, "idle">, string> = {
   partial: "partial",
 };
 
-const SVG_PROPS = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.5,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-  "aria-hidden": true,
-} as const;
-
-/** Inline status glyphs (Lucide geometry, copied from the signed-off preview oracle). */
-function ClockGlyph() {
-  return (
-    <svg {...SVG_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7.5V12l3 1.8" />
-    </svg>
-  );
-}
-
-function CheckGlyph() {
-  return (
-    <svg {...SVG_PROPS}>
-      <path d="M5 12.5l4.2 4.2L19 7" />
-    </svg>
-  );
-}
-
-function ErrorGlyph() {
-  return (
-    <svg {...SVG_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M9 9l6 6M15 9l-6 6" />
-    </svg>
-  );
-}
-
-function PartialGlyph() {
-  return (
-    <svg {...SVG_PROPS}>
-      <path d="M12 4.5 2.7 20h18.6L12 4.5Z" />
-      <path d="M12 10v4.6" />
-      <path d="M12 17.7v.01" />
-    </svg>
-  );
-}
-
 /**
- * The leading glyph for a state. `running` (non-streaming) reuses the shipped
- * `.spinner`; `running` + `streaming` has no leading glyph (the `.term__cursor`
- * trails the label instead). Returns `null` when no leading glyph applies.
+ * The leading glyph for a state — the B2 generated status icons (16px, the
+ * `.tuf__glyph` wrapper sizes them via the shipped CSS): pending → clock, success →
+ * check, error → circle-x, partial → triangle-alert. `running` (non-streaming)
+ * reuses the shipped `.spinner`; `running` + `streaming` has no leading glyph (the
+ * `.term__cursor` trails the label instead). Returns `null` when no leading glyph
+ * applies. The glyph is the primary FR4 non-color cue.
  */
 function leadingGlyph(state: Exclude<ToolUseState, "idle">, streaming: boolean): ReactNode {
   switch (state) {
     case "pending":
-      return <ClockGlyph />;
+      return <Clock size={16} />;
     case "running":
       return streaming ? null : <span className="spinner spinner--sm" aria-hidden />;
     case "success":
-      return <CheckGlyph />;
+      return <Check size={16} />;
     case "error":
-      return <ErrorGlyph />;
+      return <CircleX size={16} />;
     case "partial":
-      return <PartialGlyph />;
+      return <TriangleAlert size={16} />;
   }
 }
 

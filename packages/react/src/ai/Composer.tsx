@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 
+import { ArrowRight } from "../icons/generated";
+
 /**
  * Composer — the terminal's multiline input + inline send control, painted with
  * the shipped `.term__composer` / `.term__prompt` / `.term__input` classes from
@@ -30,25 +32,6 @@ export interface ComposerProps {
   inputLabel?: string;
   /** className merged onto the `.term__composer` root. */
   className?: string;
-}
-
-function SendIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 12h14" />
-      <path d="m13 6 6 6-6 6" />
-    </svg>
-  );
 }
 
 export function Composer({
@@ -117,7 +100,7 @@ export function Composer({
         disabled={disabled}
         aria-label={sendLabel}
       >
-        <SendIcon />
+        <ArrowRight size={16} strokeWidth={1.6} />
       </button>
       {disabled ? <p className="term__keyhint">{keyPrompt}</p> : null}
     </div>

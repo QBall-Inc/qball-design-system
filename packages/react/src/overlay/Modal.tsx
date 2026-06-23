@@ -3,6 +3,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, CSSProperties, ElementRef, ReactNode } from "react";
 
+import { TriangleAlert, X } from "../icons/generated";
+
 /**
  * Modal — accessible dialog built on Radix `Dialog` (standard) + `AlertDialog`
  * (destructive confirm), painted entirely with the shipped `@qball-inc/tokens`
@@ -76,45 +78,6 @@ const ALERT_HEAD_ROW_STYLE: CSSProperties = {
   gap: "12px",
   alignItems: "flex-start",
 };
-
-function CloseIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
-}
-
-function WarnIcon() {
-  return (
-    <svg
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z" />
-      <path d="M12 9v4" />
-      <path d="M12 17h.01" />
-    </svg>
-  );
-}
 
 /** Modal root — owns the open state. Thin alias of Radix `Dialog.Root`. */
 export const Modal = Dialog.Root;
@@ -230,7 +193,7 @@ export const ModalClose = forwardRef<
       aria-label={ariaLabel ?? "Close"}
       {...rest}
     >
-      {children ?? <CloseIcon />}
+      {children ?? <X size={16} />}
     </Dialog.Close>
   );
 });
@@ -306,7 +269,7 @@ export function AlertModal({
             <div style={ALERT_HEAD_ROW_STYLE}>
               {destructive ? (
                 <span style={WARN_BADGE_STYLE} aria-hidden="true">
-                  <WarnIcon />
+                  <TriangleAlert size={17} strokeWidth={1.6} />
                 </span>
               ) : null}
               <div>

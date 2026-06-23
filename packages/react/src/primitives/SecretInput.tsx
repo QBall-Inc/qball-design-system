@@ -1,6 +1,8 @@
 import { forwardRef, useId, useState } from "react";
 import type { KeyboardEvent } from "react";
 
+import { Eye, EyeOff } from "../icons/generated";
+
 /**
  * SecretInput — masked BYO-key / secret entry with reveal, set, rotate, remove.
  *
@@ -65,44 +67,6 @@ export interface SecretInputProps {
   showSecretLabel?: string;
   /** `aria-label` for the reveal toggle when revealed. Default `"Hide secret"`. */
   hideSecretLabel?: string;
-}
-
-function EyeIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function EyeOffIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.61 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9.1 9.1 0 0 0 5.39-1.61" />
-      <path d="M2 2l20 20" />
-    </svg>
-  );
 }
 
 export const SecretInput = forwardRef<HTMLInputElement, SecretInputProps>(function SecretInput(
@@ -196,7 +160,7 @@ export const SecretInput = forwardRef<HTMLInputElement, SecretInputProps>(functi
             setShowSecret((shown) => !shown);
           }}
         >
-          {showSecret ? <EyeOffIcon /> : <EyeIcon />}
+          {showSecret ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
       </div>
 

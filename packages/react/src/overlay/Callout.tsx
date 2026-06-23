@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { CircleX, Info, TriangleAlert, X } from "../icons/generated";
+
 /**
  * Callout — inline banner / message surface, painted with the shipped
  * `@qball-inc/tokens` `.callout` classes from the `preview/banner.html` oracle.
@@ -59,63 +61,13 @@ const VARIANT_ROLE: Record<CalloutVariant, "status" | "alert" | "note"> = {
   neutral: "note",
 };
 
+// Variant → B2 generated glyph (17px, stroke 1.6): warning → triangle-alert,
+// error → circle-x, info + neutral share the info-circle. The leading icon is the
+// FR4 non-color cue; the wrapper (`.callout__icon`) owns the semantic color.
 function CalloutIcon({ variant }: { variant: CalloutVariant }) {
-  const common = {
-    width: 17,
-    height: 17,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
-  if (variant === "warning") {
-    return (
-      <svg {...common}>
-        <path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z" />
-        <path d="M12 9v4" />
-        <path d="M12 17h.01" />
-      </svg>
-    );
-  }
-  if (variant === "error") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="10" />
-        <path d="m15 9-6 6" />
-        <path d="m9 9 6 6" />
-      </svg>
-    );
-  }
-  // info + neutral share the info-circle glyph.
-  return (
-    <svg {...common}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 16v-4" />
-      <path d="M12 8h.01" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
+  if (variant === "warning") return <TriangleAlert size={17} strokeWidth={1.6} />;
+  if (variant === "error") return <CircleX size={17} strokeWidth={1.6} />;
+  return <Info size={17} strokeWidth={1.6} />;
 }
 
 export function Callout({
@@ -142,7 +94,7 @@ export function Callout({
       </div>
       {dismissible ? (
         <button type="button" className="callout__x" aria-label={dismissLabel} onClick={onDismiss}>
-          <CloseIcon />
+          <X size={14} strokeWidth={1.6} />
         </button>
       ) : null}
     </div>

@@ -1,6 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import type { KeyboardEvent, ReactNode } from "react";
 
+import { ArrowDownRight, ArrowUpRight, BellOff, Info, TriangleAlert } from "../icons/generated";
 import { NotificationBell } from "./AppBar";
 
 /**
@@ -38,101 +39,16 @@ export interface NotificationItemData {
   onMarkRead: (id: string) => void;
 }
 
+// Semantic mark → B2 generated glyph (15px): up → arrow-up-right, down →
+// arrow-down-right (1.8 stroke); warn → triangle-alert, info → info-circle (1.7
+// stroke). The glyph is the non-color cue; the `.notif__mark--{kind}` wrapper owns
+// the semantic color + tint. The exact per-kind glyph mapping is preserved (S84).
 function MarkIcon({ kind }: { kind?: NotificationKind | undefined }) {
-  if (kind === "up") {
-    return (
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M7 17 17 7" />
-        <path d="M7 7h10v10" />
-      </svg>
-    );
-  }
-  if (kind === "down") {
-    return (
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M7 7 17 17" />
-        <path d="M17 7v10H7" />
-      </svg>
-    );
-  }
-  if (kind === "warn") {
-    return (
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="m10.3 3.9-8.2 14a2 2 0 0 0 1.7 3h16.4a2 2 0 0 0 1.7-3l-8.2-14a2 2 0 0 0-3.4 0Z" />
-        <path d="M12 9v4" />
-        <path d="M12 17h.01" />
-      </svg>
-    );
-  }
+  if (kind === "up") return <ArrowUpRight size={15} strokeWidth={1.8} />;
+  if (kind === "down") return <ArrowDownRight size={15} strokeWidth={1.8} />;
+  if (kind === "warn") return <TriangleAlert size={15} strokeWidth={1.7} />;
   // info (default)
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 16v-4" />
-      <path d="M12 8h.01" />
-    </svg>
-  );
-}
-
-function BellOffIcon() {
-  return (
-    <svg
-      width="26"
-      height="26"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M8.7 3A6 6 0 0 1 18 8c0 1.6.2 3 .6 4.2" />
-      <path d="M17 17H3a2 2 0 0 0 2-2V8a6 6 0 0 1 1-3.3" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-      <path d="m2 2 20 20" />
-    </svg>
-  );
+  return <Info size={15} strokeWidth={1.7} />;
 }
 
 function NotificationRow({ item }: { item: NotificationItemData }) {
@@ -242,7 +158,7 @@ export function NotificationCenter({
                   color: "var(--text-muted)",
                 }}
               >
-                <BellOffIcon />
+                <BellOff size={26} strokeWidth={1.4} />
                 <span style={{ fontSize: "12.5px" }}>{emptyLabel}</span>
               </div>
             ) : (
