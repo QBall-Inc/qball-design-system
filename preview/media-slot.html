@@ -1,0 +1,228 @@
+<!doctype html>
+<!-- @dsCard group="Site & Media" name="MediaSlot" subtitle="DISPLAY oracle — image / gif / video / embed-facade × shape × fit × empty" -->
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<title>MediaSlot · DISPLAY oracle (WP-B-4b.3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  /* ── page chrome (preview-only, not shipped) ─────────────────────────── */
+  html,body{margin:0}
+  body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-ui);padding:0 0 64px}
+  .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:16px 28px;
+       background:var(--bg-primary);border-bottom:.5px solid var(--border-default)}
+  .top h1{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.5px;margin:0}
+  .top .pill{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);border:.5px solid var(--border-default);
+             border-radius:999px;padding:3px 9px}
+  .toggle{margin-left:auto;display:inline-flex;border:.5px solid var(--border-strong);border-radius:var(--radius-sm);overflow:hidden}
+  .toggle button{font-family:var(--font-ui);font-size:12px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  main{padding:8px 28px 0;max-width:1180px}
+  section{padding:24px 0;border-bottom:.5px solid var(--border-default)}
+  h2{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.2px;margin:0 0 4px;text-transform:uppercase}
+  .sub{font-family:var(--font-ui);font-size:12.5px;color:var(--text-muted);margin:0 0 18px;max-width:74ch;line-height:1.55}
+  .grid{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+  .spec{display:flex;flex-direction:column;gap:8px}
+  .spec .lab{font-family:var(--font-ui);font-size:11px;color:var(--text-muted)}
+  .spec .lab b{color:var(--text-primary);font-weight:600}
+  .w260{width:260px}.w220{width:220px}.w160{width:160px}.w120{width:120px}
+
+  /* ════════════════════════════════════════════════════════════════════
+     PROPOSED .media-slot* TOKEN-CSS SURFACE  (the artifact under review)
+     Token-only (DESIGN_DENY-clean). Scrim/on-scrim use var(...) with a
+     fallback ONLY because the preview imports the stale root CSS; the
+     shipped token is --color-scrim: rgba(20,20,20,0.45). Ships into
+     packages/tokens/components.css after RB-7 sign-off.
+     ════════════════════════════════════════════════════════════════════ */
+  .media-slot{position:relative;display:block;overflow:hidden;container-type:inline-size;
+              background:var(--bg-surface);border:.5px solid var(--border-default);
+              aspect-ratio:var(--ms-aspect, 16 / 9)}
+  .media-slot > img,
+  .media-slot > video,
+  .media-slot > iframe{display:block;width:100%;height:100%;border:0;
+              object-fit:var(--ms-fit, cover);object-position:var(--ms-pos, 50% 50%)}
+  .media-slot--rect{border-radius:0}
+  .media-slot--rounded{border-radius:var(--ms-radius, var(--radius-md))}
+  .media-slot--circle{border-radius:50%}
+  .media-slot--pill{border-radius:999px}
+
+  /* empty / placeholder — content scales with the box via container-query units (cqw) */
+  .media-slot--empty{display:grid;place-items:center;border-style:dashed;border-color:var(--border-strong)}
+  .media-slot__placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;
+              gap:clamp(6px,2.2cqw,12px);font-family:var(--font-ui);
+              font-size:clamp(11px,5.5cqw,15px);color:var(--text-muted);text-align:center;
+              padding:clamp(10px,4cqw,20px);line-height:1.4}
+  .media-slot__placeholder svg{width:clamp(22px,18cqw,60px);height:auto;stroke:var(--text-muted);fill:none;stroke-width:1.5}
+  /* icon-only placeholder (e.g. avatar) — glyph spans most of the box */
+  .media-slot__placeholder--icon svg{width:clamp(30px,48cqw,140px)}
+
+  /* drag-and-drop / upload placeholder (the AUTHORING-LAYER visual, WP-B-4b.3a — shown for design lock) */
+  .media-slot--dropzone{border-style:dotted;border-color:var(--border-strong)}
+  .media-slot__dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;
+              gap:clamp(6px,2.4cqw,12px);font-family:var(--font-ui);text-align:center;
+              padding:clamp(10px,4cqw,20px);color:var(--text-muted);font-size:clamp(10.5px,4.6cqw,13px);line-height:1.4}
+  .media-slot__dropzone svg{width:clamp(22px,16cqw,48px);height:auto;stroke:var(--text-muted);fill:none;stroke-width:1.5}
+  .media-slot__browse{font-family:var(--font-ui);font-size:clamp(10px,4cqw,12px);
+              padding:4px 12px;border:.5px solid var(--border-strong);border-radius:var(--radius-sm);
+              background:transparent;color:var(--text-primary);cursor:pointer;transition:border-color .12s,color .12s}
+  .media-slot__browse:hover{border-color:var(--color-signal);color:var(--color-signal)}
+  .media-slot__browse:focus-visible{outline:2px solid var(--color-signal);outline-offset:2px}
+
+  /* video: native controls render on hydration; poster shown at rest (faux bar = preview hint) */
+  .media-slot__bar{position:absolute;left:0;right:0;bottom:0;height:26px;display:flex;align-items:center;gap:8px;
+              padding:0 9px;background:var(--bg-surface);border-top:.5px solid var(--border-default)}
+  .media-slot__bar .tri{width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--text-primary)}
+  .media-slot__bar .line{flex:1;height:2px;border-radius:999px;background:var(--border-strong)}
+  .media-slot__bar .line i{display:block;width:38%;height:100%;border-radius:999px;background:var(--color-signal)}
+  .media-slot__bar .t{font-family:var(--font-ui);font-size:10px;color:var(--text-muted)}
+
+  /* embed FACADE: real provider thumbnail + a real play <button> on a DARK SCRIM (so it never
+     blends into the thumbnail). Click swaps the real iframe; never auto-load. */
+  .media-slot__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .media-slot__play{position:absolute;inset:0;margin:auto;
+              width:clamp(46px,26cqw,74px);height:clamp(46px,26cqw,74px);
+              display:grid;place-items:center;border:0;border-radius:50%;
+              background:var(--color-scrim, rgba(20,20,20,.45));
+              color:var(--color-on-scrim, rgba(255,255,255,.96));
+              cursor:pointer;transition:background .12s,color .12s}
+  .media-slot__play .tri{width:0;height:0;margin-left:14%;border-style:solid;
+              border-width:0.9em 0 0.9em 1.5em;border-color:transparent transparent transparent currentColor}
+  .media-slot__play:hover{background:var(--color-signal);color:var(--color-on-scrim, rgba(255,255,255,.96))}
+  .media-slot__play:focus-visible{outline:2px solid var(--color-signal);outline-offset:3px}
+  .media-slot__badge{position:absolute;top:7px;left:7px;font-family:var(--font-ui);font-size:9.5px;letter-spacing:.4px;
+              text-transform:uppercase;color:var(--text-muted);background:var(--bg-surface);
+              border:.5px solid var(--border-default);border-radius:var(--radius-sm);padding:2px 6px}
+
+  /* gif "animates" affordance — a sweeping sheen, preview-only stand-in for real animation */
+  .is-gif::after{content:"";position:absolute;inset:0;pointer-events:none;
+              background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);
+              transform:translateX(-100%);animation:sheen 2.4s linear infinite}
+  @keyframes sheen{to{transform:translateX(100%)}}
+  @media (prefers-reduced-motion: reduce){.is-gif::after{animation:none;opacity:0}}
+</style>
+</head><body>
+  <div class="top">
+    <h1>MediaSlot</h1>
+    <span class="pill">DISPLAY oracle · WP-B-4b.3 · PROPOSED — pending sign-off</span>
+    <div class="toggle" role="group" aria-label="Theme">
+      <button type="button" data-set="light" aria-pressed="true">Light</button>
+      <button type="button" data-set="dark" aria-pressed="false">Dark</button>
+    </div>
+  </div>
+
+  <main>
+    <section>
+      <h2>1 · Media types</h2>
+      <p class="sub">The discriminated <code>type</code> prop selects the inner element — one component, four render paths.
+        <b>image/gif → &lt;img&gt;</b>, <b>video → &lt;video poster&gt;</b> (native controls; default <b>muted, no autoplay</b>),
+        <b>embed → a facade</b> (real provider thumbnail + a real play button on a dark scrim; the iframe loads only on click — no network/cookies until then).</p>
+      <div class="grid">
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph" alt="Mountains at dawn"></div><div class="lab"><b>type="image"</b> · static</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded is-gif w220" style="--ms-aspect:16/9"><img class="ph" alt="Looping clip"><span class="media-slot__badge">gif</span></div><div class="lab"><b>type="gif"</b> · animates in &lt;img&gt;</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph" alt="Video poster"><div class="media-slot__bar"><span class="tri"></span><span class="line"><i></i></span><span class="t">0:12</span></div></div><div class="lab"><b>type="video"</b> · poster + native controls</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph media-slot__poster" alt="YouTube thumbnail"><button class="media-slot__play" type="button" aria-label="Play video"><span class="tri"></span></button><span class="media-slot__badge">embed · facade</span></div><div class="lab"><b>type="embed"</b> · real thumbnail → click loads player</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2 · Shapes</h2>
+      <p class="sub">Shape mask at the frame level — the inner media fills it (<code>overflow:hidden</code>). Reuses the existing
+        radii vocabulary (<code>--radius-md</code>) and the circle/pill idiom already shipped on Avatar/Badge. <code>mask</code> takes
+        an arbitrary <code>clip-path</code> for anything beyond these four.</p>
+      <div class="grid">
+        <div class="spec"><div class="media-slot media-slot--rect w160" style="--ms-aspect:1/1"><img class="ph" alt=""></div><div class="lab"><b>rect</b></div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1"><img class="ph" alt=""></div><div class="lab"><b>rounded</b> · radius</div></div>
+        <div class="spec"><div class="media-slot media-slot--circle w160" style="--ms-aspect:1/1"><img class="ph" alt=""></div><div class="lab"><b>circle</b></div></div>
+        <div class="spec"><div class="media-slot media-slot--pill w220" style="--ms-aspect:21/9"><img class="ph" alt=""></div><div class="lab"><b>pill</b></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3 · Fit &amp; position</h2>
+      <p class="sub">A wide source in a square frame, to show <code>object-fit</code>. <b>cover</b> fills + crops (default),
+        <b>contain</b> letterboxes, <b>fill</b> stretches. <code>position</code> chooses which part of a cover crop shows.</p>
+      <div class="grid">
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1;--ms-fit:cover"><img class="ph" alt=""></div><div class="lab"><b>fit="cover"</b> · default</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1;--ms-fit:contain"><img class="ph" alt=""></div><div class="lab"><b>fit="contain"</b></div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1;--ms-fit:fill"><img class="ph" alt=""></div><div class="lab"><b>fit="fill"</b></div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1;--ms-fit:cover;--ms-pos:100% 0%"><img class="ph" alt=""></div><div class="lab"><b>cover</b> · position="100% 0%"</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>4 · Aspect ratio (CLS-safe)</h2>
+      <p class="sub"><code>aspect-ratio</code> reserves the box before media loads — no layout shift. Portrait, square, and
+        landscape from the same component.</p>
+      <div class="grid" style="align-items:flex-end">
+        <div class="spec"><div class="media-slot media-slot--rounded w120" style="--ms-aspect:9/16"><img class="ph pf" alt=""></div><div class="lab"><b>9 / 16</b> portrait</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w160" style="--ms-aspect:1/1"><img class="ph" alt=""></div><div class="lab"><b>1 / 1</b> square</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph" alt=""></div><div class="lab"><b>16 / 9</b> landscape</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>5 · Empty state &amp; placeholder</h2>
+      <p class="sub">No <code>src</code> → <code>.media-slot--empty</code>. Placeholder content scales with the box
+        (container-query units), so a bigger slot ⇒ bigger glyph/label. Three treatments: the passive <b>default</b> ("no media"),
+        an icon-only <b>avatar</b> empty, and the active <b>drag-and-drop / upload</b> dropzone (the latter is the
+        <b>WP-B-4b.3a authoring-layer</b> visual, shown here to lock the design — display-only consumers use the passive ones).</p>
+      <div class="grid">
+        <div class="spec"><div class="media-slot media-slot--rounded media-slot--empty w260" style="--ms-aspect:16/9"><div class="media-slot__placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>No media</div></div><div class="lab"><b>default</b> · passive (display-only)</div></div>
+        <div class="spec"><div class="media-slot media-slot--circle media-slot--empty w160" style="--ms-aspect:1/1"><div class="media-slot__placeholder media-slot__placeholder--icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></div></div><div class="lab"><b>avatar</b> · icon-only, spans the circle</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded media-slot--empty media-slot--dropzone w260" style="--ms-aspect:16/9"><div class="media-slot__dropzone"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><div>Drag &amp; drop, or</div><button class="media-slot__browse" type="button">Browse…</button></div></div><div class="lab"><b>dropzone</b> · drag-drop + upload (authoring · 4b.3a)</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>6 · Facade play overlay (states)</h2>
+      <p class="sub">Now on a <b>dark scrim</b> (token <code>--color-scrim</code>) so it reads on any thumbnail — the earlier
+        translucent-sage hover blended into a sage image. Rest = scrim; hover = <b>solid sage</b> (opaque, no blend); keyboard
+        focus = sage ring. The glyph is light (theme-independent, on the scrim). Button size scales with the slot.</p>
+      <div class="grid">
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph media-slot__poster" alt=""><button class="media-slot__play" type="button" aria-label="Play"><span class="tri"></span></button></div><div class="lab"><b>rest</b> · dark scrim</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph media-slot__poster" alt=""><button class="media-slot__play" type="button" aria-label="Play" style="background:var(--color-signal)"><span class="tri"></span></button></div><div class="lab"><b>hover</b> · solid sage</div></div>
+        <div class="spec"><div class="media-slot media-slot--rounded w220" style="--ms-aspect:16/9"><img class="ph media-slot__poster" alt=""><button class="media-slot__play" type="button" aria-label="Play" style="outline:2px solid var(--color-signal);outline-offset:3px"><span class="tri"></span></button></div><div class="lab"><b>focus-visible</b> ring</div></div>
+      </div>
+    </section>
+
+    <section style="border-bottom:0">
+      <h2>7 · Fluid / responsive</h2>
+      <p class="sub">The slot is <b>fluid by default</b>: it fills its container's width and the height follows from
+        <code>aspect-ratio</code> (the fixed widths above are just for this contact sheet). The consumer controls the width —
+        a grid cell, a <code>max-width</code>, 100%, or a fixed px. <b>Resize the window</b> to watch this one reflow (and the
+        placeholder glyph scale with it).</p>
+      <div style="max-width:680px">
+        <div class="media-slot media-slot--rounded media-slot--empty" style="--ms-aspect:16/9;width:100%"><div class="media-slot__placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Fluid — fills its container; resize me</div></div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // ── theme toggle (matches preview/icons.html) ──
+  document.querySelectorAll('.toggle button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.documentElement.setAttribute('data-theme', b.getAttribute('data-set'));
+      document.querySelectorAll('.toggle button').forEach(function(x){ x.setAttribute('aria-pressed', String(x===b)); });
+    });
+  });
+
+  // ── shared stand-in "photo" (preview-only demo content; NOT shipped CSS) ──
+  // A landscape with an off-center sun so cover/position crops are visible.
+  function photo(w,h){return 'data:image/svg+xml;utf8,'+encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid slice">'+
+    '<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#1f3b4d"/><stop offset="0.55" stop-color="#3f6b5b"/><stop offset="1" stop-color="#c98a52"/>'+
+    '</linearGradient></defs>'+
+    '<rect width="'+w+'" height="'+h+'" fill="url(#s)"/>'+
+    '<circle cx="'+(w*0.74)+'" cy="'+(h*0.30)+'" r="'+(h*0.13)+'" fill="#f4d9a6"/>'+
+    '<path d="M0 '+h+' L'+(w*0.30)+' '+(h*0.55)+' L'+(w*0.50)+' '+(h*0.78)+' L'+(w*0.70)+' '+(h*0.48)+' L'+w+' '+(h*0.82)+' L'+w+' '+h+' Z" fill="#16242e" opacity="0.92"/>'+
+    '<path d="M0 '+h+' L'+(w*0.18)+' '+(h*0.72)+' L'+(w*0.42)+' '+h+' Z" fill="#0f1a21"/>'+
+    '</svg>');
+  }
+  document.querySelectorAll('img.ph').forEach(function(img){
+    img.src = img.classList.contains('pf') ? photo(450,800) : photo(800,450);
+  });
+</script>
+</body></html>
