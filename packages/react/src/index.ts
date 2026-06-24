@@ -181,3 +181,18 @@ export type { IconName } from "./icons/generated/registry";
 export { BRAND_ICON_NAMES } from "./icons/generated/registry";
 export type { BrandIconName } from "./icons/generated/registry";
 export type { IconProps } from "./icons/icon-props";
+
+// Site & Media Primitives III — MediaSlot (WP-B-4b.3). A pure-React, SSR/static-safe
+// DISPLAY container for heterogeneous media (image / gif / video / embed-facade) over
+// the shipped `.media-slot` token surface; native <img>/<video>/<iframe>, zero heavy
+// deps. The embed facade loads the real <iframe> only on click (no network until then).
+// The authoring layer (upload / crop / persist / oEmbed) is the deferred WP-B-4b.3a;
+// `adapter` is a reserved no-op seam for it.
+export { MediaSlot } from "./media/MediaSlot";
+export type {
+  MediaSlotProps,
+  MediaSlotType,
+  MediaSlotShape,
+  MediaSlotFit,
+  MediaSlotAdapter,
+} from "./media/MediaSlot";

@@ -58,6 +58,10 @@
      behind a dialog). Theme-independent dark veil, matching the preview cards;
      consumed by the .scrim class and the Scrim overlay component. */
   --color-scrim:     rgba(20, 20, 20, 0.45);
+  /* Light foreground for glyphs sitting ON the dark scrim (e.g. the MediaSlot
+     embed-facade play button). Theme-independent — the scrim is always a dark
+     veil, so the glyph on it is always light. WP-B-4b.3. */
+  --color-on-scrim:  rgba(255, 255, 255, 0.96);
 
   /* ===== Finance / data palette (traditional hues, warm-tuned) =====
      Recognizable green/red/gold/blue for data semantics ONLY (gains,

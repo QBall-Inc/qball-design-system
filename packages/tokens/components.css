@@ -1079,6 +1079,99 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   .tuf { animation: none; transition: none; }
 }
 
+/* ----- MediaSlot (WP-B-4b.3) — art-directed media container ---------------
+   A sized/shaped frame for heterogeneous media (image / gif / video / embed
+   facade). `aspect-ratio` reserves the box (no CLS); the inner native element
+   fills it (`overflow:hidden`). Shapes reuse the radius vocabulary + the
+   circle/pill idiom (Avatar/Badge). Container-query units (cqw) size the
+   placeholder / play affordances so they scale with the box (.dt-wrap precedent).
+   The embed facade play button sits on the shipped `--color-scrim` with a light
+   `--color-on-scrim` glyph (no shadow — scrim is the brand's lift partner).
+   The dropzone surface is the WP-B-4b.3a authoring visual: the CSS ships now to
+   lock the signed-off look; the upload BEHAVIOR is deferred to 4b.3a. */
+.media-slot {
+  position: relative; display: block; overflow: hidden;
+  container-type: inline-size;
+  background: var(--bg-surface); border: .5px solid var(--border-default);
+  aspect-ratio: var(--ms-aspect, 16 / 9);
+}
+.media-slot > img,
+.media-slot > video,
+.media-slot > iframe {
+  display: block; width: 100%; height: 100%; border: 0;
+  object-fit: var(--ms-fit, cover); object-position: var(--ms-pos, 50% 50%);
+}
+.media-slot--rect    { border-radius: 0; }
+.media-slot--rounded { border-radius: var(--ms-radius, var(--radius-md)); }
+.media-slot--circle  { border-radius: 50%; }
+.media-slot--pill    { border-radius: 999px; }
+
+/* empty state + passive placeholder (icon + label); scales with the box (cqw) */
+.media-slot--empty { display: grid; place-items: center; border-style: dashed; border-color: var(--border-strong); }
+.media-slot__placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(6px, 2.2cqw, 12px); font-family: var(--font-ui);
+  font-size: clamp(11px, 5.5cqw, 15px); color: var(--text-muted);
+  text-align: center; padding: clamp(10px, 4cqw, 20px); line-height: 1.4;
+}
+.media-slot__placeholder svg { width: clamp(22px, 18cqw, 60px); height: auto; stroke: var(--text-muted); fill: none; stroke-width: 1.5; }
+/* icon-only placeholder (e.g. avatar/circle empty) — the glyph spans most of the box */
+.media-slot__placeholder--icon svg { width: clamp(30px, 48cqw, 140px); }
+
+/* drag-and-drop / upload placeholder — the AUTHORING-LAYER visual (WP-B-4b.3a).
+   CSS ships now to lock the signed-off look; the upload behavior is deferred. */
+.media-slot--dropzone { border-style: dotted; border-color: var(--border-strong); }
+.media-slot__dropzone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(6px, 2.4cqw, 12px); font-family: var(--font-ui); text-align: center;
+  padding: clamp(10px, 4cqw, 20px); color: var(--text-muted);
+  font-size: clamp(10.5px, 4.6cqw, 13px); line-height: 1.4;
+}
+.media-slot__dropzone svg { width: clamp(22px, 16cqw, 48px); height: auto; stroke: var(--text-muted); fill: none; stroke-width: 1.5; }
+.media-slot__browse {
+  font-family: var(--font-ui); font-size: clamp(10px, 4cqw, 12px);
+  padding: 4px 12px; border: .5px solid var(--border-strong); border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-primary); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.media-slot__browse:hover { border-color: var(--color-signal); color: var(--color-signal); }
+.media-slot__browse:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+/* embed FACADE: real provider thumbnail + a real play <button> on a DARK SCRIM
+   (so it never blends into the thumbnail). Click swaps the real iframe; never
+   auto-load. */
+.media-slot__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.media-slot__play {
+  position: absolute; inset: 0; margin: auto;
+  width: clamp(46px, 26cqw, 74px); height: clamp(46px, 26cqw, 74px);
+  display: grid; place-items: center; border: 0; border-radius: 50%;
+  background: var(--color-scrim); color: var(--color-on-scrim);
+  cursor: pointer; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.media-slot__play .tri {
+  width: 0; height: 0; margin-left: 14%;
+  border-style: solid; border-width: 0.9em 0 0.9em 1.5em;
+  border-color: transparent transparent transparent currentColor;
+}
+.media-slot__play:hover { background: var(--color-signal); color: var(--color-on-scrim); }
+.media-slot__play:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 3px; }
+
+/* in-frame type chip — optional; rendered only when the consumer passes `badge` */
+.media-slot__badge {
+  position: absolute; top: 7px; left: 7px;
+  font-family: var(--font-ui); font-size: 9.5px; letter-spacing: .4px;
+  text-transform: uppercase; color: var(--text-muted);
+  background: var(--bg-surface); border: .5px solid var(--border-default);
+  border-radius: var(--radius-sm); padding: 2px 6px;
+}
+
+/* Reduced-motion: gif-as-video autoplay is gated in the component (autoPlay
+   suppressed under prefers-reduced-motion); native <img> GIFs animate per the UA.
+   Cut the facade/browse hover micro-transitions too. NFR5. */
+@media (prefers-reduced-motion: reduce) {
+  .media-slot__play, .media-slot__browse { transition: none; }
+}
+
 /* ----- Scrollbar (design-system default) ------------------------
    Thin, unobtrusive, token-driven. Track is transparent; the thumb
    uses the strong border token and darkens on hover. Applies to any
