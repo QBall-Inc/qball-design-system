@@ -15,7 +15,7 @@ register. **The stack is locked — no substitutions on type.**
 ## Berkeley Mono — the one that needs care
 
 - **Self-hosted and license-restricted.** The 18 woff2 files in `fonts/` are the **SemiCondensed**
-  width axis (100–800 + matching obliques). They are wired into `colors_and_type.css` via `@font-face`
+  width axis (100–800 + matching obliques). They are wired into `packages/tokens/colors_and_type.css` via `@font-face`
   (weights 100/200/300/350/400/500/600/700/800). **Embed per-app; do not redistribute publicly.**
 - **Width = SemiCondensed (current, locked).** This is narrower than the standard-width family the
   original brand spec referenced. Consequence: at the same character count, lines are shorter and the
@@ -43,7 +43,7 @@ import "@fontsource/instrument-serif/400.css";
 import "@fontsource/instrument-serif/400-italic.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
-// Berkeley Mono: copy fonts/ into the app and import colors_and_type.css (carries the @font-face),
+// Berkeley Mono: copy fonts/ into the app and import packages/tokens/colors_and_type.css (carries the @font-face),
 // OR re-declare the @font-face block pointing at your asset path. Keep font-display: swap.
 ```
 

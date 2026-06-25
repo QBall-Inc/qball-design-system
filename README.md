@@ -26,11 +26,12 @@ FONTS.md                 — the type families + how to load them
 SKILL.md                 — agent-skill front-matter (drop-in)
 gallery.html             — live component contact-sheet (light + dark)
 
-colors_and_type.css      — canonical tokens + @font-face + semantic element styles
-components.css            — the full application component layer (layer after the tokens)
-tokens/
+packages/tokens/         — the canonical, published token layer (@qball-inc/tokens):
+  colors_and_type.css    — canonical tokens + @font-face seam + semantic element styles
+  components.css         — the full application component layer (layer after the tokens)
   theme.css              — Tailwind v4 @theme export of the tokens
   tokens.json            — DTCG / Style-Dictionary shape (cross-platform)
+packages/react/          — the @qball-inc/react component library
 assets/                  — logos (wordmark + mark + favicon) + assets/icons/ (Lucide)
 preview/                 — one live card per component (the canonical state matrices)
 reference/               — usage guide + upstream foundations + historical audit
@@ -38,9 +39,9 @@ reference/               — usage guide + upstream foundations + historical aud
 
 ## How to consume it
 
-- **Tokens (lift verbatim, never re-eyeball):** `tokens/theme.css` (Tailwind), `tokens.json` (DTCG),
-  or `colors_and_type.css` (raw CSS vars + the `@font-face`).
-- **Components:** `components.css` is a drop-in, token-driven layer (framework-agnostic). To build the
+- **Tokens (lift verbatim, never re-eyeball):** `packages/tokens/theme.css` (Tailwind), `packages/tokens/tokens.json` (DTCG),
+  or `packages/tokens/colors_and_type.css` (raw CSS vars + the `@font-face`).
+- **Components:** `packages/tokens/components.css` is a drop-in, token-driven layer (framework-agnostic). To build the
   React library, follow `COMPONENT-LIBRARY.md` — it maps each CSS class to a shadcn/Radix component and
   lists the states to implement. Verify each build against the matching `preview/*.html` / `gallery.html`.
 - **Theme:** set `data-theme="light|dark"` on `<html>`; tokens swap. Light and dark are both first-class.
@@ -58,9 +59,10 @@ public packages under the `@qball-inc` scope (Apache-2.0):
 pnpm add @qball-inc/tokens @qball-inc/react
 ```
 
-> **Status:** the packages are **not yet published**. The drop-in `colors_and_type.css` /
-> `components.css` / `tokens/` sources above are the canonical reference today; the npm
-> packages extract that same surface verbatim. Until v1.0.0 ships, consume the CSS directly.
+> **Status:** `@qball-inc/tokens` is published (early-access `0.x`); `@qball-inc/react` is **not yet
+> published** (v1). The canonical CSS source is `packages/tokens/` (`colors_and_type.css` /
+> `components.css` / `theme.css` / `tokens.json`) — what the npm package ships verbatim. Until
+> `@qball-inc/react` v1.0.0, consume the token CSS directly from `packages/tokens/` or `@qball-inc/tokens`.
 
 Workspace layout: `packages/tokens/` and `packages/react/`. Local development uses
 `pnpm install` at the repo root + the `Justfile` recipes (`just typecheck`, `just lint`,
@@ -70,7 +72,7 @@ Workspace layout: `packages/tokens/` and `packages/react/`. Local development us
 
 > **The display font ships as Fira Code in this repository.** The system's intended display
 > face is **Berkeley Mono**, a commercial typeface that is **not** redistributed here. The
-> token files (`colors_and_type.css`, `tokens/theme.css`, `tokens.json`) default
+> token files (`packages/tokens/colors_and_type.css`, `packages/tokens/theme.css`, `packages/tokens/tokens.json`) default
 > `--font-display` to Fira Code so nothing licensed is published.
 
 To restore Berkeley Mono after cloning:
@@ -78,9 +80,9 @@ To restore Berkeley Mono after cloning:
 1. Purchase a license from **U.S. Graphics Company** — https://usgraphics.com/typefaces/berkeley-mono
    (a Website License Grant + Web Fonts module is required to serve it as a web font).
 2. Drop the `.woff2` files into `fonts/`.
-3. Re-add the `@font-face` declarations in `colors_and_type.css` (see the _Display font_ comment there).
-4. Put `'Berkeley Mono'` first in `--font-display` in `colors_and_type.css`, `tokens/theme.css`,
-   and `tokens.json`.
+3. Re-add the `@font-face` declarations in `packages/tokens/colors_and_type.css` (see the _Display font_ comment there).
+4. Put `'Berkeley Mono'` first in `--font-display` in `packages/tokens/colors_and_type.css`, `packages/tokens/theme.css`,
+   and `packages/tokens/tokens.json`.
 
 Every other family (Fira Code, Syne, Instrument Serif, JetBrains Mono) is freely available
 and loaded from Google Fonts by the host page.

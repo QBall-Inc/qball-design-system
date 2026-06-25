@@ -1,6 +1,6 @@
 # Stocky App Components — Usage Guide
 
-The Ashay Kubal design system was originally an **editorial / terminal personal-site brand** (see the root `README.md` and `colors_and_type.css`). This guide documents the **application component layer** added on top of it to build **Stocky** — the hobby-tier stock watchlist with an AI sidekick.
+The Ashay Kubal design system was originally an **editorial / terminal personal-site brand** (see the root `README.md` and `packages/tokens/colors_and_type.css`). This guide documents the **application component layer** added on top of it to build **Stocky** — the hobby-tier stock watchlist with an AI sidekick.
 
 Everything here layers on the brand tokens. Nothing replaces them.
 
@@ -8,19 +8,19 @@ Everything here layers on the brand tokens. Nothing replaces them.
 
 | File | What it is |
 |---|---|
-| `colors_and_type.css` | Brand tokens (color, type, spacing, radii, motion) + the **finance/data palette** and **annotation** tokens added for Stocky. Single source of truth. |
-| `components.css` | The **app component layer** — every class documented below. Layer it after `colors_and_type.css`. |
+| `packages/tokens/colors_and_type.css` | Brand tokens (color, type, spacing, radii, motion) + the **finance/data palette** and **annotation** tokens added for Stocky. Single source of truth. |
+| `packages/tokens/components.css` | The **app component layer** — every class documented below. Layer it after `colors_and_type.css`. |
 | `preview/*.html` | One self-contained card per component (feeds the Design System tab). Each links the two CSS files and shows the component's states in light + dark. |
 | `ui_kits/stocky/` | The full working app prototype assembling these components. Start here to see them in context. |
 
-## Token extensions (in `colors_and_type.css`)
+## Token extensions (in `packages/tokens/colors_and_type.css`)
 
 - **Finance / data palette** — `--data-up` (green), `--data-down` (red), `--data-warn` (gold), `--data-info` (blue), `--data-flat` (stone), each with a `-bg` tint. Traditional market hues, warm-tuned for parchment + charcoal. Used **only** for data semantics (gains/losses/caution/info), never for wayfinding.
 - **Annotation accent** — `--anno-source` (slate) + `--anno-source-bg`. Deliberately **outside** the finance palette so a cited "[source]" never reads as a price color.
 - **Numerics** — `.num` / `.tabular` apply Berkeley Mono tabular figures. Use for all prices, %, OHLC.
 - The brand's sage (`--color-signal`) stays the one signal for links/CTAs/selection; amber (`--color-highlight`) stays the one highlight (and marks "[unverified]").
 
-## Component catalog (in `components.css`)
+## Component catalog (in `packages/tokens/components.css`)
 
 **Forms & controls**
 - Buttons — extends the brand `.btn` with `--ghost`, `--destructive`, `--icon`, `--loading`, `:disabled`.

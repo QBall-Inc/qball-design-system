@@ -5,8 +5,8 @@
 <title>MediaSlot · DISPLAY oracle (WP-B-4b.3)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../colors_and_type.css">
-<link rel="stylesheet" href="../components.css">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
 <style>
   /* ── page chrome (preview-only, not shipped) ─────────────────────────── */
   html,body{margin:0}
@@ -32,9 +32,9 @@
   /* ════════════════════════════════════════════════════════════════════
      PROPOSED .media-slot* TOKEN-CSS SURFACE  (the artifact under review)
      Token-only (DESIGN_DENY-clean). Scrim/on-scrim use var(...) with a
-     fallback ONLY because the preview imports the stale root CSS; the
-     shipped token is --color-scrim: rgba(20,20,20,0.45). Ships into
-     packages/tokens/components.css after RB-7 sign-off.
+     defensive fallback; packages/tokens/colors_and_type.css (imported above)
+     defines the shipped token --color-scrim: rgba(20,20,20,0.45). The MediaSlot
+     surface ships in packages/tokens/components.css (RB-7 sign-off, S100).
      ════════════════════════════════════════════════════════════════════ */
   .media-slot{position:relative;display:block;overflow:hidden;container-type:inline-size;
               background:var(--bg-surface);border:.5px solid var(--border-default);

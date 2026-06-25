@@ -53,13 +53,13 @@ motion:
 
 > **This file is the design source of truth.** Its companions in this packet:
 > `COMPONENT-LIBRARY.md` (how to build each component on Vite+React+shadcn/Radix+Tailwind),
-> `tokens/` (`theme.css` Tailwind export + `tokens.json` DTCG), `colors_and_type.css` +
-> `components.css` (the canonical CSS to lift verbatim), `CAVEATS.md` (open decisions),
+> `packages/tokens/` (`theme.css` Tailwind export + `tokens.json` DTCG + `colors_and_type.css` +
+> `components.css` — the canonical CSS to lift verbatim), `CAVEATS.md` (open decisions),
 > `FONTS.md`, `gallery.html` (live component contact-sheet), and `reference/` (the upstream brand
 > README, the CSS-class usage guide, and the original gap audit).
 >
-> **Golden rule:** lift token + component *values* verbatim from `colors_and_type.css` /
-> `components.css` / `theme.css`. Never re-derive a color, spacing, radius, or type setting by eye.
+> **Golden rule:** lift token + component *values* verbatim from `packages/tokens/colors_and_type.css` /
+> `packages/tokens/components.css` / `packages/tokens/theme.css`. Never re-derive a color, spacing, radius, or type setting by eye.
 
 ## Overview
 
@@ -202,7 +202,7 @@ guidance in `reference/brand-README.md` → *Content Fundamentals*.
 
 ## Component overview
 
-The full built layer is `components.css` (drop-in, token-driven, framework-agnostic), with one live
+The full built layer is `packages/tokens/components.css` (drop-in, token-driven, framework-agnostic), with one live
 preview card per component under `preview/` (assembled in `gallery.html`). Headline members — forms
 (button/input/secret/select/switch/segmented/field/search), data (table/stat/meter/badge/sparkline/
 **candlestick (D3)**/tooltip/avatar), overlays (modal/toast/notification-center/callout/skeleton/

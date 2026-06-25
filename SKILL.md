@@ -17,9 +17,9 @@ gradients, glassmorphism, emoji, or pill-shaped buttons; they are explicitly out
 ## What to read, by task
 
 - **Building a real component library or app** → `DESIGN.md` (foundations) + `COMPONENT-LIBRARY.md`
-  (component → shadcn/Radix/Tailwind build map, states, build order) + `tokens/theme.css` /
-  `tokens.json` (lift verbatim) + `colors_and_type.css` + `components.css` (the canonical CSS).
-- **Throwaway prototype / mock / slides** → copy `colors_and_type.css` + `components.css` + the fonts/
+  (component → shadcn/Radix/Tailwind build map, states, build order) + `packages/tokens/theme.css` /
+  `packages/tokens/tokens.json` (lift verbatim) + `packages/tokens/colors_and_type.css` + `packages/tokens/components.css` (the canonical CSS).
+- **Throwaway prototype / mock / slides** → copy `packages/tokens/colors_and_type.css` + `packages/tokens/components.css` + the fonts/
   assets out, build static HTML. Browse `preview/*.html` (or open `gallery.html`) for every component's
   state matrix; copy the closest card and adapt.
 - **Understanding the brand voice / writing copy** → `reference/brand-README.md` → *Content Fundamentals*.
@@ -27,7 +27,7 @@ gradients, glassmorphism, emoji, or pill-shaped buttons; they are explicitly out
 
 ## Golden rules
 
-- **Lift token + component values verbatim** from `tokens/` / `colors_and_type.css` / `components.css`.
+- **Lift token + component values verbatim** from `packages/tokens/` (`colors_and_type.css` / `components.css` / `theme.css` / `tokens.json`).
   Never re-derive a color, spacing, radius, or type setting by eye.
 - **Theme:** set `data-theme="light|dark"` on `<html>`; tokens swap automatically. Theme is global,
   lives in the chrome, never per-surface. Dark + light both first-class.
@@ -45,9 +45,7 @@ gradients, glassmorphism, emoji, or pill-shaped buttons; they are explicitly out
 - `COMPONENT-LIBRARY.md` — the build map: each component → real-stack implementation + states.
 - `CAVEATS.md` — open decisions + resolutions + versioning.
 - `FONTS.md` — the five families + Berkeley Mono licensing/width notes.
-- `tokens/` — `theme.css` (Tailwind v4), `tokens.json` (DTCG/Style-Dictionary).
-- `colors_and_type.css` — canonical tokens + `@font-face` + semantic element styles (drop-in).
-- `components.css` — the full application component layer (drop-in, layer after the tokens).
+- `packages/tokens/` — the canonical token layer (`@qball-inc/tokens`): `colors_and_type.css` (tokens + `@font-face` + semantic element styles), `components.css` (the full application component layer), `theme.css` (Tailwind v4), `tokens.json` (DTCG/Style-Dictionary).
 - `fonts/` — Berkeley Mono SemiCondensed woff2 (self-hosted, license-restricted, embed per-app).
 - `assets/` — logos (wordmark + mark + favicon) + `assets/icons/` (Lucide).
 - `preview/*.html` + `gallery.html` — one live card per component; the contact sheet.

@@ -140,16 +140,17 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 | type                   | `--font-ui` (label), `--font-display` (mono skill id)                               | 11–11.5px                                                                                                                      |
 | icons                  | Lucide, stroke 1.5, 16px                                                            | `clock` / `check` / `alert-triangle` / `x`; **no emoji**                                                                       |
 
-> **Preview-vs-spec token-name note.** The shipped `preview/tool-use-indicator.html` imports the
-> gallery's root `colors_and_type.css` + `components.css` (the convention every other preview
-> card follows). That root file currently names the tint/finance tokens `--signal-bg`,
-> `--data-up/--data-down/--data-warn` (+ `-bg`), whereas the canonical `@qball-inc/tokens`
-> (packages/tokens) names them `--color-signal-bg`, `--color-up/--color-down/--color-warn`. The
-> **values are identical**; only the variable names differ (the stale-root delta WP-B-3.3b will
-> consolidate). The preview therefore uses the **root** names so it renders in the gallery
-> today; this spec + the WP-B-4.4 React component use the **canonical** names above. The 1:1
-> mapping: `--color-signal-bg`↔`--signal-bg`, `--color-warn`↔`--data-warn`, `--color-warn-bg`↔`--data-warn-bg`,
-> `--color-down-bg`↔`--data-down-bg`. (`--bg-surface` is the same name in both.)
+> **Preview token note (path consolidated WP-B-3.3b, S101).** `preview/tool-use-indicator.html` imports
+> `packages/tokens/colors_and_type.css` + `packages/tokens/components.css` (single-source convention after
+> WP-B-3.3b). Two naming schemes ship in the package: the framework-agnostic `colors_and_type.css` defines
+> `--signal-bg` / `--data-up/--data-down/--data-warn` (+ `-bg`); the Tailwind `theme.css` defines the SAME
+> values under `--color-signal-bg` / `--color-up/--color-down/--color-warn` (+ `-bg`). This card's inline
+> `.tuf` block uses the `--data-*`/`--signal-bg` (colors_and_type) names, so it renders on the drop-in path.
+> **Pre-existing inconsistency (WP-B-4.4, commit 44d87ae — tracked for a token-naming polish, NOT changed by
+> WP-B-3.3b): the SHIPPED `.tuf` block in `components.css` + the §6 table below use the `--color-*` (theme.css)
+> names, so the `.tuf` state tints resolve ONLY when `theme.css` is loaded — unlike the ~67 other `--data-*`
+> references in `components.css` that work on the drop-in path.** 1:1 mapping: `--color-signal-bg`↔`--signal-bg`,
+> `--color-warn`↔`--data-warn`, `--color-warn-bg`↔`--data-warn-bg`, `--color-down-bg`↔`--data-down-bg`. (`--bg-surface` is the same name in both.)
 
 ## 7. DESIGN.md conformance checklist
 
@@ -169,7 +170,7 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 - Per-skill custom iconography beyond the Lucide status glyphs (a single shared glyph set in v1).
 - The exact `.tuf*` class names are a proposal; WP-B-4.4 may finalize them when it ships the
   token-CSS class family (the Terminal/GroundingFlag precedent: a small additive
-  `components.css` block), pending its own SD1.
+  `packages/tokens/components.css` block), pending its own SD1.
 
 ## 9. Sign-off
 

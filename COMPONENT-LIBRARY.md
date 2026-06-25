@@ -5,10 +5,10 @@ component library and consuming it across projects (Stocky first, more later).
 **Goal:** every project builds the *same button, the same switch, the same modal* — no per-project
 drift. This doc is the contract that guarantees that.
 
-**Companions:** `DESIGN.md` (design truth + tokens), `components.css` (the canonical CSS layer — every
+**Companions:** `DESIGN.md` (design truth + tokens), `packages/tokens/components.css` (the canonical CSS layer — every
 class referenced below exists there), `reference/COMPONENTS-usage.md` (the CSS-class usage guide with
 each class's states), `reference/component-audit.md` (the original build/extend/create verdicts),
-`preview/*.html` + `gallery.html` (live state matrices), `tokens/theme.css` + `tokens.json`.
+`preview/*.html` + `gallery.html` (live state matrices), `packages/tokens/theme.css` + `packages/tokens/tokens.json`.
 
 ---
 
@@ -18,15 +18,15 @@ each class's states), `reference/component-audit.md` (the original build/extend/
   into the repo — favor shadcn/Radix patterns), **TanStack Router/Query** + **Zustand** for state,
   **D3.js** for the candlestick (and inline SVG sparklines). This is the stack Stocky targets; keep the
   library framework-agnostic at the token layer so other projects can reuse it.
-- **Wire tokens first:** `@import "tailwindcss"; @import "./tokens/theme.css"; @import
-  "./colors_and_type.css";` — the last brings the font custom properties + semantic element styles (h1–h4, p,
+- **Wire tokens first:** `@import "tailwindcss"; @import "@qball-inc/tokens/theme.css"; @import
+  "@qball-inc/tokens/colors-and-type.css";` — the last brings the font custom properties + semantic element styles (h1–h4, p,
   blockquote, code, a, `.num`). Then build components with Tailwind utilities mapped to the theme
   (`bg-surface`, `text-signal`, `border-strong`, `font-display`, `rounded-md`, `text-up`…).
 - **Two valid strategies — pick per component, don't mix within one:**
   1. **shadcn/Radix + Tailwind** (preferred for anything interactive/accessible) — take the shadcn
      component, restyle to tokens, match the prototype's states.
   2. **Port the CSS class as-is** (good for purely presentational atoms — `.stat`, `.digest`,
-     `.sparkline`, `.term`) — wrap the existing `components.css` class in a thin React component.
+     `.sparkline`, `.term`) — wrap the existing `packages/tokens/components.css` class in a thin React component.
 - **Every interactive/data component must implement the full state set:** `default, hover, focus,
   disabled, loading, empty, error` (where applicable). The prototype already demonstrates each — see
   the matching `preview/*.html`.
@@ -144,5 +144,5 @@ against the matching `preview/*.html` and the `gallery.html` contact sheet.
 - **Tool-use / skill indicator** — P1, not yet designed; design it before building if a project needs it.
 - **Berkeley Mono Regular (standard width)** — only if a project opts into the wider face (CAVEATS #1).
 
-Everything else the audit flagged as `No`/`Partial` has since been built into `components.css` — treat
+Everything else the audit flagged as `No`/`Partial` has since been built into `packages/tokens/components.css` — treat
 that file + the previews as the source of truth, not the original audit's verdict column.

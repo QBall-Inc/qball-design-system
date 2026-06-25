@@ -10,8 +10,8 @@ This system is the operating manual for any agent or human designing surfaces un
 
 This system was distilled from material the user provided directly. None of the upstream sources are bundled — keep your own access handy if you need to chase a detail back to the original.
 
-- **Brand spec (local repo, attached read-only):** `brand-identity/brand-spec.md` — v1.0, locked 2026-05-22. The canonical document. Everything in `colors_and_type.css` and the README's *Visual Foundations* / *Content Fundamentals* sections derives from it.
-- **Berkeley Mono webfonts (uploaded):** 18× WOFF2 files for the **SemiCondensed** width axis, weights 100–800 plus matching obliques. Copied into `fonts/` and wired into `colors_and_type.css`.
+- **Brand spec (local repo, attached read-only):** `brand-identity/brand-spec.md` — v1.0, locked 2026-05-22. The canonical document. Everything in `packages/tokens/colors_and_type.css` and the README's *Visual Foundations* / *Content Fundamentals* sections derives from it.
+- **Berkeley Mono webfonts (uploaded):** 18× WOFF2 files for the **SemiCondensed** width axis, weights 100–800 plus matching obliques. Copied into `fonts/` and wired into `packages/tokens/colors_and_type.css`.
 - **Site reference:** [ashaykubal.com](https://ashaykubal.com) — the live site. UI kit `ui_kits/ashaykubal/` is a recreation of the spec's intent (hero, featured posts, code block, pull quote, projects, career timeline, footer). When the live site and the spec disagree, **the spec wins** — that's what was given to us as locked.
 - **Qball Inc:** No brand assets were provided. A placeholder folder exists; see *Caveats* below.
 
@@ -25,7 +25,7 @@ The root of this project is the manifest. Everything below is reachable from her
 |---|---|
 | `README.md` | This file. Start here. |
 | `SKILL.md` | Skill front-matter so this folder works as a Claude-Code Agent Skill. |
-| `colors_and_type.css` | All design tokens (CSS custom properties) and semantic element styles. Drop-in stylesheet for any prototype. |
+| `packages/tokens/colors_and_type.css` | All design tokens (CSS custom properties) and semantic element styles. Drop-in stylesheet for any prototype. |
 | `brand-identity/brand-spec.md` | The original brand specification (read-only, source of truth). |
 | `fonts/` | Self-hosted Berkeley Mono SemiCondensed webfonts (WOFF2). |
 | `assets/` | Logos, marks, favicon, generic illustrations. |

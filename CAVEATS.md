@@ -55,7 +55,7 @@ stop re-litigating them. Treat these as binding unless the owner revises.
 This packet represents **v1.0.0** (brand tokens locked 2026-05-22; application component layer added
 2026-05-30). When consuming it as a dependency:
 
-- Treat `tokens/` + `colors_and_type.css` + `components.css` as a **pinned version**. A change to any
+- Treat `packages/tokens/` (`colors_and_type.css` + `components.css` + `theme.css` + `tokens.json`) as a **pinned version**. A change to any
   token value is a **minor/major bump**, never a silent edit — downstream layouts are tuned to these
   exact values.
 - Additive-only changes (new component, new variant) → **minor**. Token value changes or removals,

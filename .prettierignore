@@ -9,8 +9,7 @@ pnpm-lock.yaml
 # Pre-existing DS-packet / gallery content — served and maintained as-authored
 # (browser HTML/CSS + design docs). Out of the workspace format scope; preserve
 # verbatim per WP-B-0.1 (D-09). The npm packages (packages/*) ARE formatted.
-/colors_and_type.css
-/components.css
+# (root colors_and_type.css + components.css removed WP-B-3.3b S101 — consolidated into packages/tokens.)
 /index.html
 /gallery.html
 tokens/
