@@ -1,24 +1,14 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { componentsCss, ruleBody } from "../test-utils/css-source";
 import { Sparkline } from "./Sparkline";
 
 // The trend stroke color lives in the shipped @qball-inc/tokens CSS
 // (.trend-{up,down,flat} → color: var(--data-*)), which jsdom does not load. So
-// the direction→token mapping is asserted at the CSS-source contract level; the
-// DOM tests assert the component applies the .trend-{direction} class and
-// stroke="currentColor". vitest runs with cwd = packages/react.
-const componentsCss = readFileSync(resolve(process.cwd(), "../tokens/components.css"), "utf8");
-
-/** Returns the declaration body of the first `selector { ... }` rule, or "". */
-function ruleBody(css: string, selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`).exec(css);
-  return match?.[1] ?? "";
-}
+// the direction→token mapping is asserted at the CSS-source contract level (shared
+// css-source helper); the DOM tests assert the component applies the
+// .trend-{direction} class and stroke="currentColor".
 
 describe("Sparkline", () => {
   it("renders an inline SVG with role=img and the aria-label", () => {

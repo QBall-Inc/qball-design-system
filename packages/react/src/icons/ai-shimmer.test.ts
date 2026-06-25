@@ -11,12 +11,13 @@ import { describe, expect, it } from "vitest";
 const componentsCss = readFileSync(resolve(process.cwd(), "../tokens/components.css"), "utf8");
 
 describe("AI sparkle shimmer — CSS-source contract (§7a, the only animated icon)", () => {
-  it("defines .ic-ai-shimmer with an animation paced by a --duration-* token", () => {
+  it("defines .ic-ai-shimmer with an animation paced by a --dur-* token", () => {
     const rule = componentsCss.match(/\.ic-ai-shimmer\s*\{[^}]*\}/)?.[0];
     expect(rule, "no .ic-ai-shimmer rule shipped").toBeTruthy();
     expect(rule).toMatch(/animation:\s*ic-ai-shimmer/);
-    // Motion is paced by a design --duration-* token, not a magic number (AC-8).
-    expect(rule).toMatch(/var\(--duration-[a-z]+\)/);
+    // Motion is paced by a design --dur-* token (colors_and_type drop-in namespace),
+    // not a magic number (AC-8). Renamed from theme-only --duration-* in WP-B-3.3c.
+    expect(rule).toMatch(/var\(--dur-[a-z]+\)/);
   });
 
   it("ships the @keyframes ic-ai-shimmer the animation references", () => {

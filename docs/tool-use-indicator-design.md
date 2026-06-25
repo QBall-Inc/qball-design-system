@@ -51,9 +51,9 @@ is no backend coupling to these exact strings.
 | `running` | job executing / SSE tokens streaming                                         | **`--color-signal`** (sage)           | **spinner** (`.spinner--sm`, the one sanctioned loop) **or** the streaming cursor |
 | `success` | job complete, result appended to transcript                                  | `--color-success`                     | static **check** glyph (Lucide `check`)                                           |
 | `error`   | job failed — hard error surfaced to the user                                 | `--color-error`                       | static **alert / x** glyph (Lucide `alert-triangle` or `x`)                       |
-| `partial` | job complete but degraded (rate-limited / partial fundamentals / stale feed) | `--color-warn` (finance caution gold) | static **alert-triangle** glyph **+ the literal word "partial" / "rate-limited"** |
+| `partial` | job complete but degraded (rate-limited / partial fundamentals / stale feed) | `--data-warn` (finance caution gold) | static **alert-triangle** glyph **+ the literal word "partial" / "rate-limited"** |
 
-**`partial` is the FR4-critical state.** Caution gold (`--color-warn`) is a _finance/data_
+**`partial` is the FR4-critical state.** Caution gold (`--data-warn`) is a _finance/data_
 hue, so per DESIGN.md it must _always_ pair with a non-color cue — here the glyph **and** an
 explicit text label ("partial" / "rate-limited"). Color alone never carries the `partial`
 meaning. (This guards against the gold reading as a price.)
@@ -75,8 +75,8 @@ A single inline-flex chip. Every named sub-element, its role, token refs, and la
 
 | Sub-element    | Role                                                                                              | Token refs                                                                                                                                                                                                   | Layout                                                                                    |
 | -------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| `.tuf`         | wrapper chip; the state lives here as a `data-state` attribute                                    | `--radius-sm` (4px); per-state fill — `--bg-surface` (idle/pending), `--color-signal-bg` (running/success), `--color-down-bg` (error), `--color-warn-bg` (partial); hairline `--border-default`; `--font-ui` | `display:inline-flex; align-items:center; gap:6px; padding:3px 8px`; sits in the bot turn |
-| `.tuf__glyph`  | **leading status glyph** — the primary non-color cue (Lucide icon, the `.spinner`, or the cursor) | `--color-signal` / `--color-success` / `--color-error` / `--color-warn`; 16px, stroke 1.5                                                                                                                    | first child; fixed 16×16 box so the row doesn't reflow on glyph swap                      |
+| `.tuf`         | wrapper chip; the state lives here as a `data-state` attribute                                    | `--radius-sm` (4px); per-state fill — `--bg-surface` (idle/pending), `--signal-bg` (running/success), `--data-down-bg` (error), `--data-warn-bg` (partial); hairline `--border-default`; `--font-ui` | `display:inline-flex; align-items:center; gap:6px; padding:3px 8px`; sits in the bot turn |
+| `.tuf__glyph`  | **leading status glyph** — the primary non-color cue (Lucide icon, the `.spinner`, or the cursor) | `--color-signal` / `--color-success` / `--color-error` / `--data-warn`; 16px, stroke 1.5                                                                                                                    | first child; fixed 16×16 box so the row doesn't reflow on glyph swap                      |
 | `.tuf__label`  | skill id + state verb, e.g. `news-research · running`                                             | `--font-ui` 11.5px; skill id may use `--font-display` (mono); `--text-primary` / `--text-secondary`                                                                                                          | flex body                                                                                 |
 | `.tuf__meta`   | optional trailing meta — elapsed time, result count, or "rate-limited"                            | `--text-muted` 10.5px                                                                                                                                                                                        | trailing; muted; omitted when empty                                                       |
 | `.tuf__cursor` | (running, streaming variant) the streaming cursor reused from the terminal                        | `--color-signal`; reuses the shipped `.term__cursor` pattern                                                                                                                                                 | inline after the label; mutually exclusive with the spinner                               |
@@ -96,11 +96,11 @@ all of which honor `prefers-reduced-motion`.
 
 | Transition                              | Trigger                      | Property animated                                 | Duration token            | Easing       | `prefers-reduced-motion: reduce` fallback                                                     |
 | --------------------------------------- | ---------------------------- | ------------------------------------------------- | ------------------------- | ------------ | --------------------------------------------------------------------------------------------- |
-| **appear**                              | indicator mounts (any state) | `opacity` 0→1                                     | `--duration-fast` (120ms) | `--ease-out` | instant (no fade)                                                                             |
-| **pending → running**                   | job starts executing         | glyph cross-fade clock→spinner; `opacity`/`color` | `--duration-base` (200ms) | `--ease-out` | instant glyph swap                                                                            |
+| **appear**                              | indicator mounts (any state) | `opacity` 0→1                                     | `--dur-fast` (120ms) | `--ease-out` | instant (no fade)                                                                             |
+| **pending → running**                   | job starts executing         | glyph cross-fade clock→spinner; `opacity`/`color` | `--dur-base` (200ms) | `--ease-out` | instant glyph swap                                                                            |
 | **running — spinner**                   | while executing              | `transform: rotate` (continuous)                  | n/a (continuous)          | `linear`     | **`animation: none`** — spinner shows as a static ring; state still read from glyph + color   |
 | **running — streaming cursor**          | while SSE tokens stream      | cursor blink (`steps(1)`)                         | 1s loop                   | `steps`      | **`animation: none`** — solid (non-blinking) cursor; matches shipped `.term__cursor` fallback |
-| **running → success / error / partial** | job resolves                 | glyph + color cross-fade                          | `--duration-base` (200ms) | `--ease-out` | instant swap                                                                                  |
+| **running → success / error / partial** | job resolves                 | glyph + color cross-fade                          | `--dur-base` (200ms) | `--ease-out` | instant swap                                                                                  |
 
 `idle` and `pending` carry **no loop** (DESIGN.md idle-loop ban). The `running` loop is a
 _transient_ state indicator (sanctioned), reusing the shipped `.spinner` (one sanctioned loop)
@@ -127,30 +127,34 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 | running / sage lead    | `--color-signal`                                                                    | the wayfinding accent                                                                                                          |
 | success                | `--color-success`                                                                   | sage-family hue; paired with check glyph                                                                                       |
 | error                  | `--color-error`                                                                     | hard error                                                                                                                     |
-| partial / caution      | `--color-warn`                                                                      | finance-caution gold; **always** + non-color cue (FR4)                                                                         |
+| partial / caution      | `--data-warn`                                                                       | finance-caution gold; **always** + non-color cue (FR4)                                                                         |
 | pending / idle         | `--color-info`, `--text-muted`                                                      | neutral                                                                                                                        |
 | (reserved, **unused**) | `--color-highlight`                                                                 | amber — deliberately not a state color                                                                                         |
 | idle / pending fill    | `--bg-surface`                                                                      | neutral surface — separates the pre-result chip from the page parchment                                                        |
-| running / success tint | `--color-signal-bg`                                                                 | sage chip background                                                                                                           |
-| error tint             | `--color-down-bg`                                                                   | faint red; no dedicated `--color-error-bg` token exists — a candidate token-add for WP-B-4.4 if a true error surface is wanted |
-| partial tint           | `--color-warn-bg`                                                                   | caution chip background                                                                                                        |
+| running / success tint | `--signal-bg`                                                                       | sage chip background                                                                                                           |
+| error tint             | `--data-down-bg`                                                                    | faint red; no dedicated `--data-error-bg` token exists — a candidate token-add for WP-B-4.4 if a true error surface is wanted |
+| partial tint           | `--data-warn-bg`                                                                    | caution chip background                                                                                                        |
 | chrome                 | `--bg-primary`, `--border-default`                                                  | page bg + hairline                                                                                                             |
 | radius                 | `--radius-sm` (4px)                                                                 | chip; ≤12px; no pill; count-badge/meter carve-out **not** used                                                                 |
-| motion                 | `--duration-fast` (120ms), `--duration-base` (200ms), `--ease-out`, `--ease-in-out` | per §4                                                                                                                         |
+| motion                 | `--dur-fast` (120ms), `--dur-base` (200ms), `--ease-out`, `--ease-in-out` | per §4                                                                                                                         |
 | type                   | `--font-ui` (label), `--font-display` (mono skill id)                               | 11–11.5px                                                                                                                      |
 | icons                  | Lucide, stroke 1.5, 16px                                                            | `clock` / `check` / `alert-triangle` / `x`; **no emoji**                                                                       |
 
-> **Preview token note (path consolidated WP-B-3.3b, S101).** `preview/tool-use-indicator.html` imports
-> `packages/tokens/colors_and_type.css` + `packages/tokens/components.css` (single-source convention after
-> WP-B-3.3b). Two naming schemes ship in the package: the framework-agnostic `colors_and_type.css` defines
-> `--signal-bg` / `--data-up/--data-down/--data-warn` (+ `-bg`); the Tailwind `theme.css` defines the SAME
-> values under `--color-signal-bg` / `--color-up/--color-down/--color-warn` (+ `-bg`). This card's inline
-> `.tuf` block uses the `--data-*`/`--signal-bg` (colors_and_type) names, so it renders on the drop-in path.
-> **Pre-existing inconsistency (WP-B-4.4, commit 44d87ae — tracked for a token-naming polish, NOT changed by
-> WP-B-3.3b): the SHIPPED `.tuf` block in `components.css` + the §6 table below use the `--color-*` (theme.css)
-> names, so the `.tuf` state tints resolve ONLY when `theme.css` is loaded — unlike the ~67 other `--data-*`
-> references in `components.css` that work on the drop-in path.** 1:1 mapping: `--color-signal-bg`↔`--signal-bg`,
-> `--color-warn`↔`--data-warn`, `--color-warn-bg`↔`--data-warn-bg`, `--color-down-bg`↔`--data-down-bg`. (`--bg-surface` is the same name in both.)
+> **Token note (consolidated WP-B-3.3b S101; `.tuf` drop-in naming fixed WP-B-3.3c S102).**
+> `preview/tool-use-indicator.html` imports `packages/tokens/colors_and_type.css` +
+> `packages/tokens/components.css` (single-source convention). Two naming schemes ship: the
+> framework-agnostic `colors_and_type.css` defines `--signal-bg` / `--data-up`/`--data-down`/`--data-warn`
+> (+ `-bg`) and `--dur-fast`/`--dur-base`/`--dur-slow`; the Tailwind `theme.css` mirrors the SAME values
+> under `--color-signal-bg` / `--color-up`/`--color-down`/`--color-warn` (+ `-bg`) and
+> `--duration-fast`/`--duration-base`/`--duration-slow`. The shipped `.tuf` block in `components.css` + the
+> §6 table above now use the `colors_and_type` names (state tints AND animation timing), so the indicator
+> renders fully on the framework-agnostic drop-in path (no `theme.css` required), consistent with the other
+> `--data-*` references in `components.css`. State FOREGROUND colors keep their `--color-*` names
+> (`--color-signal`/`--color-success`/`--color-error`/`--color-info`) — those ARE defined in `colors_and_type.css`.
+> _History (WP-B-4.4, commit 44d87ae → fixed WP-B-3.3c): the `.tuf` tints + the `.tuf`/`.ic-ai-shimmer` animation
+> timing originally shipped with the theme.css `--color-*`/`--duration-*` names, broken on the drop-in path.
+> 1:1 value map: `--color-signal-bg`=`--signal-bg`, `--color-warn`=`--data-warn`, `--color-warn-bg`=`--data-warn-bg`,
+> `--color-down-bg`=`--data-down-bg`, `--duration-*`=`--dur-*`._
 
 ## 7. DESIGN.md conformance checklist
 

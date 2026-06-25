@@ -1,23 +1,15 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
 import { render } from "@testing-library/react";
 import type { CSSProperties } from "react";
 import { describe, expect, it } from "vitest";
 
+import { componentsCss, ruleBody } from "../test-utils/css-source";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./Tooltip";
 
 // The .tip-pop lift (inverted token surface, no shadow) lives in the shipped
 // @qball-inc/tokens CSS, which jsdom does not load. The no-shadow + token-surface
-// guarantees are asserted at the CSS-source contract level; the DOM tests assert
-// the portal-escape behavior and that the component applies the .tip-pop class.
-const componentsCss = readFileSync(resolve(process.cwd(), "../tokens/components.css"), "utf8");
-
-function ruleBody(css: string, selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`).exec(css);
-  return match?.[1] ?? "";
-}
+// guarantees are asserted at the CSS-source contract level (shared css-source
+// helper); the DOM tests assert the portal-escape behavior and that the component
+// applies the .tip-pop class.
 
 const TIP_TEXT = "Delayed ~15 min on the hobby tier.";
 

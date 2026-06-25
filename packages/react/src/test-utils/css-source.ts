@@ -20,6 +20,12 @@ export const componentsCss = readFileSync(
   "utf8",
 );
 
+/** Sibling read of the framework-agnostic token base (drop-in `--data-*` / element styles). */
+export const colorsCss = readFileSync(
+  resolve(process.cwd(), "../tokens/colors_and_type.css"),
+  "utf8",
+);
+
 /** Returns the declaration body of the first `selector { ... }` rule, or "". */
 export function ruleBody(css: string, selector: string): string {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

@@ -263,7 +263,7 @@
   transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 .segmented button:last-child { border-right: 0; }
-.segmented button:hover { color: var(--text-secondary); }
+.segmented button:hover:not(:disabled) { color: var(--text-secondary); }
 .segmented button[aria-pressed="true"] { background: var(--signal-bg); color: var(--color-signal); }
 
 /* ----- Tabs ----------------------------------------------------
@@ -469,7 +469,7 @@
    sparkle (no loop) — the binding DESIGN.md Motion contract (§7a). */
 .ic-ai-shimmer {
   transform-origin: center;
-  animation: ic-ai-shimmer calc(var(--duration-slow) * 4) ease-in-out infinite;
+  animation: ic-ai-shimmer calc(var(--dur-slow) * 4) ease-in-out infinite;
 }
 @keyframes ic-ai-shimmer {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -634,11 +634,13 @@
 /* avatar (image or initials) */
 .avatar {
   width: 28px; height: 28px; flex: none; border-radius: var(--radius-sm);
-  display: grid; place-items: center; overflow: hidden;
+  display: grid; place-items: center; overflow: visible;
   background: var(--signal-bg); color: var(--color-signal);
   font-family: var(--font-display); font-size: 11px; font-weight: 700;
 }
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* overflow stays visible so the .avatar__status corner dot's halo isn't clipped;
+   the image self-clips to the avatar's border-radius via inherit (incl. --round 50%). */
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .avatar--lg { width: 38px; height: 38px; font-size: 14px; }
 .avatar--round { border-radius: 50%; }
 
@@ -1049,10 +1051,10 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   line-height: 1;
   /* §4 motion: appear = 120ms opacity fade-in; state change = 200ms color/tint
      cross-fade. Both stop under reduced-motion below. Fades, not slides. */
-  animation: tuf-appear var(--duration-fast) var(--ease-out);
+  animation: tuf-appear var(--dur-fast) var(--ease-out);
   transition:
-    color var(--duration-base) var(--ease-out),
-    background-color var(--duration-base) var(--ease-out);
+    color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
 }
 .tuf__glyph { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; color: currentColor; }
 .tuf__glyph svg { width: 16px; height: 16px; display: block; }
@@ -1067,10 +1069,10 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
    the gallery specimen; the React ToolUseIndicator collapses idle to a null render. */
 .tuf[data-state="idle"]    { color: var(--text-muted);    background: var(--bg-surface); }
 .tuf[data-state="pending"] { color: var(--color-info);    background: var(--bg-surface); }
-.tuf[data-state="running"] { color: var(--color-signal);  background: var(--color-signal-bg); border-color: transparent; }
-.tuf[data-state="success"] { color: var(--color-success); background: var(--color-signal-bg); border-color: transparent; }
-.tuf[data-state="error"]   { color: var(--color-error);   background: var(--color-down-bg);   border-color: transparent; }
-.tuf[data-state="partial"] { color: var(--color-warn);    background: var(--color-warn-bg);   border-color: transparent; }
+.tuf[data-state="running"] { color: var(--color-signal);  background: var(--signal-bg);       border-color: transparent; }
+.tuf[data-state="success"] { color: var(--color-success); background: var(--signal-bg);       border-color: transparent; }
+.tuf[data-state="error"]   { color: var(--color-error);   background: var(--data-down-bg);    border-color: transparent; }
+.tuf[data-state="partial"] { color: var(--data-warn);     background: var(--data-warn-bg);    border-color: transparent; }
 
 @keyframes tuf-appear { from { opacity: 0; } to { opacity: 1; } }
 /* Reduced-motion: stop the appear fade + state-change cross-fade; the running

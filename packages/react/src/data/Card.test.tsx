@@ -1,26 +1,15 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { colorsCss, ruleBody } from "../test-utils/css-source";
 import { Card } from "./Card";
 
 // The .card surface + its hover/selected states live in the shipped
 // @qball-inc/tokens CSS, which jsdom does NOT load (no external stylesheet, no
 // :hover matching). So the no-shadow guarantee and the hover-sage rule are
-// asserted at the CSS-source contract level; the DOM tests assert the component
-// applies the classes those rules target. vitest runs with cwd = packages/react,
-// so the sibling tokens source resolves (source == shipped, RB-10 golden rule).
-const colorsCss = readFileSync(resolve(process.cwd(), "../tokens/colors_and_type.css"), "utf8");
-
-/** Returns the declaration body of the first `selector { ... }` rule, or "". */
-function ruleBody(css: string, selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`).exec(css);
-  return match?.[1] ?? "";
-}
+// asserted at the CSS-source contract level (shared css-source helper); the DOM
+// tests assert the component applies the classes those rules target.
 
 describe("Card", () => {
   it("renders the .card surface with no shadow (AC-12h / DESIGN.md No-Shadows)", () => {
