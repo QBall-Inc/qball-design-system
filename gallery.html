@@ -24,6 +24,14 @@
   .tg { font-family: var(--font-ui); font-size: 12px; padding: 7px 14px; border-radius: var(--radius-sm);
     border: 1px solid var(--color-signal); color: var(--color-signal); background: transparent; cursor: pointer; }
   .tg:hover { background: var(--signal-bg); }
+  .consume { display: flex; align-items: center; flex-wrap: wrap; gap: 9px 16px; margin: 16px 0 0;
+    font-family: var(--font-ui); font-size: 12.5px; color: var(--text-muted); }
+  .consume a { color: var(--color-signal); text-decoration: none; }
+  .consume a:hover { text-decoration: underline; }
+  .consume code { font-family: var(--font-code); font-size: 12px; color: var(--text-secondary);
+    background: var(--bg-surface); border: 0.5px solid var(--border-default);
+    border-radius: var(--radius-sm); padding: 5px 9px; }
+  .consume .soon { opacity: 0.75; }
   .wrap { margin: 0; }
   h2 { font-family: var(--font-heading); font-size: clamp(18px, 1.7vw, 24px); font-weight: 600; color: var(--text-primary);
     letter-spacing: -0.3px; margin: 48px 0 5px; padding-top: 18px; border-top: 1px solid var(--border-default); }
@@ -84,6 +92,12 @@
       <button class="tg" id="themeBtn" type="button">Toggle theme</button>
     </div>
   </div>
+  <div class="consume">
+    <span>Consume the system:</span>
+    <a href="https://github.com/QBall-Inc/qball-design-system" target="_blank" rel="noopener">GitHub repo ↗</a>
+    <code>npm install @qball-inc/tokens</code>
+    <span class="soon">@qball-inc/react publishes at v1.0</span>
+  </div>
   <div class="font-note">
     <b>Display font &mdash;</b> the intended display typeface is <b>Berkeley Mono</b> (a commercial font by
     <a href="https://usgraphics.com/typefaces/berkeley-mono" target="_blank" rel="noopener">U.S. Graphics</a>).
@@ -114,9 +128,9 @@
       ["colors-semantic.html","Semantic colors"],["colors-light-neutrals.html","Neutrals · light"],["colors-dark-neutrals.html","Neutrals · dark"],
       ["type-display.html","Type · display"],["type-headings.html","Type · headings"],["type-body.html","Type · body"],["type-code.html","Type · code"],
       ["spacing-scale.html","Spacing scale"],["radii.html","Radii"],["borders.html","Borders"],["motion.html","Motion"],["voice.html","Voice"] ] },
-    { t: "Forms & controls", note: "Buttons, inputs, the brand-native squared toggle, select, segmented, secret input.", items: [
+    { t: "Forms & controls", note: "Buttons, inputs, the brand-native squared toggle, select, segmented, tabs, secret input.", items: [
       ["buttons.html","Buttons"],["buttons-states.html","Button states"],["form-input.html","Text input + field"],
-      ["form-controls.html","Form controls"],["secret-input.html","Secret / masked input"],["select.html","Select"],["toggle.html","Switch + segmented"] ] },
+      ["form-controls.html","Form controls"],["secret-input.html","Secret / masked input"],["select.html","Select"],["toggle.html","Switch + segmented"],["tabs.html","Tabs"] ] },
     { t: "Data display & charts", note: "Tables, stats, meters, badges, sparklines, and the D3 candlestick (color + chrome decisions).", items: [
       ["data-table.html","Data table"],["stats-meters.html","Stats + meters"],["tags.html","Tags + badges"],
       ["chart-candlestick-color.html","Candlestick · color",true],["chart-candlestick-chrome.html","Candlestick · chrome",true],["tooltip-avatar.html","Tooltip + avatar"] ] },
@@ -129,8 +143,10 @@
       ["conversation-terminal.html","Terminal conversation",true],["tool-use-indicator.html","Tool-use / skill indicator",true] ] },
     { t: "Briefings", note: "The LLM digest card — unread / read / loading / empty.", items: [
       ["briefing.html","Briefing / digest card",true] ] },
-    { t: "Brand & misc", note: "Logo, iconography (Lucide), editorial bits.", items: [
-      ["logo.html","Logo"],["iconography.html","Iconography · Lucide"],["card-featured.html","Featured card"],
+    { t: "Site & media", note: "The MediaSlot display container — image / gif / video / click-to-load embed facade.", items: [
+      ["media-slot.html","MediaSlot · display container",true] ] },
+    { t: "Brand & misc", note: "Logo, the full icon system + usage, editorial bits.", items: [
+      ["logo.html","Logo"],["icons.html","Icon system · full set",true],["iconography.html","Icon usage · hover + glyphs"],["card-featured.html","Featured card"],
       ["code-block.html","Code block"],["pull-quote.html","Pull quote"] ] }
   ];
   const wrap = document.getElementById("wrap");
