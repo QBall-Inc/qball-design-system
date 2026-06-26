@@ -1,8 +1,8 @@
 <!doctype html>
-<!-- @dsCard group="Site & Media" name="MediaSlot" subtitle="DISPLAY oracle — image / gif / video / embed-facade × shape × fit × empty" -->
+<!-- @dsCard group="Site & Media" name="MediaSlot" subtitle="Display container — image / gif / video / embed-facade × shape × fit × empty" -->
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
-<title>MediaSlot · DISPLAY oracle (WP-B-4b.3)</title>
+<title>MediaSlot · display container</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
@@ -30,11 +30,11 @@
   .w260{width:260px}.w220{width:220px}.w160{width:160px}.w120{width:120px}
 
   /* ════════════════════════════════════════════════════════════════════
-     PROPOSED .media-slot* TOKEN-CSS SURFACE  (the artifact under review)
-     Token-only (DESIGN_DENY-clean). Scrim/on-scrim use var(...) with a
-     defensive fallback; packages/tokens/colors_and_type.css (imported above)
-     defines the shipped token --color-scrim: rgba(20,20,20,0.45). The MediaSlot
-     surface ships in packages/tokens/components.css (RB-7 sign-off, S100).
+     .media-slot* TOKEN-CSS SURFACE
+     Token-only. Scrim/on-scrim use var(...) with a defensive fallback;
+     packages/tokens/colors_and_type.css (imported above) defines the shipped
+     token --color-scrim: rgba(20,20,20,0.45). The MediaSlot surface ships in
+     packages/tokens/components.css.
      ════════════════════════════════════════════════════════════════════ */
   .media-slot{position:relative;display:block;overflow:hidden;container-type:inline-size;
               background:var(--bg-surface);border:.5px solid var(--border-default);
@@ -58,7 +58,7 @@
   /* icon-only placeholder (e.g. avatar) — glyph spans most of the box */
   .media-slot__placeholder--icon svg{width:clamp(30px,48cqw,140px)}
 
-  /* drag-and-drop / upload placeholder (the AUTHORING-LAYER visual, WP-B-4b.3a — shown for design lock) */
+  /* drag-and-drop / upload placeholder (authoring-layer visual — shown for design reference) */
   .media-slot--dropzone{border-style:dotted;border-color:var(--border-strong)}
   .media-slot__dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;
               gap:clamp(6px,2.4cqw,12px);font-family:var(--font-ui);text-align:center;
@@ -105,7 +105,7 @@
 </head><body>
   <div class="top">
     <h1>MediaSlot</h1>
-    <span class="pill">DISPLAY oracle · WP-B-4b.3 · PROPOSED — pending sign-off</span>
+    <span class="pill">Display container · image / gif / video / embed</span>
     <div class="toggle" role="group" aria-label="Theme">
       <button type="button" data-set="light" aria-pressed="true">Light</button>
       <button type="button" data-set="dark" aria-pressed="false">Dark</button>
@@ -167,7 +167,7 @@
       <p class="sub">No <code>src</code> → <code>.media-slot--empty</code>. Placeholder content scales with the box
         (container-query units), so a bigger slot ⇒ bigger glyph/label. Three treatments: the passive <b>default</b> ("no media"),
         an icon-only <b>avatar</b> empty, and the active <b>drag-and-drop / upload</b> dropzone (the latter is the
-        <b>WP-B-4b.3a authoring-layer</b> visual, shown here to lock the design — display-only consumers use the passive ones).</p>
+        <b>authoring-layer</b> visual, shown here for reference — display-only consumers use the passive ones).</p>
       <div class="grid">
         <div class="spec"><div class="media-slot media-slot--rounded media-slot--empty w260" style="--ms-aspect:16/9"><div class="media-slot__placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>No media</div></div><div class="lab"><b>default</b> · passive (display-only)</div></div>
         <div class="spec"><div class="media-slot media-slot--circle media-slot--empty w160" style="--ms-aspect:1/1"><div class="media-slot__placeholder media-slot__placeholder--icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></div></div><div class="lab"><b>avatar</b> · icon-only, spans the circle</div></div>
