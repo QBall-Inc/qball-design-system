@@ -26,12 +26,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Canonical GitHub Pages deploy permission set: deploy-pages needs pages:write
-# + id-token:write (OIDC); checkout needs contents:read.
+# Least-privilege split (CR S104): only the deploy job needs pages:write +
+# id-token:write (deploy-pages OIDC). The build job runs `pnpm install`, so it
+# must NOT hold id-token:write — keep OIDC-token minting off the dependency-
+# install job (supply-chain blast radius). Per-job permissions below override
+# this minimal top-level default.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One Pages deployment at a time. Do NOT cancel an in-flight deploy — a
 # half-applied deploy-pages can leave the environment inconsistent.
@@ -44,6 +45,9 @@ jobs:
     name: Build _site (inject Berkeley)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: read   # checkout the public repo
+      pages: write     # actions/configure-pages
     steps:
       - name: Checkout (public DS repo)
         uses: actions/checkout@v6
@@ -98,6 +102,9 @@ jobs:
     name: Deploy to Pages
     needs: build
     runs-on: ubuntu-24.04
+    permissions:
+      pages: write     # deploy-pages publishes the artifact
+      id-token: write  # deploy-pages OIDC attestation
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
