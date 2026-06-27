@@ -1,0 +1,107 @@
+# .github/workflows/pages.yml — WP-B-5.1 GitHub Pages gallery deploy.
+#
+# Publishes the component gallery (index.html redirect + gallery.html + preview/
+# + packages/tokens/ + assets/) to https://qball-inc.github.io/qball-design-system/
+# via an Actions ARTIFACT deploy, injecting the licensed Berkeley Mono display
+# face at deploy time from the PRIVATE ashaykubal/stock-watcher repo. The woff2
+# binaries are NEVER committed to this public repo (LR-02 Website Grant: the
+# deployed site may SERVE Berkeley Mono; it may not redistribute the binaries via
+# a public git tree). The WP-B-0.2 license gate runs first as a fail-fast guard.
+#
+# OWNER PREREQUISITES (one-time — see WP-B-5.1 AD-03 / AD-05):
+#   1. Settings -> Pages -> Build and deployment -> Source = "GitHub Actions"
+#      (replaces the prior "Deploy from a branch" source; only one source can
+#      publish, so this switch is required before the first Actions deploy).
+#   2. Settings -> Secrets and variables -> Actions -> New repository secret
+#      BERKELEY_FONT_SECRET = a fine-grained PAT scoped to ashaykubal/stock-watcher
+#      with Repository permissions -> Contents: Read-only (nothing else).
+#
+# The Apache-2.0 repo code license covers this workflow file; Berkeley Mono is
+# separately licensed (FX-102 / LR-02) — distinct licenses, never conflated.
+
+name: Deploy gallery to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Canonical GitHub Pages deploy permission set: deploy-pages needs pages:write
+# + id-token:write (OIDC); checkout needs contents:read.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One Pages deployment at a time. Do NOT cancel an in-flight deploy — a
+# half-applied deploy-pages can leave the environment inconsistent.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build _site (inject Berkeley)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout (public DS repo)
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # B-0.2 dual-assertion license gate, fail-fast: the committed tree (and
+      # every publishable package tarball) MUST be font-binary-free BEFORE we
+      # inject any Berkeley weight into the ephemeral artifact. Keeps the public
+      # repo clean-by-construction even if the deploy step misbehaves.
+      - name: License-clean gate (committed tree must be font-free)
+        run: pnpm run license-check
+
+      # Fetch ONLY the font directory from the private source, via the PAT.
+      # Sparse cone checkout keeps the rest of the private repo off the runner;
+      # persist-credentials:false so the PAT never lands in .git/config.
+      - name: Fetch Berkeley Mono from private stock-watcher
+        uses: actions/checkout@v6
+        with:
+          repository: ashaykubal/stock-watcher
+          token: ${{ secrets.BERKELEY_FONT_SECRET }}
+          sparse-checkout: docs/stocky-github-pages/fonts
+          sparse-checkout-cone-mode: true
+          path: _fonts_src
+          persist-credentials: false
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      # Stage the curated surface into _site/ and inject the 6 licensed
+      # @font-face blocks + Berkeley-first --font-display into the _site copy of
+      # packages/tokens/colors_and_type.css ONLY (never the committed source).
+      - name: Stage _site + inject @font-face (artifact only)
+        run: bash scripts/build-pages-site.sh
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -7,6 +7,12 @@ dist/
 build/
 *.tsbuildinfo
 
+# WP-B-5.1 Pages deploy: the ephemeral _site artifact and the privately-fetched
+# font staging dir are produced by scripts/build-pages-site.sh / pages.yml at
+# deploy time (and on a local dry-run). Never committed.
+_site/
+_fonts_src/
+
 # Test / coverage
 coverage/
 
