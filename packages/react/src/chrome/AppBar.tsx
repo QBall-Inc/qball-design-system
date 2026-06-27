@@ -34,7 +34,7 @@ import { Bell } from "../icons/generated";
 export interface NotificationBellProps extends ComponentPropsWithoutRef<"button"> {
   /**
    * Unread count. Renders the `.badge-count` overlay when `>= 1`; omits it when `0` or
-   * `undefined`. The live value is produced by NotificationCenter (WP-B-3.8); this is the
+   * `undefined`. The live value is produced by NotificationCenter; this is the
    * passive data surface.
    */
   unreadCount?: number;

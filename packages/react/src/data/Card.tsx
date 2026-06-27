@@ -11,7 +11,7 @@ import type { HTMLAttributes, ReactNode } from "react";
  * radius, and `var(--space-md)` padding. There is **no box-shadow** anywhere — the
  * lift comes from the border weight + tonal surface step (DESIGN.md No-Shadows).
  *
- * Two optional states (the WP-B-3.3 `.card--interactive` / `.card--selected`
+ * Two optional states (the `.card--interactive` / `.card--selected`
  * additions to `colors_and_type.css`):
  * - `interactive` — a selectable card; the border lifts to sage
  *   (`var(--color-signal)`) on hover, with a pointer cursor.

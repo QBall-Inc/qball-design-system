@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# scripts/license-check.sh — WP-B-0.2 dual-assertion font-binary license gate.
+# scripts/license-check.sh — dual-assertion font-binary license gate.
 #
 # Enforces the "embed-in-deploy, never-in-source" posture (plan_v1 RB-1):
 # a licensed font binary (Berkeley Mono, et al.) must never reach the public
 # repo source tree NOR a published npm tarball — `git clone` and `npm install`
 # are both public redistribution, which the LR-02 Website Grant does not cover.
-# Berkeley is injected only at Pages-deploy time from a private source (WP-B-5.1).
+# Berkeley is injected only at Pages-deploy time from a private source.
 #
 #   Gate (a): scan each PUBLISHABLE package's `npm pack` tarball.
 #   Gate (b): scan the committed repo tree (`git ls-files`).

@@ -8,11 +8,11 @@ pnpm-lock.yaml
 
 # Pre-existing DS-packet / gallery content — served and maintained as-authored
 # (browser HTML/CSS + design docs). Out of the workspace format scope; preserve
-# verbatim per WP-B-0.1 (D-09). The TS packages (packages/react) ARE formatted; the
+# verbatim (D-09). The TS packages (packages/react) ARE formatted; the
 # hand-authored, column-aligned token CSS in packages/tokens/ is the exception — preserved
 # verbatim (prettier would collapse its alignment). (Root colors_and_type.css + components.css
-# + root tokens/ removed WP-B-3.3b S101 → consolidated into packages/tokens; the old bare `tokens/`
-# glob is now root-anchored as `/packages/tokens/` (leading slash = repo root only) — WP-B-3.3c S102.)
+# + root tokens/ consolidated into packages/tokens; the old bare `tokens/`
+# glob is now root-anchored as `/packages/tokens/` (leading slash = repo root only).)
 /index.html
 /gallery.html
 /packages/tokens/

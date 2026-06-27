@@ -7,7 +7,7 @@ import { NotificationBell } from "./AppBar";
 /**
  * NotificationCenter — the app-bar bell dropdown, built on Radix `Popover`.
  *
- * The shipped `NotificationBell` (WP-B-3.7) is the Popover trigger; the panel paints the shipped
+ * The shipped `NotificationBell` is the Popover trigger; the panel paints the shipped
  * `.dropdown` / `.notif` token classes (matching `preview/app-chrome-island.html`). ZERO token-CSS
  * change. Radix supplies the behavior (portal to `<body>`, focus management, Escape/outside-click).
  *
@@ -16,7 +16,7 @@ import { NotificationBell } from "./AppBar";
  * meaning, NOT a source-identity tag. Unread items are the sage-tinted `.notif__item--unread` row;
  * clicking an unread row marks it read (`onMarkRead(id)`). The unread count is derived from `items`
  * here (no shared store) and drives the bell's `.badge-count` badge — empty `items` → count 0 → no
- * badge (the WP-B-3.7 contract).
+ * badge contract.
  */
 
 /** Semantic meaning of a notification — drives the shipped `.notif__mark--*` left mark. */

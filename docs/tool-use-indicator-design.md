@@ -2,24 +2,21 @@
 title: Tool-use / skill indicator — design spec
 component: ToolUseIndicator
 status: signed-off
-wp: WP-B-4.3
-gates: WP-B-4.4
-binds_via: WP-B-4.3 owner sign-off (RB-7 / OQ4)
 signoff:
   owner: "Ashay Kubal"
   date: "2026-06-20"
-  decision: "approved" # approved as the binding spec for WP-B-4.4 (session 89; preview layout + idle/pending/error bg fixes applied pre-approval)
+  decision: "approved" # approved as the binding spec for the BUILD (session 89; preview layout + idle/pending/error bg fixes applied pre-approval)
 tokens_source: "@qball-inc/tokens (theme.css / components.css)"
 preview: preview/tool-use-indicator.html
 ---
 
 # Tool-use / skill indicator — design spec
 
-> **Design-only WP (WP-B-4.3).** This document + `preview/tool-use-indicator.html` are the
-> binding spec for the WP-B-4.4 build. No React source ships in this WP. Owner sign-off (see
-> front-matter) is the hard gate: until it is recorded, WP-B-4.4's indicator build is NOT
+> **Design-only specification.** This document + `preview/tool-use-indicator.html` are the
+> binding spec for the build. No React source ships from this design pass. Owner sign-off (see
+> front-matter) is the hard gate: until it is recorded, the indicator build is NOT
 > unblocked. If sign-off is not obtained, the indicator descopes to v2 (DigestCard, the other
-> WP-B-4.4 deliverable, is unaffected).
+> build deliverable, is unaffected).
 
 ## 1. Purpose & placement
 
@@ -29,9 +26,9 @@ skill catalogue). The **tool-use indicator** is the compact, inline affordance t
 user _which_ skill is running and _what state_ it is in, so a multi-second tool call never
 looks like a hang.
 
-It lives **inside the bot turn of the AI terminal transcript** (the WP-B-4.1a `Terminal`),
+It lives **inside the bot turn of the AI terminal transcript** (the `Terminal`),
 rendered just above or inline-before the streamed response text. It is a sibling of the
-existing generic "thinking" cursor (`.term__cursor`, shipped WP-B-4.1a) — but where the
+existing generic "thinking" cursor (`.term__cursor`, already shipped) — but where the
 thinking cursor says only "Stocky is composing", the tool-use indicator names the **specific
 skill** and its **lifecycle state**.
 
@@ -115,12 +112,12 @@ Every animated element degrades under `@media (prefers-reduced-motion: reduce)`:
 - **appear / state-change fades** → `transition: none` (instant).
 
 In every case the state remains fully legible from the **static glyph + color + label** — no
-information is animation-dependent. This is the same contract WP-B-3.2 (Skeleton/Spinner) and
-WP-B-3.7 (ThemeToggle) ship.
+information is animation-dependent. This is the same contract the Skeleton/Spinner and
+ThemeToggle components ship.
 
 ## 6. Token list (canonical `@qball-inc/tokens`)
 
-The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero hardcoded hex):
+The React component consumes these **`@qball-inc/tokens`** names (zero hardcoded hex):
 
 | Role                   | Token                                                                               | Notes                                                                                                                          |
 | ---------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -132,7 +129,7 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 | (reserved, **unused**) | `--color-highlight`                                                                 | amber — deliberately not a state color                                                                                         |
 | idle / pending fill    | `--bg-surface`                                                                      | neutral surface — separates the pre-result chip from the page parchment                                                        |
 | running / success tint | `--signal-bg`                                                                       | sage chip background                                                                                                           |
-| error tint             | `--data-down-bg`                                                                    | faint red; no dedicated `--data-error-bg` token exists — a candidate token-add for WP-B-4.4 if a true error surface is wanted |
+| error tint             | `--data-down-bg`                                                                    | faint red; no dedicated `--data-error-bg` token exists — a candidate token-add if a true error surface is wanted |
 | partial tint           | `--data-warn-bg`                                                                    | caution chip background                                                                                                        |
 | chrome                 | `--bg-primary`, `--border-default`                                                  | page bg + hairline                                                                                                             |
 | radius                 | `--radius-sm` (4px)                                                                 | chip; ≤12px; no pill; count-badge/meter carve-out **not** used                                                                 |
@@ -140,7 +137,7 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 | type                   | `--font-ui` (label), `--font-display` (mono skill id)                               | 11–11.5px                                                                                                                      |
 | icons                  | Lucide, stroke 1.5, 16px                                                            | `clock` / `check` / `alert-triangle` / `x`; **no emoji**                                                                       |
 
-> **Token note (consolidated WP-B-3.3b S101; `.tuf` drop-in naming fixed WP-B-3.3c S102).**
+> **Token note (consolidated in S101; `.tuf` drop-in naming fixed in S102).**
 > `preview/tool-use-indicator.html` imports `packages/tokens/colors_and_type.css` +
 > `packages/tokens/components.css` (single-source convention). Two naming schemes ship: the
 > framework-agnostic `colors_and_type.css` defines `--signal-bg` / `--data-up`/`--data-down`/`--data-warn`
@@ -151,7 +148,7 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 > renders fully on the framework-agnostic drop-in path (no `theme.css` required), consistent with the other
 > `--data-*` references in `components.css`. State FOREGROUND colors keep their `--color-*` names
 > (`--color-signal`/`--color-success`/`--color-error`/`--color-info`) — those ARE defined in `colors_and_type.css`.
-> _History (WP-B-4.4, commit 44d87ae → fixed WP-B-3.3c): the `.tuf` tints + the `.tuf`/`.ic-ai-shimmer` animation
+> _History (commit 44d87ae, later fixed): the `.tuf` tints + the `.tuf`/`.ic-ai-shimmer` animation
 > timing originally shipped with the theme.css `--color-*`/`--duration-*` names, broken on the drop-in path.
 > 1:1 value map: `--color-signal-bg`=`--signal-bg`, `--color-warn`=`--data-warn`, `--color-warn-bg`=`--data-warn-bg`,
 > `--color-down-bg`=`--data-down-bg`, `--duration-*`=`--dur-*`._
@@ -167,12 +164,12 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 - [x] **No `backdrop-filter`, no gradient, no glass** — flat tonal tints only.
 - [x] **No looping idle animation** — `idle`/`pending` are static; the only loop is the `running` spinner/cursor (a sanctioned transient state indicator) and it honors `prefers-reduced-motion`.
 
-## 8. Out of scope (v1) / open for WP-B-4.4
+## 8. Out of scope (v1) / open for the build
 
 - Determinate progress bar / track (skill duration is unknown ahead of time).
 - A "cancel skill" action (the chip reports state; it is not a control).
 - Per-skill custom iconography beyond the Lucide status glyphs (a single shared glyph set in v1).
-- The exact `.tuf*` class names are a proposal; WP-B-4.4 may finalize them when it ships the
+- The exact `.tuf*` class names are a proposal; the build may finalize them when it ships the
   token-CSS class family (the Terminal/GroundingFlag precedent: a small additive
   `packages/tokens/components.css` block), pending its own SD1.
 
@@ -180,6 +177,6 @@ The WP-B-4.4 React component consumes these **`@qball-inc/tokens`** names (zero 
 
 Owner reviews this spec **and** `preview/tool-use-indicator.html` (state matrix, light + dark).
 On approval, fill the front-matter `signoff:` block (owner / date / `decision: approved`) — that
-record unblocks WP-B-4.4. If not approved in-session, the descope path applies:
-`docs/tool-use-indicator-v2-deferral.md` is authored and WP-B-4.4's indicator sub-task is marked
-deferred in `tasks.yaml` (DigestCard stays unblocked).
+record unblocks the build. If not approved in-session, the descope path applies:
+`docs/tool-use-indicator-v2-deferral.md` is authored and the indicator sub-task is marked
+deferred (DigestCard stays unblocked).

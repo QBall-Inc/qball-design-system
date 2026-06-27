@@ -1,4 +1,4 @@
-// ESLint flat config for the QBall Design System workspace (WP-B-0.1 scaffold).
+// ESLint flat config for the QBall Design System workspace.
 // Covers the published packages (packages/*) + repo config files. Mirrors the
 // stock-watcher conventions (typescript-eslint recommendedTypeChecked, Prettier
 // last). The DESIGN.md mechanical conformance deny-rule (no-box-shadow,
@@ -72,7 +72,7 @@ export default tseslint.config(
       "preview/**",
       "assets/**",
       "reference/**",
-      // WP-B-2.0a throwaway consumer harness — a standalone Vite + React 18 app
+      // Throwaway consumer harness — a standalone Vite + React 18 app
       // with its own tsconfig, built/asserted only via `just consumer-validate`.
       // Not a workspace member; lives outside the library lint scope.
       "fixtures/**",

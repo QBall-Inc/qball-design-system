@@ -1,7 +1,7 @@
 ---
 # QBall Design System — pnpm workspace.
 # v1 packages: @qball-inc/tokens (CSS/DTCG, zero build) + @qball-inc/react.
-# The fixtures/consumer scratch harness (WP-B-2.0a / WP-B-5.2) adds its own
-# glob when it lands; packages/* is sufficient for the WP-B-0.1 scaffold.
+# The fixtures/consumer scratch harness adds its own
+# glob when it lands; packages/* is sufficient for the initial scaffold.
 packages:
   - "packages/*"

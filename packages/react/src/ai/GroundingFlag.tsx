@@ -23,7 +23,7 @@ import type { ReactNode } from "react";
  * **Portaled to `<body>` (BINDING, RB-5).** The explainer bubble composes
  * `@radix-ui/react-tooltip` directly, so it portals to `<body>` and Radix's popper
  * keeps it on-screen (collision-clamped) — the same portal-to-body guarantee as the
- * sibling `Tooltip` (WP-B-3.4). We do NOT reuse the shipped `TooltipContent` wrapper:
+ * sibling `Tooltip`. We do NOT reuse the shipped `TooltipContent` wrapper:
  * it force-joins `.tip-pop` (the DARK inverted bubble), whereas grounding uses the
  * deliberately LIGHT guardrail bubble. The position-agnostic `.gtip-pop` token class
  * carries that light look minus the parent-anchored `.gtip` positioning (Radix owns

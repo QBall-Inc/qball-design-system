@@ -9,11 +9,10 @@ import {
 } from "@qball-inc/react";
 
 /**
- * Throwaway consumer surface. Distribution prongs under test (WP-B-2.0a + the
- * WP-B-5.2 full integration pass):
+ * Throwaway consumer surface. Distribution prongs under test:
  *
- *  1. The four representative components — <Button> (WP-B-2.1), <Switch>
- *     (WP-B-2.2), <Modal> (WP-B-3.1), and <Stat> (WP-B-3.3) — are all rendered
+ *  1. The four representative components — <Button>, <Switch>,
+ *     <Modal>, and <Stat> — are all rendered
  *     from the tarball-installed @qball-inc/react. Each is a Strategy-2 className
  *     wrapper that ships NO CSS of its own; their `.btn` / `.switch` / `.modal` /
  *     `.stat` styling must arrive entirely from the installed @qball-inc/tokens

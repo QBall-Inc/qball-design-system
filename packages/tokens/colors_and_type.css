@@ -60,7 +60,7 @@
   --color-scrim:     rgba(20, 20, 20, 0.45);
   /* Light foreground for glyphs sitting ON the dark scrim (e.g. the MediaSlot
      embed-facade play button). Theme-independent — the scrim is always a dark
-     veil, so the glyph on it is always light. WP-B-4b.3. */
+     veil, so the glyph on it is always light. */
   --color-on-scrim:  rgba(255, 255, 255, 0.96);
 
   /* ===== Finance / data palette (traditional hues, warm-tuned) =====
@@ -167,6 +167,8 @@
     --data-down-bg:  rgba(226, 112, 95, 0.15);
     --data-warn-bg:  rgba(217, 180, 60, 0.16);
     --data-info-bg:  rgba(91, 155, 214, 0.15);
+    --anno-source:    #93A7B5;
+    --anno-source-bg: rgba(147, 167, 181, 0.16);
   }
 }
 

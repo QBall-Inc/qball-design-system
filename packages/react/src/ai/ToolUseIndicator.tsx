@@ -4,16 +4,16 @@ import { Check, CircleX, Clock, TriangleAlert } from "../icons/generated";
 
 /**
  * ToolUseIndicator — the compact, inline lifecycle chip for a skill / tool call
- * inside the AI terminal transcript (the WP-B-4.1a `Terminal`). It names the
+ * inside the AI terminal transcript (the `Terminal`). It names the
  * specific skill (`news-research`, `sec-filings-lookup`, …) and reports the state
  * of its run, so a multi-second tool call never reads as a hang.
  *
- * Built to the WP-B-4.3 **owner-signed-off** design spec
+ * Built to the **owner-signed-off** design spec
  * (`docs/tool-use-indicator-design.md`) + `preview/tool-use-indicator.html`. It is a
  * transient, status-bearing chip — it reports state, it is NOT a control.
  *
  * **All visuals come from the shipped `@qball-inc/tokens` `.tuf*` classes** (added in
- * WP-B-4.4 from the signed-off design — the Terminal/GroundingFlag token-CSS-port
+ * Built from the signed-off design — the Terminal/GroundingFlag token-CSS-port
  * precedent). `data-state` drives the per-state color + tint; the color flows to the
  * leading glyph + verb via `currentColor`. There is no component CSS and no hardcoded
  * color (FR4 / DESIGN_DENY-clean — flat tonal tints, no elevation).

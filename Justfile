@@ -1,7 +1,7 @@
 # QBall Design System — Justfile.
 # `build` runs each publishable package's tsup harness (dual ESM/CJS + dts);
 # `test` runs each package's vitest suite. `license-check` is the enforceable
-# WP-B-0.2 dual-assertion font-binary gate (scripts/license-check.sh); `ci`
+# dual-assertion font-binary gate (scripts/license-check.sh); `ci`
 # mirrors the GitHub Actions gate chain for local parity.
 #
 # Recipes are single-line shell invocations on purpose: `just` runs them via
@@ -47,27 +47,27 @@ build:
 test:
     pnpm --filter "@qball-inc/*" --if-present run test
 
-# Icon-system codegen (WP-B-4b.2): regenerate the committed src/icons/generated/**
+# Icon-system codegen: regenerate the committed src/icons/generated/**
 # from the manifest + pinned lucide-react@1.17.0. Run after editing the manifest.
 generate-icons:
     pnpm --filter "@qball-inc/react" run generate:icons
 
-# Icon-system codegen drift gate (WP-B-4b.2-B1): the committed src/icons/generated/**
+# Icon-system codegen drift gate: the committed src/icons/generated/**
 # must match what generate-icons.mjs reproduces from pinned lucide-react@1.17.0 + the manifest.
 generate-icons-check:
     pnpm --filter "@qball-inc/react" run generate:icons:check
 
-# License-clean (font-binary) dual-assertion gate: npm pack tarballs + committed tree (WP-B-0.2, RB-1).
+# License-clean (font-binary) dual-assertion gate: npm pack tarballs + committed tree (RB-1).
 license-check:
     bash scripts/license-check.sh
 
-# NET-NEW SPDX / pack-license assertion (WP-B-4b.2, §12): icon-pack devDeps exact-pinned
+# NET-NEW SPDX / pack-license assertion (§12): icon-pack devDeps exact-pinned
 # + declared SPDX (lucide ISC / simple-icons CC0) + per-file provenance headers + MARKS.md.
 # Distinct from the font-binary license-check above.
 spdx-check:
     node scripts/spdx-check.mjs
 
-# Consumer distribution gate (WP-B-2.0a, RB-2): packs the @qball-inc tarballs the
+# Consumer distribution gate (RB-2): packs the @qball-inc tarballs the
 # way the npm publish path will (pnpm pack rewrites workspace:* -> a real version,
 # NOT the @source utility-purge model), installs them into the throwaway
 # fixtures/consumer app, and asserts the Strategy-2 component CSS (.btn) delivers +

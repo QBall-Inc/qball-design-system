@@ -12,7 +12,7 @@ import type { ComponentPropsWithoutRef, ElementRef } from "react";
  * `Portal`, so the bubble escapes any transformed / `backdrop-filter` ancestor —
  * notably the floating `.dock`, which uses `transform: translateX(-50%)` and would
  * otherwise clip or mis-place a parent-anchored tooltip. This is the same
- * portal-to-body guarantee applied to `GroundingFlag` (WP-B-4.1b).
+ * portal-to-body guarantee applied to `GroundingFlag`.
  *
  * **Why `.tip-pop`, not `.tip__pop`.** The shipped `.tip__pop` is a parent-anchored
  * pure-CSS hover popover (`position:absolute` relative to `.tip`), which cannot be

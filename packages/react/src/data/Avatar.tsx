@@ -54,7 +54,7 @@ const OVERFLOW_STYLE: CSSProperties = {
   color: "var(--data-info)",
 };
 
-// Scheme allowlist for `src` (defense-in-depth, mirroring the WP-2.4 httpUrl
+// Scheme allowlist for `src` (defense-in-depth, mirroring the httpUrl
 // guard): http(s), root/relative paths, and data:image/ only. A `javascript:` or
 // `data:text/html` src is rejected and the avatar falls back to initials.
 const SAFE_SRC_RE = /^(?:https?:\/\/|\/|\.\.?\/|data:image\/)/i;

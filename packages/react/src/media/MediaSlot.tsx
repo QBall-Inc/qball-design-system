@@ -10,7 +10,7 @@ import type { CSSProperties, ReactNode } from "react";
  * from the `preview/media-slot.html` oracle — every visual comes from the token
  * CSS / token-valued custom properties (no hardcoded hex, no `box-shadow`).
  *
- * **Pure React, SSR/static-safe by construction** (WP-B-4b.3, research Option A):
+ * **Pure React, SSR/static-safe by construction** (research Option A):
  * renders native `<img>`/`<video>`/`<iframe>`; NO `window`/`document`/
  * `customElements` access at module-eval OR render. The only client-side work —
  * the embed facade's click→swap and the reduced-motion probe — lives in an event
@@ -28,7 +28,7 @@ import type { CSSProperties, ReactNode } from "react";
  *   auto-loads a new embed.
  *
  * The DISPLAY primitive only. Upload / drag-drop / reframe-crop / persistence /
- * oEmbed resolution are the deferred authoring layer (WP-B-4b.3a); `adapter` is a
+ * oEmbed resolution are the deferred authoring layer; `adapter` is a
  * reserved, no-op seam that declares that future API for forward-compatibility.
  */
 
@@ -37,7 +37,7 @@ export type MediaSlotShape = "rect" | "rounded" | "circle" | "pill";
 export type MediaSlotFit = "cover" | "contain" | "fill";
 
 /**
- * RESERVED no-op seam for the WP-B-4b.3a authoring layer (read/persist adapters).
+ * RESERVED no-op seam for the authoring layer (read/persist adapters).
  * Declared in 1.0 so 1.1 can ship the authoring behavior backward-compatibly;
  * MediaSlot ignores it entirely at 1.0 (zero persistence behavior).
  */
@@ -100,11 +100,11 @@ export interface MediaSlotProps {
   badge?: ReactNode;
   /** Merged onto the `.media-slot` root. The consumer owns WIDTH/layout here. */
   className?: string;
-  /** RESERVED no-op in 1.0 (WP-B-4b.3a authoring seam). */
+  /** RESERVED no-op in 1.0 (authoring seam). */
   adapter?: MediaSlotAdapter;
 }
 
-// Scheme allowlists (defense-in-depth, mirroring the WP-2.4 httpUrl + Avatar guards):
+// Scheme allowlists (defense-in-depth, mirroring the httpUrl + Avatar guards):
 // any consumer-supplied media/poster/thumbnail URL must be http(s) / root-or-relative /
 // data:image|video / blob:; an embed iframe target must be https. A `javascript:` /
 // `data:text/html` URL is dropped (the affordance falls back to the empty state / no poster).

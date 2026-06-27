@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "WP-B-2.0a throwaway consumer harness — installs the PACKED @qball-inc tarballs (not workspace:*) and proves Strategy-2 component delivery + the optional token-utility path in one real Vite + React 18 app. Not a workspace member (AR15).",
+  "description": "Throwaway consumer harness — installs the PACKED @qball-inc tarballs (not workspace:*) and proves Strategy-2 component delivery + the optional token-utility path in one real Vite + React 18 app. Not a workspace member (AR15).",
   "scripts": {
     "build": "vite build"
   },

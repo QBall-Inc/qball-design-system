@@ -16,7 +16,7 @@ describe("AI sparkle shimmer — CSS-source contract (§7a, the only animated ic
     expect(rule, "no .ic-ai-shimmer rule shipped").toBeTruthy();
     expect(rule).toMatch(/animation:\s*ic-ai-shimmer/);
     // Motion is paced by a design --dur-* token (colors_and_type drop-in namespace),
-    // not a magic number (AC-8). Renamed from theme-only --duration-* in WP-B-3.3c.
+    // not a magic number (AC-8). Renamed from theme-only --duration-*.
     expect(rule).toMatch(/var\(--dur-[a-z]+\)/);
   });
 

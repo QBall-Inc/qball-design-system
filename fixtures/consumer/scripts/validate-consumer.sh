@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# WP-B-2.0a — Consumer distribution gate (extended by WP-B-5.2).
+# Consumer distribution gate (extended in the full integration pass).
 #
 # Proves the two-pronged @qball-inc distribution model in one real consumer app:
 #   - Strategy-2 (canonical): the SHIPPED component CSS (.btn) reaches a
@@ -11,7 +11,7 @@
 #   - Negative control: drop the required component CSS and the .btn-delivery
 #     assertion must fail — the gate has teeth (AC-8).
 #
-# WP-B-5.2 additions (the full consumer integration pass):
+# Full integration pass additions:
 #   - Component-delivery proofs (emitted-CSS, anti-vacuous): the shipped
 #     .stat__delta--up rule resolves the --data-up finance token (defined in the
 #     bundle), and .stat__value carries the var(--font-display) numeric display
@@ -23,7 +23,7 @@
 #
 # Packaging uses `pnpm pack` (NOT `npm pack`): the react package depends on
 # @qball-inc/tokens via `workspace:*`, and only pnpm rewrites that protocol to a
-# real version (0.0.0) — exactly what the npm publish path (WP-B-5.3 changesets/
+# real version (0.0.0) — exactly what the npm publish path (changesets/
 # pnpm publish) will serve. `npm pack` would leave an unresolvable `workspace:*`
 # in the tarball. This is a recorded S72 deviation from AC-2's literal "npm pack"
 # wording, owner-approved, honoring AC-1's "consume exactly what npm serves" intent.
@@ -69,7 +69,7 @@ echo "==> [4/8] Build the fixture (Button+Switch+Modal+Stat + optional utility w
 build_fixture
 CSS="$(css_file)" || { echo "FAIL: positive build did not emit exactly one CSS file"; exit 1; }
 
-echo "==> [5/8] Assert delivery (AC-5 + WP-5.2 component proofs), optional utility (AC-6), single base (AC-7)"
+echo "==> [5/8] Assert delivery (AC-5 + component proofs), optional utility (AC-6), single base (AC-7)"
 fail=0
 
 # AC-5a — Strategy-2 delivery: the shipped .btn rule reaches the built bundle.
@@ -92,7 +92,7 @@ for v in --radius-sm --bg-surface --signal-bg; do
   }
 done
 
-# AC-5.2a (WP-B-5.2) — Stat finance-color delivery (anti-vacuous, emitted-CSS): the
+# AC-5.2a — Stat finance-color delivery (anti-vacuous, emitted-CSS): the
 # shipped .stat__delta--up rule resolves the finance-up token, AND --data-up is
 # defined in the bundle. Mirrors AC-5b/AC-5c (reference + definition), not DOM-presence.
 grep -qE '\.stat__delta--up[[:space:]]*\{[^}]*color:[[:space:]]*var\(--data-up\)' "$CSS" || {
@@ -101,7 +101,7 @@ grep -qE '\.stat__delta--up[[:space:]]*\{[^}]*color:[[:space:]]*var\(--data-up\)
 grep -qE -- '--data-up[[:space:]]*:' "$CSS" || {
   echo "FAIL AC-5.2: finance token --data-up has no definition in the built CSS"; fail=1;
 }
-# AC-5.2b (WP-B-5.2) — numeric display family: the .stat__value rule (a .num-equivalent
+# AC-5.2b — numeric display family: the .stat__value rule (a .num-equivalent
 # numeric class) uses the display-font token, AND --font-display is defined in the bundle
 # (symmetric with AC-5.2a: reference + definition, so a missing token can't pass vacuously).
 grep -qE '\.stat__value[[:space:]]*\{[^}]*font-family:[[:space:]]*var\(--font-display\)' "$CSS" || {
@@ -155,11 +155,11 @@ echo "==> [7/8] FR10 --font-display override sub-test (cascade-only; zero binari
 # Proves the .stat__value/.num display family is overridable by a license-holding
 # consumer WITHOUT any bundled binary. (This is an emitted-CSS-artifact check: it
 # confirms the override is preserved + wins source order, not paint-time resolution —
-# the harness is browser-free; see spec-verify-103-WP-B-5.2.md D-17.) Mirrors the
+# the harness is browser-free.) Mirrors the
 # AC-8 negative-control backup/modify/rebuild/restore pattern (EXIT+TERM+INT trap).
 cp "$INDEX_CSS" "$INDEX_CSS.bak"
 trap 'mv -f "$INDEX_CSS.bak" "$INDEX_CSS"' EXIT TERM INT
-printf '\n/* WP-B-5.2 Berkeley override sub-test (injected by validate-consumer.sh; reverted after) */\n:root { --font-display: "Berkeley Mono", monospace; }\n' >> "$INDEX_CSS"
+printf '\n/* Berkeley override sub-test (injected by validate-consumer.sh; reverted after) */\n:root { --font-display: "Berkeley Mono", monospace; }\n' >> "$INDEX_CSS"
 build_fixture
 BCSS="$(css_file)" || { echo "FAIL FR10: Berkeley-override build did not emit exactly one CSS file"; exit 1; }
 grep -qE -- '--font-display:[^;}]*Berkeley Mono' "$BCSS" || {

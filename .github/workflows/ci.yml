@@ -36,11 +36,11 @@ jobs:
       # safeguard, so it runs first after install to fail fast before the
       # heavier typecheck/lint/test. gate (a) npm pack tarballs + gate (b)
       # committed tree. Berkeley is never committed; injected only at
-      # Pages-deploy (WP-B-5.1). No git-history scan (clean-by-construction).
+      # Pages-deploy. No git-history scan (clean-by-construction).
       - name: License-clean gate (font binaries)
         run: pnpm run license-check
 
-      # Icon-system codegen drift gate (WP-B-4b.2-B1) — the committed generated
+      # Icon-system codegen drift gate — the committed generated
       # icons (src/icons/generated/**) must match what scripts/generate-icons.mjs
       # reproduces from the pinned lucide-react@1.17.0 + the manifest. Runs before
       # typecheck so a stale commit or an un-regenerated pack bump fails loudly.
@@ -56,14 +56,14 @@ jobs:
       - name: Test
         run: pnpm test
 
-      # NET-NEW SPDX / pack-license assertion (WP-B-4b.2, §12) — icon-pack devDeps
+      # NET-NEW SPDX / pack-license assertion (§12) — icon-pack devDeps
       # exact-pinned + declared SPDX (lucide ISC / simple-icons CC0) + per-file
       # provenance headers + MARKS.md ships. Distinct from the font-binary
       # license-check above (which neither trips on nor validates a code dep).
       - name: SPDX / pack-license assertion
         run: pnpm run spdx-check
 
-      # WP-B-2.0a consumer distribution gate (RB-2) — the Strategy-2 shipped-CSS
+      # Consumer distribution gate (RB-2) — the Strategy-2 shipped-CSS
       # delivery contract becomes a blocking pre-merge check. Packs the @qball-inc
       # tarballs (pnpm pack rewrites workspace:* to a real version, matching the
       # publish path), installs them into the throwaway fixtures/consumer app,

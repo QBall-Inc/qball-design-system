@@ -22,6 +22,12 @@ each class's states), `reference/component-audit.md` (the original build/extend/
   "@qball-inc/tokens/colors-and-type.css";` — the last brings the font custom properties + semantic element styles (h1–h4, p,
   blockquote, code, a, `.num`). Then build components with Tailwind utilities mapped to the theme
   (`bg-surface`, `text-signal`, `border-strong`, `font-display`, `rounded-md`, `text-up`…).
+  - **`theme.css` is Tailwind-v4-only** — it exists purely to expose the tokens to Tailwind's
+    `@theme`/utility layer. The components are **fully styled without it**. If you are **not** on
+    Tailwind v4, import `colors-and-type.css` + `components.css` and skip `theme.css`; see the
+    standalone non-Tailwind recipe + import order in
+    [`docs/consumer-setup.md`](docs/consumer-setup.md). The frozen token surface those imports
+    expose is catalogued in [`docs/frozen-tokens.md`](docs/frozen-tokens.md).
 - **Two valid strategies — pick per component, don't mix within one:**
   1. **shadcn/Radix + Tailwind** (preferred for anything interactive/accessible) — take the shadcn
      component, restyle to tokens, match the prototype's states.
@@ -45,8 +51,8 @@ each class's states), `reference/component-audit.md` (the original build/extend/
 | **Text input** | shadcn **Input** + **Label** | `.field` / `.input` | focus (sage ring), error (`.input--error` + `.field__error` text), disabled, numeric variant. Field wrapper = label + control + help + error; drives 400/422 display. |
 | **Secret / masked input** | Input `type=password` + reveal toggle | `preview/secret-input.html` | mask + show/hide; set / rotate / remove affordances; never echo the secret beyond the field. (BYO-key entry.) |
 | **Select** | Radix **Select** | `.select` / `.menu` | chevron affix; custom open panel; keyboard nav. |
-| **Switch / toggle** | Radix **Switch** restyled | `.switch` | **squared (4px), NOT a pill** — this is a brand non-negotiable. |
-| **Segmented control** | Radix **ToggleGroup** (single) | `.segmented` | 2–3 short options; the brand's radio-group substitute. |
+| **Switch / toggle** | native `<input type="checkbox">` restyled | `.switch` | **squared (4px), NOT a pill** — this is a brand non-negotiable. (Native checkbox + CSS sibling selector, deliberately not a Radix Switch.) |
+| **Segmented control** | native `<button aria-pressed>` group (single-select) | `.segmented` | 2–3 short options; the brand's radio-group substitute. (Native buttons, deliberately not a Radix ToggleGroup.) |
 | **Search / autocomplete** | Command/Combobox (cmdk) or custom | `.search-pop` / `.sresult` | idle / typing / results / no-results; type-ahead. |
 
 ## 2. Layout, navigation & app chrome

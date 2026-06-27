@@ -238,13 +238,13 @@ describe("DataTable", () => {
     expect(pkg.dependencies?.["@tanstack/react-table"]).toBeUndefined();
   });
 
-  // ---- Mobile card-list reflow (WP-B-3.5a) ----
+  // ---- Mobile card-list reflow ----
 
   it("wraps the table in a .dt-wrap container host without breaking table resolution (AC-8 / AC-10e)", () => {
     const { container } = render(<DataTable columns={COLUMNS} data={DATA} />);
     // the new host wraps the table...
     expect(container.querySelector(".dt-wrap > table.dt")).not.toBeNull();
-    // ...and the WP-B-3.5 descendant query still resolves (regression guard)
+    // ...and the descendant query still resolves (regression guard)
     expect(container.querySelector("table")?.classList.contains("dt")).toBe(true);
   });
 

@@ -27,13 +27,13 @@ import { Plus, SearchIcon } from "../icons/generated";
  * ONE popover is open at a time (a single controlled `openId`); scrolling closes the open popover
  * and hides the dock, matching the prototype.
  *
- * Hide-on-scroll mirrors the AppBar (WP-B-3.7) mechanism exactly: hide WHILE scrolling (either
+ * Hide-on-scroll mirrors the AppBar mechanism exactly: hide WHILE scrolling (either
  * direction), spring back 220ms after scroll STOPS — NOT a directional down-past-threshold.
  * `scrollContainer` selects the scroll source (default `window`). The listener is cleaned up on
  * unmount (no leak).
  *
  * The "Ask Stocky" popover is a MINIMAL composer + the BYO-key gate (`aiEnabled`); the full
- * conversation terminal (transcript, streaming) is WP-B-4.1a's scope and composes in later.
+ * conversation terminal (transcript, streaming) composes in later.
  */
 
 /**
@@ -267,7 +267,7 @@ export const CommandDock = forwardRef<HTMLDivElement, CommandDockProps>(function
         </Popover.Portal>
       </Popover.Root>
 
-      {/* Ask Stocky — minimal AI composer + BYO-key gate (full terminal = WP-B-4.1a). */}
+      {/* Ask Stocky — minimal AI composer + BYO-key gate (full terminal composes in later). */}
       <Popover.Root open={openId === "ai"} onOpenChange={(o) => handleOpenChange("ai", o)}>
         <Popover.Trigger
           className="btn btn--ghost btn--icon iconbtn--stocky"

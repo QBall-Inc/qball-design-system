@@ -921,7 +921,7 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 .digest--read .digest__dot { display: none; }
 .digest__skel { display: flex; flex-direction: column; gap: 9px; }
 
-/* ----- AI conversation terminal (WP-B-4.1a) --------------------
+/* ----- AI conversation terminal --------------------
    The Stocky terminal transcript surface + its inline composer.
    Ported from the conversation-terminal oracle; the generic helpers
    (turn / prefixes / cursor / number / bullet) are BEM-namespaced
@@ -1027,9 +1027,9 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   .term__cursor { animation: none; }
 }
 
-/* ----- Tool-use / skill indicator (.tuf) — WP-B-4.4 -------------------
+/* ----- Tool-use / skill indicator (.tuf) -------------------
    The lifecycle chip for a skill/tool call inside the AI terminal transcript,
-   built from the WP-B-4.3 signed-off design + preview/tool-use-indicator.html.
+   built from the signed-off design + preview/tool-use-indicator.html.
    A transient, status-bearing chip: it reports state, it is not a control.
    `data-state` drives the per-state color + tint, and the color flows to the
    leading glyph + verb via currentColor. The glyph is the primary NON-color cue
@@ -1081,7 +1081,7 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
   .tuf { animation: none; transition: none; }
 }
 
-/* ----- MediaSlot (WP-B-4b.3) — art-directed media container ---------------
+/* ----- MediaSlot — art-directed media container ---------------
    A sized/shaped frame for heterogeneous media (image / gif / video / embed
    facade). `aspect-ratio` reserves the box (no CLS); the inner native element
    fills it (`overflow:hidden`). Shapes reuse the radius vocabulary + the
@@ -1089,7 +1089,7 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
    placeholder / play affordances so they scale with the box (.dt-wrap precedent).
    The embed facade play button sits on the shipped `--color-scrim` with a light
    `--color-on-scrim` glyph (no shadow — scrim is the brand's lift partner).
-   The dropzone surface is the WP-B-4b.3a authoring visual: the CSS ships now to
+   The dropzone surface is the authoring visual: the CSS ships now to
    lock the signed-off look; the upload BEHAVIOR is deferred to 4b.3a. */
 .media-slot {
   position: relative; display: block; overflow: hidden;
@@ -1120,7 +1120,7 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 /* icon-only placeholder (e.g. avatar/circle empty) — the glyph spans most of the box */
 .media-slot__placeholder--icon svg { width: clamp(30px, 48cqw, 140px); }
 
-/* drag-and-drop / upload placeholder — the AUTHORING-LAYER visual (WP-B-4b.3a).
+/* drag-and-drop / upload placeholder — the AUTHORING-LAYER visual.
    CSS ships now to lock the signed-off look; the upload behavior is deferred. */
 .media-slot--dropzone { border-style: dotted; border-color: var(--border-strong); }
 .media-slot__dropzone {

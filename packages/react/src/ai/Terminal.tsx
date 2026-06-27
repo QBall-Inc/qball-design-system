@@ -20,7 +20,7 @@ import { Callout } from "../overlay/Callout";
  * Streaming state comes from the `useStreaming` hook (`messages` / `streaming` /
  * `error`), but `Terminal` is a pure display surface — it accepts that state as
  * props. Grounding annotations (`[source]` / `[unverified]`) are OUT of scope:
- * WP-B-4.1b composes `GroundingFlag` into the message content afterward.
+ * Grounding annotations are composed in afterward via `GroundingFlag`.
  */
 
 /** Speaker for a transcript turn. */

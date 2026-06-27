@@ -1,13 +1,11 @@
 ---
 title: MediaSlot — Design Specification
-wp: WP-B-4b.3
 status: signed-off # owner RB-7 sign-off S99 (2026-06-24) via the preview/media-slot.html review loop → binding for the BUILD
 owner: Ashay Kubal
 designed_by: Claude (session 99)
 date: 2026-06-24
 supersedes: null
 sources:
-  - logs/spec-verify-session-99-WP-B-4b.3.md # SD1 verified frame (PROCEED_ADJUSTED, binding)
   - artifacts/research/mediaslot-wp-b-4b3/synthesis.md # 5-viewpoint bulwark-research synthesis (binding)
   - logs/research/mediaslot-wp-b-4b3/0{1..5}-*.md # the 5 viewpoint logs
   - personalsite-v2 P1 consumer ask (§3.2 image-slot.js) + /mnt/c/projects/personalsite-v2/v2-design/image-slot.js (source, read-only)
@@ -27,7 +25,7 @@ review_log:
     changes:
       - "Facade play button → DARK SCRIM (--color-scrim); the earlier translucent-sage hover blended into a sage thumbnail. Rest = scrim, hover = solid sage, focus = sage ring, light (on-scrim) glyph."
       - "Empty placeholder: content now scales with the box (container-query units); default 'no media' centered + larger; avatar/circle empty is icon-only and spans most of the circle."
-      - "Added a drag-drop/upload DROPZONE placeholder treatment (dotted border + upload glyph + Browse button, light emphasis) — this is the WP-B-4b.3a AUTHORING-layer visual, designed now to lock direction; the BEHAVIOR stays deferred."
+      - "Added a drag-drop/upload DROPZONE placeholder treatment (dotted border + upload glyph + Browse button, light emphasis) — this is the deferred AUTHORING-layer visual, designed now to lock direction; the BEHAVIOR stays deferred."
       - "Video: default NO autoplay + default muted (controls on)."
       - "Embed: infer provider from the URL, WITH an explicit `provider`/`thumbnail` fallback."
       - 'Dropped the `decorative` prop — `alt=""` is the standard decorative signal.'
@@ -41,12 +39,12 @@ review_log:
 > does **not** build it. The companion visual oracle is **`preview/media-slot.html`** (a token-driven,
 > light/dark contact sheet of every media type × shape × fit × state). The follow-on **BUILD** (after
 > owner RB-7 sign-off + a fresh SD1) implements this spec; the binding plan below supersedes the
-> original WP-B-4b.3 stub.
+> original stub.
 >
 > **The authoring layer is OUT of scope** (upload / drag-drop / reframe-crop / pluggable persistence /
-> oEmbed resolution) — deferred to **WP-B-4b.3a** (post-1.0), owner-approved because no current consumer
+> oEmbed resolution) — deferred to a **post-1.0 authoring layer**, owner-approved because no current consumer
 > depends on it. This spec covers DISPLAY only. (The dropzone/upload _placeholder visual_ in oracle §5
-> was designed in round-1 to lock direction, but its _behavior_ belongs to WP-B-4b.3a.)
+> was designed in round-1 to lock direction, but its _behavior_ belongs to that deferred authoring layer.)
 
 ---
 
@@ -77,13 +75,13 @@ authoring dropzone) and the **facade play overlay** (for embeds).
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | D1  | **Architecture = Option A: a pure React component** rendering native `<img>`/`<video>`/`<iframe>`. **No** custom element, **no** Shadow DOM.                                                                                                                                                                                                                                                                                                                              | SSR/static-safe by construction; Astro consumes React directly. Option B ruled out — React 19 still mishandles Declarative Shadow DOM (React #33698/#26071) and both consumers are pre-React-19; Polymer's lesson: no framework-agnostic core before a real non-React consumer. |
 | D2  | **Discriminated `type` → 4 internal render paths**: `image`/`gif` → `<img>`; `video` → `<video>`; `embed` → facade. One export, four paths.                                                                                                                                                                                                                                                                                                                               | The slot contract is unifying (shape/fit/aspect); the divergence is only the inner element. Native elements ⇒ no library imports ⇒ **zero heavy deps**.                                                                                                                         |
-| D3  | **Stays in `@qball-inc/react`** (the single barrel). **No** `@qball-inc/media` split at 1.0.                                                                                                                                                                                                                                                                                                                                                                              | The DISPLAY core has zero heavy deps, so there is **no single-barrel tax**. The package split is a WP-B-4b.3a question (it's where the heavy authoring deps land).                                                                                                              |
+| D3  | **Stays in `@qball-inc/react`** (the single barrel). **No** `@qball-inc/media` split at 1.0.                                                                                                                                                                                                                                                                                                                                                                              | The DISPLAY core has zero heavy deps, so there is **no single-barrel tax**. The package split is a deferred authoring-layer question (it's where the heavy authoring deps land).                                                                                                              |
 | D4  | **SSR/static-safe**: no `window`/`document`/`customElements` at module-eval **or** render. Any DOM work (facade click→swap) is inside an effect/handler.                                                                                                                                                                                                                                                                                                                  | Binding 1.0.0 constraint (the Astro static consumer). Verified by a node-env import/render test.                                                                                                                                                                                |
 | D5  | **video** (`type="video"`): **default `muted`, default NO autoplay**, `controls` on by default. **gif-as-video** is an explicit opt-in (`autoPlay loop muted` → adds `playsinline`; iOS needs all four; mp4 `yuv420p` + even dims).                                                                                                                                                                                                                                       | Owner round-1: video must not autoplay and is muted by default. Autoplaying audio is hostile; the loud-decorative-loop case is opt-in.                                                                                                                                          |
 | D6  | **embed = facade** on a **dark scrim** (lite-youtube-embed pattern): the provider's **real thumbnail** + a real `<button>` play overlay; on click, swap the real `<iframe>`. **Never auto-load.** **Provider inferred from the URL, with an explicit `provider`/`thumbnail` fallback** for unknown providers or when inference fails. No oEmbed auto-resolution or consent logic in the DS (consumer owns CSP/consent).                                                   | Fast + privacy-safe. Owner round-1: inference + a fallback. **Avoid Tenor (API dies 2026-06-30) + legacy Meta oEmbed (retired Apr-2025).**                                                                                                                                      |
 | D7  | **`aspect-ratio` on the container is unconditional** (reserve space → no CLS). Shape masks via `border-radius`/`clip-path` at the frame level; the inner element fills it (`overflow:hidden`).                                                                                                                                                                                                                                                                            | 2021-baseline CLS fix; the most direct layout-stability lesson from prior art.                                                                                                                                                                                                  |
 | D8  | **a11y**: `alt` required for informative media; **`alt=""` is the decorative signal** (no separate `decorative` prop). Reduced-motion honored for animated media; the facade play affordance is a real `<button aria-label>`.                                                                                                                                                                                                                                             | Owner round-1: drop the `decorative` prop — `alt=""` is the standard, sufficient decorative signal (matches the Icon System a11y idiom: a label flips it to informative).                                                                                                       |
-| D9  | **`adapter?` is a RESERVED, typed, no-op prop** in 1.0 — it declares the WP-B-4b.3a authoring API seam so 1.1 is backward-compatible. **Zero persistence behavior** in 1.0.                                                                                                                                                                                                                                                                                               | Locks the API boundary without shipping the deferred behavior.                                                                                                                                                                                                                  |
+| D9  | **`adapter?` is a RESERVED, typed, no-op prop** in 1.0 — it declares the deferred authoring API seam so 1.1 is backward-compatible. **Zero persistence behavior** in 1.0.                                                                                                                                                                                                                                                                                               | Locks the API boundary without shipping the deferred behavior.                                                                                                                                                                                                                  |
 | D10 | **New `.media-slot*` token-CSS surface** in `@qball-inc/tokens` → **RB-7 design-first gate + owner sign-off**. Reuses `--radius-*`, surface/border/text tokens, the shared sage `--color-signal` + `--signal-bg`, and **`--color-scrim`** (existing) for the play button. Uses **`container-type: inline-size`** (the `.dt-wrap` DataTable precedent) so placeholder content scales with the box. DESIGN_DENY clean (no hex/rgb/box-shadow literals in component source). | Small new surface, mostly reusing shipped tokens. One likely **token add: `--color-on-scrim`** (a theme-independent light foreground for the play glyph on the scrim) — confirm at build.                                                                                       |
 
 ---
@@ -124,7 +122,7 @@ interface MediaSlotProps {
 
   // passthrough + reserved seam
   className?: string; // consumer owns WIDTH/layout here (the slot is fluid by default)
-  adapter?: MediaSlotAdapter; // RESERVED no-op in 1.0 (WP-B-4b.3a authoring seam)
+  adapter?: MediaSlotAdapter; // RESERVED no-op in 1.0 (deferred authoring seam)
 }
 ```
 
@@ -161,7 +159,7 @@ Shipped into `packages/tokens/components.css` after sign-off (Tabs/Icon preceden
 - Shapes: `--rect` (radius 0), `--rounded` (`var(--radius-md)`), `--circle` (50%), `--pill` (999px). `mask` → inline `clip-path`.
 - `.media-slot--empty` — empty state: dashed token border; `display:grid; place-items:center`.
 - `.media-slot__placeholder` — passive placeholder (icon + label); sizes via `clamp(..,cqw,..)` so it scales with the box. `--icon` variant = icon-only, large (avatar empty, spans most of the circle).
-- `.media-slot--dropzone` + `.media-slot__dropzone` + `.media-slot__browse` — the **authoring dropzone** visual (dotted border + upload glyph + "Browse" button, light emphasis). **Behavior = WP-B-4b.3a**; the CSS may ship with 4b.3a or be reserved now (decide at build).
+- `.media-slot--dropzone` + `.media-slot__dropzone` + `.media-slot__browse` — the **authoring dropzone** visual (dotted border + upload glyph + "Browse" button, light emphasis). **Behavior = the deferred authoring layer (post-1.0)**; the CSS may ship with that authoring layer or be reserved now (decide at build).
 - `.media-slot__poster` — facade thumbnail layer.
 - `.media-slot__play` — facade play `<button>`: centered, sized via `clamp(..,cqw,..)`, **`background:var(--color-scrim)`** + light glyph (`--color-on-scrim`); hover → `background:var(--color-signal)`; `:focus-visible` → sage outline ring.
 - `.media-slot__bar` — video native-controls hint (preview-only stand-in; real `<video controls>` ships the native bar).
@@ -184,20 +182,20 @@ glyph). Everything else reuses shipped tokens. Confirm at build/RB-7.
 
 ---
 
-## 7. Out of scope (→ WP-B-4b.3a, deferred post-1.0)
+## 7. Out of scope (deferred authoring layer, post-1.0)
 
 FILL (upload / drag-drop / paste / URL-paste — the _behavior_ behind oracle §5's dropzone) · TRANSFORM
 (reframe / pan / zoom / crop + OffscreenCanvas encode) · PERSIST (`{read,write}` adapters: IndexedDB
 default / Sanity-`{hotspot,crop}`-shaped / omelette) · oEmbed auto-resolution + embed consent · video
-lazy-play (IntersectionObserver autoplay-on-scroll) · the `@qball-inc/media` package decision. See
-`workpackages/WP-B-4b.3a.yaml`. The dropzone placeholder _design_ from round-1 is captured there as a
-build pointer.
+lazy-play (IntersectionObserver autoplay-on-scroll) · the `@qball-inc/media` package decision. The
+dropzone placeholder _design_ from round-1 is captured as a build pointer for the deferred authoring
+layer.
 
 ---
 
 ## 8. Acceptance mapping
 
-The DISPLAY ACs are in `workpackages/WP-B-4b.3.yaml` (AC-1…AC-9). This spec is the binding design input
+The DISPLAY acceptance criteria are AC-1…AC-9. This spec is the binding design input
 for them: AC-2 ↔ §4 render paths; AC-3 ↔ §5 token surface (this doc + the oracle = the RB-7 artifact);
 AC-4 ↔ §3 art-direction props + §5; AC-6 ↔ §2 D8 a11y; AC-7 ↔ §2 D9 reserved adapter; AC-1/AC-8 ↔ §6 +
 §2 D3/D4.

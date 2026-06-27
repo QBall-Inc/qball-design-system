@@ -37,7 +37,7 @@ import { Toaster, toast } from "../overlay/Toast";
 import { SecretInput } from "../primitives/SecretInput";
 
 /**
- * §10 DOM-equivalence gate — WP-B-4b.2-B3 (the icon-system glyph migration).
+ * §10 DOM-equivalence gate (the icon-system glyph migration).
  *
  * For every migrated call site, this asserts the rendered icon IS the expected B2
  * generated component — identical geometry (the inner path/circle elements, in emit
@@ -46,7 +46,7 @@ import { SecretInput } from "../primitives/SecretInput";
  * (`.modal__x` / `.callout__icon` / `.tuf__glyph` / `.ic-sun` / `.notif__mark--*` …).
  *
  * Under the owner-recertified Option-1 migration (adopt B2 / current-Lucide as the
- * canonical look — SD1 D-08, `preview/icon-migration-b3.html`), the original gate's
+ * canonical look — SD1 D-08), the original gate's
  * "emitted path-d byte-preserved" is re-scoped to "renders the RIGHT B2 icon": the
  * geometry is compared against the standalone B2 render (the single source of truth
  * for the recertified shape), while the wrapper class + element placement + the
@@ -107,7 +107,7 @@ function expectMigratedIcon(svg: Element | null | undefined, exp: IconExpectatio
   expect(svg.innerHTML).toBe(geometryOf(exp.expected));
 }
 
-describe("WP-B-4b.2-B3 — icon migration DOM-equivalence gate", () => {
+describe("Icon migration DOM-equivalence gate", () => {
   describe("C1 · overlay", () => {
     describe("Modal", () => {
       it("ModalClose renders the B2 X (.modal__x, 16px)", () => {

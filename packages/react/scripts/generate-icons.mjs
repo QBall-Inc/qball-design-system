@@ -1,4 +1,4 @@
-// scripts/generate-icons.mjs — the icon-system codegen (WP-B-4b.2).
+// scripts/generate-icons.mjs — the icon-system codegen.
 //
 // Reads the curation manifest (src/icons/manifest.json) and produces the
 // committed, tree-shakeable icon surface across the three tracks (§7):

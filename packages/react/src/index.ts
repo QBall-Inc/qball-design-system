@@ -50,7 +50,7 @@ export type { SpinnerProps, SpinnerSize } from "./overlay/Spinner";
 export { EmptyStateFig, ErrorStateFig } from "./overlay/StateFig";
 export type { EmptyStateFigProps, ErrorStateFigProps } from "./overlay/StateFig";
 
-// Data I — Stat + Meter + Badge + Card + Divider (Tabs split to WP-B-3.3a — see Data I-b below).
+// Data I — Stat + Meter + Badge + Card + Divider (Tabs split — see Data I-b below).
 export { Stat } from "./data/Stat";
 export type { StatProps, StatDirection } from "./data/Stat";
 export { Meter } from "./data/Meter";
@@ -63,7 +63,7 @@ export { Divider } from "./data/Divider";
 export type { DividerProps } from "./data/Divider";
 
 // Data I-b — Tabs (Radix Tabs over the shipped .tab* surface + the shared sage
-// focus ring; deferred from WP-B-3.3, landed WP-B-3.3a).
+// focus ring; deferred, then landed).
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./data/Tabs";
 export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from "./data/Tabs";
 
@@ -121,7 +121,7 @@ export type {
 } from "./chrome/NotificationCenter";
 
 // AI I — Terminal (conversation transcript) + Composer (input + send) + the
-// useStreaming SSE state machine (WP-B-4.1a). GroundingFlag is WP-B-4.1b.
+// useStreaming SSE state machine. GroundingFlag is the grounding annotation companion.
 export { Terminal } from "./ai/Terminal";
 export type {
   TerminalProps,
@@ -137,22 +137,22 @@ export type { StreamEvent, UseStreamingResult } from "./ai/Streaming";
 export { GroundingFlag } from "./ai/GroundingFlag";
 export type { GroundingFlagProps, GroundingVariant } from "./ai/GroundingFlag";
 // AI II — MarkdownRenderer: sanitized, token-styled markdown for streamed
-// assistant text (WP-B-4.2). Allowlist + urlTransform safe-rendering boundary.
+// assistant text. Allowlist + urlTransform safe-rendering boundary.
 export { MarkdownRenderer, ALLOWED_ELEMENTS } from "./ai/MarkdownRenderer";
 export type { MarkdownRendererProps } from "./ai/MarkdownRenderer";
 // AI IV — ToolUseIndicator: the skill/tool-call lifecycle chip in the terminal
-// transcript (WP-B-4.4, built from the WP-B-4.3 signed-off design). Token-CSS
+// transcript, built from the signed-off design. Token-CSS
 // .tuf wrapper; reuses the shipped .spinner / .term__cursor for the running loop.
 export { ToolUseIndicator } from "./ai/ToolUseIndicator";
 export type { ToolUseIndicatorProps, ToolUseState } from "./ai/ToolUseIndicator";
 
 // Briefings — DigestCard: the LLM market-briefing card over the shipped .digest
-// family (WP-B-4.4). Composes Skeleton (loading) + EmptyStateFig (empty); hosts
+// family. Composes Skeleton (loading) + EmptyStateFig (empty); hosts
 // GroundingFlag markers inline in the body prose.
 export { DigestCard } from "./briefings/DigestCard";
 export type { DigestCardProps, DigestState } from "./briefings/DigestCard";
 
-// Site & Media Primitives I — Canvas background primitives (WP-B-4b.1). Token-driven
+// Site & Media Primitives I — Canvas background primitives. Token-driven
 // animated <canvas> backgrounds (GridBg dot matrix / AsciiBg falling streams /
 // GlyphsBg drifting glyphs) + the useCanvas2D driver. SSR-safe (inert <canvas> on
 // the server); reads --color-signal / --color-highlight / --font-display at paint
@@ -165,7 +165,7 @@ export { useCanvas2D } from "./primitives/backgrounds/useCanvas2D";
 export type { BackgroundProps } from "./primitives/backgrounds/types";
 export type { CanvasDraw, CanvasFrame } from "./primitives/backgrounds/useCanvas2D";
 
-// Icon System — three tracks (WP-B-4b.2). Build-time codegen from lucide-react
+// Icon System — three tracks. Build-time codegen from lucide-react
 // (UI + AI marks, ISC) and simple-icons (brand marks, CC0) — both devDeps — into our
 // OWN committed inline-SVG components, ZERO runtime icon-pack dependency; plus
 // hand-authored AI original art + converted brand assets. Per-icon named exports
@@ -182,11 +182,11 @@ export { BRAND_ICON_NAMES } from "./icons/generated/registry";
 export type { BrandIconName } from "./icons/generated/registry";
 export type { IconProps } from "./icons/icon-props";
 
-// Site & Media Primitives III — MediaSlot (WP-B-4b.3). A pure-React, SSR/static-safe
+// Site & Media Primitives III — MediaSlot. A pure-React, SSR/static-safe
 // DISPLAY container for heterogeneous media (image / gif / video / embed-facade) over
 // the shipped `.media-slot` token surface; native <img>/<video>/<iframe>, zero heavy
 // deps. The embed facade loads the real <iframe> only on click (no network until then).
-// The authoring layer (upload / crop / persist / oEmbed) is the deferred WP-B-4b.3a;
+// The authoring layer (upload / crop / persist / oEmbed) is deferred;
 // `adapter` is a reserved no-op seam for it.
 export { MediaSlot } from "./media/MediaSlot";
 export type {

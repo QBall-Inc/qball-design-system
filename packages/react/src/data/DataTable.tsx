@@ -24,7 +24,7 @@ import { Skeleton } from "../overlay/Skeleton";
  * `.dt td.num`, `.dt .up/.down/.flat`, the `:hover` tint, the `[aria-selected]`
  * sage selection, and `.dt__remove` actions — so there is no component CSS, no
  * hardcoded color, no box-shadow. The component only wires the headless row model
- * to that surface and composes the WP-B-3.2 state figures.
+ * to that surface and composes the state figures.
  *
  * Headless-only for v1: it renders the core row model (no built-in sorting or
  * filtering UI — the oracle shows none). Consumers drive sorting/selection via
@@ -63,7 +63,7 @@ declare module "@tanstack/react-table" {
      */
     financeFormat?: (value: number) => string;
     /**
-     * Mobile card-list label (WP-B-3.5a). At <=640px (container width) the table
+     * Mobile card-list label. At <=640px (container width) the table
      * reflows to stacked cards and each cell surfaces its column header inline via
      * `td::before { content: attr(data-label) }`. CSS cannot read thead text, so the
      * label is sourced from a `data-label` attribute the component sets: the column's
@@ -236,7 +236,7 @@ export function DataTable<TData>({
         {row.getVisibleCells().map((cell) => {
           const { columnDef } = cell.column;
           const meta = columnDef.meta;
-          // Mobile card-list label (WP-B-3.5a): the string header, else `meta.label`.
+          // Mobile card-list label: the string header, else `meta.label`.
           // A falsy result (empty string / undefined) sets no `data-label`, so the
           // reflow `td[data-label]::before` skips it (actions cell, unlabeled headers).
           const headerLabel = typeof columnDef.header === "string" ? columnDef.header : meta?.label;
@@ -270,7 +270,7 @@ export function DataTable<TData>({
   }
 
   // The `.dt-wrap` host carries `container-type: inline-size` so the mobile
-  // card-list reflow (WP-B-3.5a) keys off the TABLE's own width, not the viewport.
+  // card-list reflow keys off the TABLE's own width, not the viewport.
   // `className` / `dt` / `dt--actions-visible` stay on the <table> (public contract).
   return (
     <div className="dt-wrap">

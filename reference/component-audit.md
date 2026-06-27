@@ -1,7 +1,7 @@
 # Component Inventory — Design-System Gap Audit
 
 **System audited:** Ashay Kubal Design System (`colors_and_type.css` tokens + semantic element styles, `ui_kits/ashaykubal/` UI kit, `preview/` cards).
-**Against:** `uploads/component-inventory.md` (Stock Watcher frontend, WP-5.0).
+**Against:** the consumer's component inventory (Stock Watcher frontend).
 **Date:** 2026-05-30
 
 ## Headline
@@ -14,7 +14,7 @@ The existing system is an **editorial / terminal personal-site brand** — token
 | **Partial** | 10 | Exists but missing required variants/states — extend it |
 | **No** | 28 | Must be created |
 
-Every **P0** row below that is `No`/`Partial` is on the blocking gap list for WP-5.1.
+Every **P0** row below that is `No`/`Partial` is on the blocking gap list for the consumer's build.
 
 ---
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# scripts/build-pages-site.sh — WP-B-5.1 GitHub Pages artifact builder.
+# scripts/build-pages-site.sh — GitHub Pages artifact builder.
 #
 # Stages the curated gallery surface into _site/ and injects the licensed
 # Berkeley Mono @font-face declarations + a Berkeley-first --font-display into
 # the ARTIFACT COPY of packages/tokens/colors_and_type.css ONLY. The committed
-# source tree stays font-binary-free and Berkeley-free; the WP-B-0.2 license
+# source tree stays font-binary-free and Berkeley-free; the license
 # gate (scripts/license-check.sh) enforces that continuously.
 #
 # The 6 licensed woff2 weights are fetched at deploy time from the PRIVATE
@@ -68,7 +68,7 @@ done
 
 # --- 3. Inject the @font-face declarations (top-level) into the artifact CSS --
 {
-  echo "/* WP-B-5.1: Berkeley Mono injected at Pages-deploy time — EPHEMERAL"
+  echo "/* Berkeley Mono injected at Pages-deploy time — EPHEMERAL"
   echo "   artifact only; NEVER committed (LR-02 Website Grant: serve, do not"
   echo "   redistribute). Source of truth: ashaykubal/stock-watcher (private). */"
   for entry in "${WEIGHTS[@]}"; do

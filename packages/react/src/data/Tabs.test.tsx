@@ -64,7 +64,7 @@ describe("Tabs — render + structure", () => {
   });
 });
 
-describe("Tabs — active-tab switching (WP-B-3.3 AC-12j)", () => {
+describe("Tabs — active-tab switching (AC-12j)", () => {
   it("switches the active tab + panel on click", async () => {
     const user = userEvent.setup();
     renderTabs();

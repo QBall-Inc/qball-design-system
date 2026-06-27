@@ -2,8 +2,8 @@ import Markdown, { defaultUrlTransform } from "react-markdown";
 import type { Components } from "react-markdown";
 
 /**
- * MarkdownRenderer — renders streamed assistant text (the Terminal's bot turns,
- * WP-B-4.1a) as sanitized, token-styled markdown. Scoped to assistant prose; NOT
+ * MarkdownRenderer — renders streamed assistant text (the Terminal's bot turns)
+ * as sanitized, token-styled markdown. Scoped to assistant prose; NOT
  * a general-purpose HTML renderer (the element allowlist is the hard boundary).
  *
  * **Token styling is inherited, not declared (compose the shipped surface).** The

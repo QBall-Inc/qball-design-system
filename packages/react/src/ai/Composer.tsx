@@ -13,7 +13,7 @@ import { ArrowRight } from "../icons/generated";
  * arrow; the textarea then clears and its auto-grown height resets. The BYO-key
  * gate (`keyProvided={false}`) disables the input + send and shows an "Add your
  * key" prompt — `onSend` is never invoked while gated. The Composer does NOT
- * render the key-entry flow (that is `SecretInput`, WP-B-2.3); it only reflects
+ * render the key-entry flow (that is `SecretInput`); it only reflects
  * the `keyProvided` boolean and exposes the disabled visual state.
  */
 export interface ComposerProps {

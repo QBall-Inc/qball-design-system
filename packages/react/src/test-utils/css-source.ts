@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 /**
- * Shared CSS-source-contract test helpers (WP-B-3.5; extracted per S79 LINT-F01).
+ * Shared CSS-source-contract test helpers (extracted per S79 LINT-F01).
  *
  * jsdom does not load external stylesheets, so token / @media / animation rules
  * shipped in `@qball-inc/tokens` cannot be asserted via `getComputedStyle`. The

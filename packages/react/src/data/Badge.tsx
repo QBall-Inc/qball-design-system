@@ -21,7 +21,7 @@ import type { ReactNode } from "react";
  * Variant → shipped class (note the abbreviated `warn`, mirroring `Callout`):
  * `neutral` is the base `.badge` (no modifier); `warning` → `.badge--warn`;
  * `info`/`up`/`down` map to their existing classes; `success` → `.badge--success`,
- * `error` → `.badge--error`, and `flat` → `.badge--flat` are the WP-B-3.3 additions
+ * `error` → `.badge--error`, and `flat` → `.badge--flat` are shipped additions
  * to `components.css` (success = gain green, error = loss red, flat = neutral stone).
  *
  * **Finance variants pair color with a non-color cue (FR4 / RB-8).** `up`/`down`/

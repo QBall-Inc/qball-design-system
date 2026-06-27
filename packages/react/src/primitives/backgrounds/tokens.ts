@@ -3,7 +3,7 @@
  * `var(--token)` the way CSS does — it needs a concrete color string — so these
  * primitives resolve the design-system tokens at paint time via `getComputedStyle`.
  *
- * **Token-only, no hardcoded fallbacks (WP-B-4b.1, owner decision S91).** The
+ * **Token-only, no hardcoded fallbacks (owner decision S91).** The
  * design system treats its token stylesheet as a hard import contract, and the
  * library keeps zero hardcoded color literals in component source (RB-8 / the
  * `DESIGN_DENY` lint rule). So a missing token resolves to an empty string and the

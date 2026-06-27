@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
  * **No chart library (BINDING).** The geometry is computed inline (min/max
  * normalization to a viewport + linear interpolation between points). Recharts,
  * D3, Victory, Chart.js, etc. are NOT imported — and although `d3` is an optional
- * peerDependency of `@qball-inc/react` (for the WP-B-3.6 Candlestick), the
+ * peerDependency of `@qball-inc/react` (for the Candlestick), the
  * Sparkline must NOT pull it in: it is a lightweight atom.
  *
  * **Color comes from `direction`, never from the data (BINDING, FR4 / RB-8).** The

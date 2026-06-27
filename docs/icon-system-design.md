@@ -1,13 +1,11 @@
 ---
 title: Icon System — Design Specification
-wp: WP-B-4b.2
-status: signed-off # owner-approved via the S92 iterative preview review → binding for the BUILD WP(s)
+status: signed-off # owner-approved via the S92 iterative preview review → binding for the BUILD
 owner: Ashay Kubal
 designed_by: Claude (session 92)
 date: 2026-06-21
 supersedes: null
 sources:
-  - logs/spec-verify-session-92-WP-B-4b.2.md # SD1 verified frame (binding)
   - artifacts/brainstorm/icon-system-wp-b-4b2/synthesis.md # --scoped brainstorm synthesis
   - personalsite-v2 P2 consumer ask (§4.1 page-glyphs, §4.2 BRAND_ICONS)
 signoff:
@@ -23,10 +21,10 @@ signoff:
 # Icon System — Design Specification (`@qball-inc/react`)
 
 > **Scope of this document:** this is a **DESIGN-only** artifact (mirrors `docs/tool-use-indicator-design.md`,
-> WP-B-4.3 → 4.4). It defines the icon system; it does **not** build it. The companion visual oracle is
+> its DESIGN → BUILD split). It defines the icon system; it does **not** build it. The companion visual oracle is
 > `preview/icons.html` (a token-driven, light/dark contact sheet rendering the full set with **real
-> lucide@1.17.0 + simple-icons geometry**). The follow-on **BUILD WP(s)** implement this spec; the binding plan
-> below supersedes the original WP-B-4b.2 brief.
+> lucide@1.17.0 + simple-icons geometry**). The follow-on **BUILD work** implements this spec; the binding plan
+> below supersedes the original brief.
 >
 > **Three tracks** (expanded from two during the S92 design pass, owner-directed): **UI icons** (76, codegen
 > from Lucide), **AI** (an AI indicator + agent avatars — NEW), and **Brand marks** (~26, for nominative
@@ -39,7 +37,7 @@ signoff:
 A **comprehensive, two-track icon system** for `@qball-inc/react`, seeded by the personalsite-v2 P2 consumer
 ask (3 page glyphs + a brand-mark registry) but scoped per the owner directive **"comprehensive, no scope
 cutting."** It also retires a real internal liability: **21 hand-rolled `*Icon`/`*Glyph` functions** across
-12 component files today, each independently reproducing the same Lucide geometry (the WP-B-4.4
+12 component files today, each independently reproducing the same Lucide geometry (the
 `SVG_PROPS` hoist already started converging on a primitive).
 
 **Three tracks:**
@@ -272,7 +270,7 @@ hardcodes its fill — legal, outside the `packages/*/src` DESIGN_DENY scope) is
    test asserting SVG internals.
 2. Per migrated component, a test asserting the post-migration emitted SVG matches the pre-migration one
    byte-for-byte (path data + element order + wrapper class).
-3. If a glyph's hand-rolled geometry differs from lucide-canonical, the BUILD WP DECIDES per-icon: keep the
+3. If a glyph's hand-rolled geometry differs from lucide-canonical, the BUILD DECIDES per-icon: keep the
    hand-rolled geometry (don't migrate that one) or accept + document the visual change.
 
 ---
@@ -297,7 +295,7 @@ hardcodes its fill — legal, outside the `packages/*/src` DESIGN_DENY scope) is
   generated `.tsx` carries a provenance header citing the exact pack version + SPDX.
 - **Pack-license assertion is a NET-NEW BUILD deliverable**: the existing CI `scripts/license-check.sh` is a
   **font-binary leak scanner**, not an SPDX/package check — it neither trips on nor validates a pack devDep. The
-  BUILD WP adds an explicit version-pin + SPDX-record step.
+  BUILD adds an explicit version-pin + SPDX-record step.
 - **AI track**: `ai-sparkle` + `bot`/`bot-message-square`/`cpu` are lucide (ISC, codegen); `agent-stocky` reuses
   the DS's own mascot geometry; `agent-orb`/`agent-droid`/`agent-hex` are **original DS art** (no third-party
   source). No external license encumbrance beyond Lucide ISC.
@@ -339,7 +337,7 @@ hardcodes its fill — legal, outside the `packages/*/src` DESIGN_DENY scope) is
 
 ## 14. Build Plan (DESIGN → BUILD split)
 
-- **This DESIGN pass (WP-B-4b.2): ~1 session.** Outputs: this spec + `preview/icons.html` + owner sign-off.
+- **This DESIGN pass: ~1 session.** Outputs: this spec + `preview/icons.html` + owner sign-off.
   **No `*.tsx`.**
 - **BUILD splits into ≥2 sessions:**
   - **B1 — pipeline + core API**: `generate-icons.mjs` + the curation **manifest** + the `SVG_PROPS` template →
@@ -389,18 +387,17 @@ beyond the existing `.stocky-icon` mascot; a `1em`-sizing option.
 
 ## 18. References
 
-- **SD1 verified frame** (binding): `logs/spec-verify-session-92-WP-B-4b.2.md` (PROCEED_ADJUSTED; two-track
-  split; codegen reframe; D-12 brand miscount; D-14 ISC; D-15 window-assign).
+- **Binding design decisions**: two-track split; codegen reframe; D-12 brand miscount; D-14 ISC; D-15 window-assign.
 - **Brainstorm synthesis** (5-role --scoped, PROCEED high-confidence): `artifacts/brainstorm/icon-system-wp-b-4b2/synthesis.md`
   - role logs `logs/brainstorm/icon-system-wp-b-4b2/0{1..5}-*.md`.
 - **Visual oracle**: `preview/icons.html`.
-- **Precedent**: `docs/tool-use-indicator-design.md` (WP-B-4.3 DESIGN → 4.4 BUILD split).
+- **Precedent**: `docs/tool-use-indicator-design.md` (its DESIGN → BUILD split).
 
 ---
 
 ## 19. Sign-off
 
-This spec is **binding for the BUILD WP** once approved. Approval covers: the codegen-from-lucide sourcing (D1),
+This spec is **binding for the BUILD** once approved. Approval covers: the codegen-from-lucide sourcing (D1),
 the single-barrel + no-subpath export architecture (D3), the 76+8 comprehensive curation (§8), the migration
 approach + DOM-equivalence gate (§10), and the naming/trademark posture (§11/§12).
 

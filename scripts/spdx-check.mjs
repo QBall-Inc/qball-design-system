@@ -1,4 +1,4 @@
-// scripts/spdx-check.mjs — NET-NEW pack-license / SPDX assertion (WP-B-4b.2, §12).
+// scripts/spdx-check.mjs — NET-NEW pack-license / SPDX assertion (§12).
 //
 // Distinct from scripts/license-check.sh (a FONT-BINARY leak scanner that neither
 // trips on nor validates a code dependency). This gate grounds the icon system's

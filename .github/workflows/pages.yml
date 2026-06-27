@@ -1,4 +1,4 @@
-# .github/workflows/pages.yml — WP-B-5.1 GitHub Pages gallery deploy.
+# .github/workflows/pages.yml — GitHub Pages gallery deploy.
 #
 # Publishes the component gallery (index.html redirect + gallery.html + preview/
 # + packages/tokens/ + assets/) to https://qball-inc.github.io/qball-design-system/
@@ -6,9 +6,9 @@
 # face at deploy time from the PRIVATE ashaykubal/stock-watcher repo. The woff2
 # binaries are NEVER committed to this public repo (LR-02 Website Grant: the
 # deployed site may SERVE Berkeley Mono; it may not redistribute the binaries via
-# a public git tree). The WP-B-0.2 license gate runs first as a fail-fast guard.
+# a public git tree). The license gate runs first as a fail-fast guard.
 #
-# OWNER PREREQUISITES (one-time — see WP-B-5.1 AD-03 / AD-05):
+# OWNER PREREQUISITES (one-time — see AD-03 / AD-05):
 #   1. Settings -> Pages -> Build and deployment -> Source = "GitHub Actions"
 #      (replaces the prior "Deploy from a branch" source; only one source can
 #      publish, so this switch is required before the first Actions deploy).
