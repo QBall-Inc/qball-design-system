@@ -80,3 +80,10 @@ consumer-validate:
 # Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> license-check -> spdx-check -> consumer-validate.
 ci: generate-icons-check typecheck lint test license-check spdx-check consumer-validate
     @echo "ci: all gates passed"
+
+# Release dry-run (non-mutating): asserts zero NPM_TOKEN + OIDC/provenance in the
+# workflows, previews the 1.0.0 version jump via an ephemeral changeset, and prints
+# the semver-contract scenarios. Publishes nothing. Multi-line shell lives in the
+# committed script (WSL exec-bit pattern), invoked via bash.
+release-dry-run:
+    bash scripts/release-dry-run.sh
