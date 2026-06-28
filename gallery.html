@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -168,14 +168,25 @@
     });
     wrap.appendChild(g);
   });
-  // theme toggle — propagate to every iframe card
+  // The page chrome theme is INDEPENDENT of the preview tiles.
+  // "Toggle theme" flips ONLY the gallery chrome (page background, header, card frames).
+  // The preview tiles always render dark; inspect a tile in light via its own light|dark switcher.
   const root = document.documentElement, btn = document.getElementById("themeBtn");
-  function apply(t){ root.setAttribute("data-theme", t);
-    document.querySelectorAll("iframe").forEach(f => { try { f.contentDocument.documentElement.setAttribute("data-theme", t); } catch(e){} }); }
-  btn.addEventListener("click", () => apply(root.getAttribute("data-theme") === "dark" ? "light" : "dark"));
-  // re-apply to each frame once it loads
-  document.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => {
-    try { f.contentDocument.documentElement.setAttribute("data-theme", root.getAttribute("data-theme")); } catch(e){} }));
+  // pin a preview frame to dark AND keep its in-tile light|dark switcher pressed-state in sync
+  // (the switcher's pressed segment is otherwise static markup and would show "light")
+  function pinFrameDark(f){
+    try {
+      const doc = f.contentDocument; if (!doc) return;
+      doc.documentElement.setAttribute("data-theme", "dark");
+      doc.querySelectorAll("[data-theme-set]").forEach(b =>
+        b.setAttribute("aria-pressed", b.getAttribute("data-theme-set") === "dark" ? "true" : "false"));
+    } catch(e){}
+  }
+  // main toggle themes the gallery chrome only — the preview tiles are left untouched
+  btn.addEventListener("click", () =>
+    root.setAttribute("data-theme", root.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+  // every frame (incl. lazy-loaded + the modal) loads dark; flip an individual tile with its own switcher
+  document.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => pinFrameDark(f)));
 
   // in-page preview modal (replaces opening previews in a new tab)
   const modal = document.getElementById("modal");
