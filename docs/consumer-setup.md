@@ -11,8 +11,7 @@ entirely from the token CSS you import here.
 pnpm add @qball-inc/tokens @qball-inc/react
 ```
 
-> `@qball-inc/tokens` is published (early-access `0.x`); `@qball-inc/react` ships at
-> `1.0.0`. Until then you can consume the token CSS directly from `@qball-inc/tokens`.
+> Both `@qball-inc/tokens` and `@qball-inc/react` are published at `1.0.0`.
 
 ## The import sequence (order matters)
 

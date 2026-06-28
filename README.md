@@ -1,9 +1,36 @@
-# QBall Design System
+<p align="center">
+  <a href="https://qball-inc.github.io/qball-design-system/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/QBall-Inc/qball-design-system/main/assets/qball-logo-handoff/qball-logo-dark.gif">
+      <img src="https://raw.githubusercontent.com/QBall-Inc/qball-design-system/main/assets/qball-logo-handoff/qball-logo-parchment.gif" alt="QBall Design System" width="200" height="200">
+    </picture>
+  </a>
+</p>
 
-A portable, self-contained design system: a locked token layer (color, type, spacing,
-radii, borders, motion) plus a framework-agnostic component layer, shipped in both light
-and dark from the same tokens. The CSS is drop-in; the component map shows how to build the
-same components the same way on a modern React stack.
+<h1 align="center">QBall Design System</h1>
+
+<p align="center">
+  A portable, self-contained design system — a locked token layer plus a<br>
+  framework-agnostic component layer, shipped light and dark from the same tokens.
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@qball-inc/tokens"><img src="https://img.shields.io/npm/v/@qball-inc/tokens?color=3F6B5B&label=%40qball-inc%2Ftokens" alt="@qball-inc/tokens on npm"></a>
+  <a href="https://www.npmjs.com/package/@qball-inc/react"><img src="https://img.shields.io/npm/v/@qball-inc/react?color=3F6B5B&label=%40qball-inc%2Freact" alt="@qball-inc/react on npm"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/npm/l/@qball-inc/tokens?color=3F6B5B" alt="Apache-2.0 license"></a>
+</p>
+
+<p align="center">
+  <a href="https://qball-inc.github.io/qball-design-system/"><b>Gallery</b></a> ·
+  <a href="./DESIGN.md">Design</a> ·
+  <a href="./COMPONENT-LIBRARY.md">Components</a> ·
+  <a href="./packages/tokens">@qball-inc/tokens</a> ·
+  <a href="./packages/react">@qball-inc/react</a> ·
+  <a href="./llms.txt">llms.txt</a>
+</p>
+
+The CSS is drop-in (color, type, spacing, radii, borders, motion); the component map
+shows how to build the same components the same way on a modern React stack.
 
 ## Read in this order
 
@@ -51,18 +78,17 @@ reference/               — usage guide + upstream foundations + historical aud
 This repo is a **pnpm workspace** that publishes the design system as two versioned,
 public packages under the `@qball-inc` scope (Apache-2.0):
 
-- **`@qball-inc/tokens`** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
-- **`@qball-inc/react`** — the framework-agnostic component layer as a React library.
+- **[`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
+- **[`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)** — the framework-agnostic component layer as a React library.
 
 ```bash
-# Not yet published — v1 packages are in active development (see CHANGELOG.md).
 pnpm add @qball-inc/tokens @qball-inc/react
 ```
 
-> **Status:** `@qball-inc/tokens` is published (early-access `0.x`); `@qball-inc/react` is **not yet
-> published** (v1). The canonical CSS source is `packages/tokens/` (`colors_and_type.css` /
-> `components.css` / `theme.css` / `tokens.json`) — what the npm package ships verbatim. Until
-> `@qball-inc/react` v1.0.0, consume the token CSS directly from `packages/tokens/` or `@qball-inc/tokens`.
+> **Status:** both packages are published at **v1.0.0**. The canonical CSS source is
+> `packages/tokens/` (`colors_and_type.css` / `components.css` / `theme.css` / `tokens.json`)
+> — what the npm package ships verbatim. See [docs/consumer-setup.md](./docs/consumer-setup.md)
+> for the full consumer wiring sequence.
 
 Workspace layout: `packages/tokens/` and `packages/react/`. Local development uses
 `pnpm install` at the repo root + the `Justfile` recipes (`just typecheck`, `just lint`,
