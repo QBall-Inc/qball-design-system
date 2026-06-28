@@ -9,6 +9,7 @@
 // leads-amber, finance-color-plus-cue, no-gradient/glass, no-emoji — that lint
 // cannot catch). Passing lint alone does NOT discharge DESIGN.md conformance.
 
+import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
@@ -59,7 +60,7 @@ const DESIGN_DENY = [
   ),
 ];
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [
       "**/node_modules/**",
