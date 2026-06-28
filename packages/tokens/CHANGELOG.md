@@ -1,0 +1,9 @@
+# @qball-inc/tokens
+
+## 1.0.0
+
+### Major Changes
+
+- Initial stable **1.0.0** release of the QBall Design System.
+  - **@qball-inc/tokens** — design tokens shipped as CSS custom properties, DTCG JSON, and component CSS (zero build step, Berkeley-free).
+  - **@qball-inc/react** — React component library: primitives, overlays, data display, app chrome, AI/domain surfaces, a comprehensive icon system, and the SSR-safe MediaSlot display primitive. Token-CSS className wrappers over the shipped tokens; dual ESM/CJS + type declarations.
