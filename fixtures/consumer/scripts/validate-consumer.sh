@@ -61,6 +61,12 @@ echo "==> [2/8] Pack tokens + react from each package dir (pnpm pack; workspace:
 rm -f "$FIXTURE_DIR"/qball-inc-*.tgz
 ( cd "$TOKENS_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
 ( cd "$REACT_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
+# Rename the versioned tarballs to stable, version-agnostic names so the fixture's
+# file: deps (package.json) survive version bumps — the tarball CONTENT is what the
+# gate tests, not the version string in the filename. Without this, every release
+# (0.1.0 -> 1.0.0 -> 1.0.1 ...) renames the tarballs and breaks the file: refs.
+mv -f "$FIXTURE_DIR"/qball-inc-tokens-*.tgz "$FIXTURE_DIR/qball-inc-tokens.tgz"
+mv -f "$FIXTURE_DIR"/qball-inc-react-*.tgz "$FIXTURE_DIR/qball-inc-react.tgz"
 
 echo "==> [3/8] Install the tarballs into the fixture (standalone; no workspace symlink — AR15)"
 ( cd "$FIXTURE_DIR" && rm -rf node_modules dist && pnpm install --ignore-workspace --no-frozen-lockfile >/dev/null )
