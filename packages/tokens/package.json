@@ -15,6 +15,14 @@
     "monospace"
   ],
   "license": "Apache-2.0",
+  "author": "QBall Inc",
+  "homepage": "https://qball-inc.github.io/qball-design-system/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QBall-Inc/qball-design-system.git",
+    "directory": "packages/tokens"
+  },
+  "bugs": "https://github.com/QBall-Inc/qball-design-system/issues",
   "private": false,
   "publishConfig": {
     "access": "public"

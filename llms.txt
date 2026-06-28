@@ -1,0 +1,52 @@
+# QBall Design System
+
+> The QBall Design System is a portable, self-contained design system: a locked
+> token layer (color, type, spacing, radii, borders, motion) plus a
+> framework-agnostic React component layer, shipped in both light and dark from
+> the same tokens. It publishes to npm as `@qball-inc/tokens` and
+> `@qball-inc/react` (Apache-2.0).
+
+The token layer is drop-in CSS custom properties plus a DTCG / Style-Dictionary
+JSON mirror (zero build step). The React layer is thin, accessible className
+wrappers over the shipped component CSS — Radix where a primitive needs real
+behavior, D3 for charts — with Radix/D3/TanStack as optional peers. Light and
+dark are both first-class via `data-theme`. The display face defaults to Fira
+Code; the intended Berkeley Mono is restored per-license in private builds. A
+live gallery renders every component in light and dark.
+
+## Start here
+
+- [README](README.md): What the system is, how to consume it, the package layout, and the non-negotiables.
+- [Live gallery](https://qball-inc.github.io/qball-design-system/): Every component in light + dark, deployed from this repo.
+- [DESIGN.md](DESIGN.md): The design source of truth — foundations (color, type, layout, elevation, shape, motion, icons, voice) and Do's/Don'ts.
+
+## Foundations & build map
+
+- [COMPONENT-LIBRARY.md](COMPONENT-LIBRARY.md): The build map — every component, how it is built on React + Radix + the token CSS, its states, and build order.
+- [CAVEATS.md](CAVEATS.md): Resolved design decisions and the semver / versioning contract.
+- [FONTS.md](FONTS.md): The type families and how to load them.
+- [docs/frozen-tokens.md](docs/frozen-tokens.md): The frozen 1.0 token reference.
+- [docs/ssr-static-safety.md](docs/ssr-static-safety.md): SSR / static-export safety and the client-island matrix.
+
+## Packages (npm)
+
+- [@qball-inc/tokens](packages/tokens/): The locked token layer as drop-in CSS + DTCG JSON (zero build step). Subpaths: `./theme.css` (Tailwind v4 `@theme`), `./colors-and-type.css`, `./components.css`, `./tokens.json`.
+- [@qball-inc/react](packages/react/): The framework-agnostic component layer as a React library (dual ESM/CJS + types). Token-driven.
+- [docs/consumer-setup.md](docs/consumer-setup.md): How to install and wire the packages in a consumer app.
+- [docs/consumer-handback.md](docs/consumer-handback.md): Peer dependencies, the theme mechanism, and the SSR island matrix for consumers.
+- [docs/font-override.md](docs/font-override.md): Restoring Berkeley Mono in a licensed consumer build.
+
+## Component specimens & design specs
+
+- [preview/](preview/): One live HTML card per component — the canonical state matrices the gallery is built from.
+- [docs/icon-system-design.md](docs/icon-system-design.md): The icon system (codegen pipeline, tracks, naming).
+- [docs/media-slot-design.md](docs/media-slot-design.md): The SSR-safe MediaSlot display primitive.
+- [docs/tool-use-indicator-design.md](docs/tool-use-indicator-design.md): The AI tool-use / skill indicator design.
+
+## Reference
+
+- [reference/COMPONENTS-usage.md](reference/COMPONENTS-usage.md): Per-component usage guide.
+- [CHANGELOG](CHANGELOG.md): Release history.
+- [RELEASING](RELEASING.md): The release runbook (Changesets + npm OIDC trusted publishing).
+- [SKILL.md](SKILL.md): Agent-skill front-matter (drop-in).
+- [LICENSE](LICENSE): Apache License 2.0.
