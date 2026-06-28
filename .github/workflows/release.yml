@@ -46,7 +46,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20
+          # Node >= 22.14 + npm >= 11.5.1 (upgraded below) are required for npm
+          # OIDC trusted publishing. registry-url wires the npm registry so the
+          # publish step authenticates via OIDC (no NPM_TOKEN, no NODE_AUTH_TOKEN).
+          node-version: 22
+          registry-url: https://registry.npmjs.org
           cache: pnpm
 
       - name: Install (frozen lockfile)
@@ -57,6 +61,13 @@ jobs:
       # that no font binary reaches a published tarball (RB-1).
       - name: CI gates
         run: pnpm run ci
+
+      # npm trusted publishing (OIDC) needs npm CLI >= 11.5.1; the Node-bundled
+      # npm is older. pnpm@9.15.0 cannot do the OIDC exchange, so the publish step
+      # (scripts/publish-packages.sh) packs with pnpm and publishes the tarball
+      # with this upgraded npm.
+      - name: Upgrade npm to an OIDC-capable version (>= 11.5.1)
+        run: npm install -g npm@latest
 
       - name: Version PR or publish
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0

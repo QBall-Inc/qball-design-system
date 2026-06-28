@@ -42,14 +42,18 @@ just release-dry-run
 
 ## One-time precondition: npm OIDC trusted publishing (OWNER)
 
-This release uses **npm OIDC trusted publishing** — there is **no `NPM_TOKEN`** anywhere. Before the first live publish, the owner must enable it once:
+This release uses **npm OIDC trusted publishing** — there is **no `NPM_TOKEN`** anywhere. Trusted publishing is configured **per package** on npmjs.org, so the owner enables it once for **each** of `@qball-inc/tokens` and `@qball-inc/react`:
 
-1. On npmjs.org, for the **`@qball-inc`** scope: **Settings → Access → Trusted Publishers (OIDC)**, and authorise the GitHub repo `QBall-Inc/qball-design-system` + the `Release` workflow.
-2. Owner npm 2FA is already enabled.
+1. Open the package on npmjs.org → **Settings** → **Trusted Publisher** → **GitHub Actions**, and set: Organization `QBall-Inc`, Repository `qball-design-system`, Workflow filename `release.yml` (filename only), Environment blank.
+2. Repeat for the second package. Owner npm 2FA is already enabled.
 
-The workflow grants `id-token: write` and sets `NPM_CONFIG_PROVENANCE: true`, so each publish carries a signed provenance attestation. Everything except the live publish (the build, the version PR, and `just release-dry-run`) is verifiable **without** this step.
+The workflow grants `id-token: write`, so each publish carries a signed provenance attestation automatically (it also sets `NPM_CONFIG_PROVENANCE: true` belt-and-suspenders). Everything except the live publish (the build, the version PR, and `just release-dry-run`) is verifiable **without** this step.
 
-> **Tooling caveat — verify at publish time.** OIDC trusted publishing requires a publish client that supports it. Confirm the pinned pnpm (`pnpm@9.15.0`) / underlying npm performs the tokenless OIDC publish in CI before relying on it; if not, bump pnpm (or run `npm publish` on the `pnpm pack` tarball) for the publish step. This is the only part not exercised by the dry-run.
+### Publish client (resolves the pnpm/OIDC tooling caveat)
+
+npm trusted publishing requires **npm CLI ≥ 11.5.1 on Node ≥ 22.14**, and `pnpm@9.15.0` (this repo's `packageManager`) cannot perform the OIDC token exchange. So `release.yml` runs on **Node 22**, **upgrades npm to `npm@latest`**, and the publish step (`scripts/publish-packages.sh`) **packs each package with `pnpm pack`** — the only client that rewrites `workspace:*` to a real version inside the tarball — and **publishes that tarball with `npm publish`**. pnpm stays at 9.15.0 for install/build/pack.
+
+> **Unexercised until the first real publish.** The live OIDC token exchange only runs when a package actually publishes; no-changeset pushes skip both packages idempotently. If it ever fails, the **fallback is a local publish**: `npm login`, then `bash scripts/publish-packages.sh` (uses the login token; no provenance).
 
 ## Changelogs
 
