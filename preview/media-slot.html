@@ -2,6 +2,7 @@
 <!-- @dsCard group="Site & Media" name="MediaSlot" subtitle="Display container — image / gif / video / embed-facade × shape × fit × empty" -->
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MediaSlot · display container</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -28,6 +29,9 @@
   .spec .lab{font-family:var(--font-ui);font-size:11px;color:var(--text-muted)}
   .spec .lab b{color:var(--text-primary);font-weight:600}
   .w260{width:260px}.w220{width:220px}.w160{width:160px}.w120{width:120px}
+  /* QA Item 7b: at narrow width the header description drops BELOW the "MediaSlot" title
+     (instead of sitting in a bubble beside it); the theme toggle stays top-right. */
+  @media (max-width: 600px){ .top{flex-wrap:wrap} .top .pill{order:3;flex-basis:100%} }
 
   /* ════════════════════════════════════════════════════════════════════
      .media-slot* TOKEN-CSS SURFACE

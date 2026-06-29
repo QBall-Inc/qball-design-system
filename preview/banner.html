@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Banner / Inline Callout</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9,7 +10,7 @@
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
 <link rel="stylesheet" href="../packages/tokens/components.css">
 <style>
-  html,body{margin:0;height:100%}
+  html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
@@ -20,6 +21,8 @@
   .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
   .stack{display:flex;flex-direction:column;gap:12px;max-width:680px}
   .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:-4px}
+  /* AC-6 (S110 QA Item 1): narrow-width header — shrink the title block so the light|dark switcher stays right and is never clipped (wrap as a fallback). */
+  @media (max-width: 600px){ .head{flex-wrap:wrap;gap:10px} .head>:first-child{min-width:0} .head>:last-child{margin-left:auto} }
 </style>
 </head><body>
   <div class="head">

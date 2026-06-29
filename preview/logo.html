@@ -1,22 +1,38 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logo · Wordmark & mark</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
 <style>
-  html,body{margin:0;height:100%}
-  body{background:var(--bg-primary);padding:20px 28px;display:flex;align-items:center;gap:32px;box-sizing:border-box}
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);padding:20px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:28px 32px;box-sizing:border-box}
   .col{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
   img{display:block}
   .label{font-family:var(--font-ui);font-size:10px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
   .dark{background:#1E1D1B;padding:12px 16px;border-radius:6px}
+  /* wordmark shown on its REAL surfaces so it stays legible in BOTH header (light) + footer (dark)
+     contexts (the SVG is inlined so each chip drives the name colour via currentColor; .com stays sage). */
+  .wm-chip{padding:13px 16px;border-radius:6px;display:flex}
+  .wm-chip.light{background:#F4F4EC}
+  .wm-chip.dark{background:#1E1D1B}
+  .wm{width:188px;height:auto;display:block}
+  .wm text{font-family:var(--font-display);font-weight:700;font-size:40px;letter-spacing:-1px}
+  .wm .wm-tld{fill:var(--color-signal)}
+  .wm-chip.light .wm-name{fill:#141414}
+  .wm-chip.dark .wm-name{fill:#F7F3EE}
 </style>
 </head><body>
   <div class="col">
-    <img src="../assets/logo-wordmark.svg" width="220" alt="">
-    <div class="label">Wordmark · header/footer</div>
+    <div class="wm-chip light">
+      <svg class="wm" viewBox="0 0 220 52" role="img" aria-label="QBall.com"><text x="0" y="40"><tspan class="wm-name">QBall</tspan><tspan class="wm-tld">.com</tspan></text></svg>
+    </div>
+    <div class="wm-chip dark">
+      <svg class="wm" viewBox="0 0 220 52" role="img" aria-label="QBall.com"><text x="0" y="40"><tspan class="wm-name">QBall</tspan><tspan class="wm-tld">.com</tspan></text></svg>
+    </div>
+    <div class="label">Wordmark · header / footer</div>
   </div>
   <div class="col">
     <img src="../assets/logo-mark.svg" width="56" alt="">

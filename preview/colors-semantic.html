@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Colors — Semantic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
 <style>
-  html,body{margin:0;height:100%}
+  html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;box-sizing:border-box;align-content:center}
   .sw{display:flex;flex-direction:column;gap:6px}
   .chip{aspect-ratio:1.4;border-radius:6px}
   .name{font-family:var(--font-ui);font-size:11px;color:var(--text-primary);letter-spacing:.3px}
   .hex{font-family:var(--font-ui);font-size:10px;color:var(--text-muted);letter-spacing:.5px}
+  /* AC-6 responsive: reflow to narrow widths (stacks in modal + standalone-on-phone) */
+  @media (max-width: 600px){ body{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head><body>
   <div class="sw"><div class="chip" style="background:#3F6B5B"></div><div class="name">Success</div><div class="hex">sage · #3F6B5B</div></div>

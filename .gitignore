@@ -44,3 +44,6 @@ fixtures/consumer/pnpm-lock.yaml
 *.pfb
 *.pfm
 fonts/
+
+# stray local design-handoff export — never commit to the public repo
+/assets/Ashay Kubal Design System.zip

@@ -7,9 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="packages/tokens/components.css">
 <style>
   html, body { margin: 0; }
-  body { background: var(--bg-primary); color: var(--text-secondary); padding: clamp(20px, 5vw, 56px); }
+  /* shared content shell: the hero CONTENT and everything below ride the SAME max-width + side
+     gutter, so their left/right edges align at every width and ground (center) on very wide
+     screens. The hero BAND stays full-bleed; only the content inside it aligns to the shell. */
+  :root { --gallery-max: 1480px; --gallery-pad: clamp(20px, 5vw, 56px); }
+  body { background: var(--bg-primary); color: var(--text-secondary); padding: 0 0 var(--gallery-pad); }
+  .shell { max-width: var(--gallery-max); margin-inline: auto; padding-inline: var(--gallery-pad); }
   .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
     margin: 0 0 8px; }
   h1 { font-family: var(--font-display); font-size: clamp(32px, 4.6vw, 56px); font-weight: 700;
@@ -24,13 +30,17 @@
   .tg { font-family: var(--font-ui); font-size: 12px; padding: 7px 14px; border-radius: var(--radius-sm);
     border: 1px solid var(--color-signal); color: var(--color-signal); background: transparent; cursor: pointer; }
   .tg:hover { background: var(--signal-bg); }
-  .consume { display: flex; align-items: center; flex-wrap: wrap; gap: 9px 16px; margin: 16px 0 0;
-    font-family: var(--font-ui); font-size: 12.5px; color: var(--text-muted); }
-  .consume a { color: var(--color-signal); text-decoration: none; }
-  .consume a:hover { text-decoration: underline; }
-  .consume code { font-family: var(--font-code); font-size: 12px; color: var(--text-secondary);
-    background: var(--bg-surface); border: 0.5px solid var(--border-default);
-    border-radius: var(--radius-sm); padding: 5px 9px; }
+  /* hero "Get it for free:" + composite menu-buttons (npm / GitHub) — dogfood the shipped .dropdown panel */
+  .hero-get { font-family: var(--font-ui); font-size: 12.5px; letter-spacing: 0.3px; color: var(--text-muted); align-self: center; }
+  .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }  /* keep the 2 buttons grouped when the row wraps — the label drops to its own line first */
+  .menu-btn { position: relative; display: inline-flex; }
+  .hero-buttons .btn svg.menu-btn__chev { width: 13px; height: 13px; transition: transform 150ms ease; }
+  .menu-btn.open .btn svg.menu-btn__chev { transform: rotate(180deg); }
+  .menu-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; display: none; }
+  .menu-btn.open .menu-panel { display: block; }
+  .menu-panel .dropdown__row { text-decoration: none; box-sizing: border-box; }  /* border-box so the ↗ isn't clipped by the panel's overflow:hidden */
+  .menu-panel .dropdown__row .row-arrow { margin-left: auto; color: var(--text-muted); font-size: 11px; }
+  .menu-panel .dropdown__rule { margin-inline: -6px; }  /* full-width divider between options */
   .wrap { margin: 0; }
   h2 { font-family: var(--font-heading); font-size: clamp(18px, 1.7vw, 24px); font-weight: 600; color: var(--text-primary);
     letter-spacing: -0.3px; margin: 48px 0 5px; padding-top: 18px; border-top: 1px solid var(--border-default); }
@@ -46,8 +56,20 @@
   .cap b { font-family: var(--font-heading); font-size: 12px; font-weight: 600; color: var(--text-primary); }
   .cap a { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); text-decoration: none; }
   .cap a:hover { color: var(--color-signal); }
-  iframe { width: 100%; height: 240px; border: 0; background: var(--bg-primary); display: block; }
-  iframe.h-sm { height: 180px; } iframe.h-lg { height: 360px; } iframe.h-xl { height: 440px; }
+  /* tile heights scale with the viewport (so wide tiles aren't cramped/short) but stay bounded by
+     a max, so they don't keep growing once the grid width caps at the shell on big screens (AC-2). */
+  /* AC-6: the specimens are now responsive, so a narrow desktop tile (3-col tiles are ~320-440px,
+     below the specimens' 600px mobile breakpoint) would otherwise render each specimen's MOBILE
+     layout on the desktop contact sheet. The .frame is a fixed-height clipping box; the iframe inside
+     renders at a desktop design width (>= the breakpoint) and is CSS-scaled to fit (see scaleFrame),
+     preserving the desktop look. The modal iframe is NOT in a .frame, so it stays full-size. */
+  .frame { position: relative; width: 100%; overflow: hidden; background: var(--bg-primary);
+    height: clamp(240px, 24vw, 320px); }
+  .frame.h-sm { height: clamp(180px, 18vw, 240px); }
+  .frame.h-lg { height: clamp(300px, 30vw, 400px); }
+  .frame.h-xl { height: clamp(360px, 36vw, 460px); }
+  .frame iframe { position: absolute; top: 0; left: 0; border: 0; display: block;
+    transform-origin: top left; background: var(--bg-primary); }
   footer { margin: 48px 0 0; padding-top: 18px; border-top: 1px solid var(--border-default);
     font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); }
   /* in-page preview modal (replaces opening previews in a new tab) */
@@ -60,8 +82,11 @@
     overflow: hidden; }
   .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 11px 14px; border-bottom: 1px solid var(--border-default); }
-  .modal-head b { font-family: var(--font-heading); font-size: 13px; color: var(--text-primary); }
-  .modal-actions { display: flex; align-items: center; gap: 14px; }
+  /* QA Item 7a: keep the modal header compact — long preview titles truncate with an ellipsis on one
+     line instead of wrapping and ballooning the header height; the actions stay pinned top-right. */
+  .modal-head b { font-family: var(--font-heading); font-size: 13px; color: var(--text-primary);
+    flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .modal-actions { display: flex; align-items: center; gap: 14px; flex: none; }
   .modal-actions a { font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); text-decoration: none; }
   .modal-actions a:hover { color: var(--color-signal); }
   .modal-x { font-family: var(--font-ui); font-size: 16px; line-height: 1; color: var(--text-muted);
@@ -76,29 +101,126 @@
   .font-note b { font-family: var(--font-heading); color: var(--text-primary); }
   .font-note a { color: var(--color-signal); text-decoration: none; }
   .font-note a:hover { text-decoration: underline; }
+  /* === Asymmetric hero — theme-following; left content / right logo + badges (the DS is intentionally asymmetric) === */
+  .hero { position: relative;
+    margin: 0 0 clamp(30px,4vw,48px);
+    padding: clamp(40px,5.5vw,76px) 0 clamp(40px,5vw,64px);
+    background: var(--bg-primary); border-bottom: 1px solid var(--border-default); }
+  /* bg matched to the per-theme logo GIF's baked background so the mark blends seamlessly
+     (parchment GIF #F4F4EC / dark GIF #1C1C1C — intentionally a hair off the DS bg tokens). */
+  html[data-theme="light"] .hero { background: #F4F4EC; }
+  html[data-theme="dark"]  .hero { background: #1C1C1C; }
+  .hero-theme { position: absolute; top: clamp(14px,2vw,22px); right: clamp(16px,2.4vw,28px);
+    display: inline-flex; align-items: center; gap: 8px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0,1fr) clamp(190px,24vw,310px);
+    column-gap: clamp(32px,5vw,72px); align-items: center;
+    max-width: var(--gallery-max); margin: 0 auto; padding-inline: var(--gallery-pad); }
+  .hero-main { display: flex; flex-direction: column; align-items: flex-start; }
+  .hero-aside { display: flex; flex-direction: column; align-items: center; gap: clamp(18px,2.2vw,26px); }
+  .hero-eyebrow { display: flex; align-items: center; gap: 11px; margin: 0 0 20px;
+    font-family: var(--font-ui); font-size: 11.5px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--text-muted); }
+  .hero-eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--color-signal); }
+  .hero-title { font-family: var(--font-display); font-weight: 700; letter-spacing: -2px;
+    font-size: clamp(40px,6.5vw,84px); line-height: 0.97; margin: 0 0 22px; color: var(--text-primary); }
+  .hero-title .qb { color: var(--color-signal); }
+  .hero-lede { font-family: var(--font-body); color: var(--text-secondary);
+    font-size: clamp(15px,1.35vw,18.5px); line-height: 1.55; margin: 0 0 28px; max-width: 46ch; }
+  .hero-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .hero-buttons .btn { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; }
+  .hero-buttons .btn svg { width: 17px; height: 17px; flex: none; }
+  .hero-logo { width: 100%; max-width: clamp(150px,22vw,290px); height: auto; display: block; }
+  .hero-logo--dark { display: none; }
+  html[data-theme="dark"] .hero-logo--light { display: none; }
+  html[data-theme="dark"] .hero-logo--dark { display: block; }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  @media (max-width: 820px) {
+    .hero-grid { display: flex; flex-direction: column; align-items: flex-start; }
+    .hero-main, .hero-aside { display: contents; }
+    .hero-logo { order: 1; margin: 0 0 24px; }
+    .hero-eyebrow { order: 2; }
+    .hero-title { order: 3; }
+    .hero-lede { order: 4; }
+    .hero-badges { order: 5; justify-content: flex-start; margin: 0 0 24px; }
+    .hero-buttons { order: 6; }
+    .hero-logo { max-width: clamp(120px,34vw,184px); }
+  }
+  /* === S109 QA batch === */
+  /* QA-2: theme keyboard-shortcut hint cap (main page only) */
+  .kbd-hint { font-family: var(--font-code); font-size: 10.5px; line-height: 1; color: var(--text-muted);
+    border: 1px solid var(--border-default); border-bottom-width: 2px; border-radius: 5px;
+    padding: 3px 6px; background: var(--bg-surface); user-select: none; }
+  /* QA-3: tiles are non-interactive cropped teasers; the WHOLE tile opens the modal */
+  .cell { position: relative; cursor: pointer; transition: transform 150ms ease, border-color 150ms ease; }
+  .cell:hover { transform: translateY(-2px); border-color: var(--color-signal); }
+  .cell iframe { pointer-events: none; }
+  .cap .open-cue { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); }
+  .cell:hover .open-cue { color: var(--color-signal); }
+  .cell-link { position: absolute; inset: 0; z-index: 2; display: block; }
+  .cell-link:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; border-radius: var(--radius-md); }
 </style>
 </head>
 <body>
-  <div class="top">
-    <div>
-      <h1>QBall Design System</h1>
-      <p class="sub">Component gallery — every component, live in light + dark. Each tile is its own
-        <code class="code" style="font-size:0.85em">preview/*.html</code> card, the canonical state matrix.
-        Toggle the theme to check both; full build guidance in <b>COMPONENT-LIBRARY.md</b>.</p>
+  <header class="hero">
+    <div class="hero-theme">
+      <kbd class="kbd-hint" aria-hidden="true">T</kbd>
+      <button class="iconbtn theme-toggle" id="themeBtn" type="button" aria-label="Toggle theme" title="Toggle theme (T)" aria-keyshortcuts="t">
+        <span class="ic-sun"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg></span>
+        <span class="ic-moon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+      </button>
     </div>
-    <div class="toolbar">
-      <span class="meta">v1.0.0</span>
-      <button class="tg" id="themeBtn" type="button">Toggle theme</button>
+    <div class="hero-grid">
+      <div class="hero-main">
+        <p class="hero-eyebrow">Design tokens · Drop-in React lib · Open source</p>
+        <h1 class="hero-title"><span class="qb">QBall</span><br>Design System</h1>
+        <p class="hero-lede">A portable, self-contained design system — design tokens plus a
+          framework-agnostic React component library, shipped light and dark from one locked source.</p>
+        <div class="hero-buttons">
+          <span class="hero-get">Get it for free:</span>
+          <div class="hero-cta">
+            <div class="menu-btn" data-menu>
+              <button class="btn btn--primary" type="button" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z"/></svg>npm
+                <svg class="menu-btn__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="dropdown menu-panel" role="menu" aria-label="npm packages">
+                <div class="dropdown__sec">
+                  <a class="dropdown__row" role="menuitem" href="https://www.npmjs.com/package/@qball-inc/tokens" target="_blank" rel="noopener">Tokens<span class="row-arrow">↗</span></a>
+                  <hr class="dropdown__rule">
+                  <a class="dropdown__row" role="menuitem" href="https://www.npmjs.com/package/@qball-inc/react" target="_blank" rel="noopener">React Library<span class="row-arrow">↗</span></a>
+                </div>
+              </div>
+            </div>
+            <div class="menu-btn" data-menu>
+              <button class="btn btn--secondary" type="button" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub
+                <svg class="menu-btn__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="dropdown menu-panel" role="menu" aria-label="GitHub">
+                <div class="dropdown__sec">
+                  <a class="dropdown__row" role="menuitem" href="https://github.com/QBall-Inc/qball-design-system" target="_blank" rel="noopener">View Repo<span class="row-arrow">↗</span></a>
+                  <hr class="dropdown__rule">
+                  <a class="dropdown__row" role="menuitem" href="https://github.com/QBall-Inc/qball-design-system/tree/main/packages/tokens" target="_blank" rel="noopener">Tokens<span class="row-arrow">↗</span></a>
+                  <hr class="dropdown__rule">
+                  <a class="dropdown__row" role="menuitem" href="https://github.com/QBall-Inc/qball-design-system/tree/main/packages/react" target="_blank" rel="noopener">React Library<span class="row-arrow">↗</span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-aside">
+        <img class="hero-logo hero-logo--light" src="assets/qball-logo-handoff/qball-logo-parchment.gif" alt="QBall Design System" width="290" height="290">
+        <img class="hero-logo hero-logo--dark" src="assets/qball-logo-handoff/qball-logo-dark.gif" alt="QBall Design System" width="290" height="290">
+        <div class="hero-badges">
+          <span class="badge badge--signal">v1.0.1</span>
+          <span class="badge">40+ components</span>
+          <span class="badge">light &amp; dark</span>
+          <span class="badge">Apache-2.0</span>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="consume">
-    <span>Consume the system:</span>
-    <a href="https://github.com/QBall-Inc/qball-design-system" target="_blank" rel="noopener">GitHub repo ↗</a>
-    <a href="https://github.com/QBall-Inc/qball-design-system/tree/main/packages/tokens" target="_blank" rel="noopener">@qball-inc/tokens source ↗</a>
-    <code>npm install @qball-inc/tokens</code>
-    <a href="https://github.com/QBall-Inc/qball-design-system/tree/main/packages/react" target="_blank" rel="noopener">@qball-inc/react source ↗</a>
-    <code>npm install @qball-inc/react</code>
-  </div>
+  </header>
+  <main class="shell">
   <div class="font-note">
     <b>Display font &mdash;</b> the intended display typeface is <b>Berkeley Mono</b> (a commercial font by
     <a href="https://usgraphics.com/typefaces/berkeley-mono" target="_blank" rel="noopener">U.S. Graphics</a>).
@@ -109,6 +231,7 @@
   </div>
   <div class="wrap" id="wrap"></div>
   <footer>QBall Design System · light + dark component contact-sheet</footer>
+  </main>
 
   <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-label="Component preview">
     <div class="modal-box">
@@ -139,17 +262,17 @@
     { t: "Overlays, feedback & states", note: "Modal (border+scrim lift, no shadow), toast, banner, loading, empty/error.", items: [
       ["modal.html","Modal"],["toast.html","Toast"],["banner.html","Banner / callout"],
       ["loading.html","Loading · skeleton + spinner"],["states.html","Empty / error states"] ] },
-    { t: "App chrome", note: "Two directions: traditional bar vs the floating command island. Plus auth surfaces.", h: "h-lg", items: [
-      ["app-chrome-island.html","App chrome · island",true],["app-chrome-traditional.html","App chrome · traditional",true],["auth.html","Auth"] ] },
-    { t: "AI conversation & grounding", note: "The terminal transcript, the grounding wave-flag (source / unverified), and the tool-use / skill lifecycle indicator.", h: "h-lg", items: [
-      ["conversation-terminal.html","Terminal conversation",true],["tool-use-indicator.html","Tool-use / skill indicator",true] ] },
-    { t: "Briefings", note: "The LLM digest card — unread / read / loading / empty.", items: [
-      ["briefing.html","Briefing / digest card",true] ] },
     { t: "Site & media", note: "The MediaSlot display container — image / gif / video / click-to-load embed facade.", items: [
       ["media-slot.html","MediaSlot · display container",true] ] },
     { t: "Brand & misc", note: "Logo, the full icon system + usage, editorial bits.", items: [
       ["logo.html","Logo"],["icons.html","Icon system · full set",true],["iconography.html","Icon usage · hover + glyphs"],["card-featured.html","Featured card"],
-      ["code-block.html","Code block"],["pull-quote.html","Pull quote"] ] }
+      ["code-block.html","Code block"],["pull-quote.html","Pull quote"] ] },
+    { t: "AI conversation & grounding", note: "The terminal transcript, the grounding wave-flag (source / unverified), and the tool-use / skill lifecycle indicator.", h: "h-lg", items: [
+      ["conversation-terminal.html","Terminal conversation",true],["tool-use-indicator.html","Tool-use / skill indicator",true] ] },
+    { t: "App chrome", note: "Two directions: traditional bar vs the floating command island. Plus auth surfaces.", h: "h-lg", items: [
+      ["app-chrome-island.html","App chrome · island",true],["app-chrome-traditional.html","App chrome · traditional",true],["auth.html","Auth"] ] },
+    { t: "Briefings", note: "The LLM digest card — unread / read / loading / empty.", items: [
+      ["briefing.html","Briefing / digest card",true] ] }
   ];
   const wrap = document.getElementById("wrap");
   SECTIONS.forEach(sec => {
@@ -159,12 +282,22 @@
     sec.items.forEach(([file, label, tall]) => {
       const cell = document.createElement("div"); cell.className = "cell" + (tall ? " tall" : "");
       const cap = document.createElement("div"); cap.className = "cap";
-      cap.innerHTML = '<b></b><a class="open-modal" href="preview/'+file+'" rel="noopener">open ↗</a>';
+      cap.innerHTML = '<b></b><span class="open-cue">open ↗</span>';
       cap.querySelector("b").textContent = label;
-      const capLink = cap.querySelector("a"); capLink.dataset.file = file; capLink.dataset.label = label;
+      // AC-6: the iframe lives in a fixed-height .frame and renders at a desktop design width,
+      // CSS-scaled to fit (see scaleFrame), so the now-responsive specimens keep their desktop
+      // layout inside the contact-sheet tiles.
+      const frame = document.createElement("div");
+      frame.className = "frame" + (tall ? " h-lg" : (sec.h ? " " + sec.h : ""));
       const f = document.createElement("iframe"); f.src = "preview/" + file; f.loading = "lazy";
-      if (sec.h) f.className = sec.h; if (tall) f.className = "h-lg";
-      cell.append(cap, f); g.appendChild(cell);
+      frame.appendChild(f);
+      // QA-3: whole-tile click — a transparent overlay link (covers cap + frame) opens the modal;
+      // the iframe is pointer-events:none (CSS) so the preview area is part of the click target.
+      const link = document.createElement("a");
+      link.className = "open-modal cell-link"; link.href = "preview/" + file;
+      link.dataset.file = file; link.dataset.label = label;
+      link.setAttribute("aria-label", "Open " + label + " preview");
+      cell.append(cap, frame, link); g.appendChild(cell);
     });
     wrap.appendChild(g);
   });
@@ -178,6 +311,12 @@
     try {
       const doc = f.contentDocument; if (!doc) return;
       doc.documentElement.setAttribute("data-theme", "dark");
+      // QA-3: grid tiles are cropped teasers — kill BOTH scrollbars (the full, scrollable view is the
+      // modal). The modal frame is EXCLUDED so it stays scrollable.
+      if (f.id !== "modalFrame") {
+        doc.documentElement.style.overflow = "hidden";
+        if (doc.body) doc.body.style.overflow = "hidden";
+      }
       doc.querySelectorAll("[data-theme-set]").forEach(b =>
         b.setAttribute("aria-pressed", b.getAttribute("data-theme-set") === "dark" ? "true" : "false"));
     } catch(e){}
@@ -185,8 +324,29 @@
   // main toggle themes the gallery chrome only — the preview tiles are left untouched
   btn.addEventListener("click", () =>
     root.setAttribute("data-theme", root.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+  // AC-6: scale a grid frame's iframe so a narrow tile still renders the specimen's DESKTOP layout.
+  // The iframe renders at max(frameWidth, 620px) — i.e. natural (scale 1) when the tile is already
+  // wide enough, and rendered-wide-then-scaled-down only for narrow tiles — minimising text shrink
+  // while keeping the layout width above the specimen's 600px reflow breakpoint. The modal iframe is
+  // excluded (not inside a .frame) so it stays full-size + responsive.
+  const FRAME_MINW = 620;
+  function scaleFrame(f){
+    const frame = f.closest(".frame"); if (!frame) return;
+    const fw = frame.clientWidth, fh = frame.clientHeight;
+    if (!fw || !fh) return;
+    const dw = Math.max(fw, FRAME_MINW), s = fw / dw;
+    f.style.width = dw + "px";
+    f.style.height = (fh / s) + "px";
+    f.style.transform = "scale(" + s + ")";
+  }
   // every frame (incl. lazy-loaded + the modal) loads dark; flip an individual tile with its own switcher
-  document.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => pinFrameDark(f)));
+  document.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => { pinFrameDark(f); scaleFrame(f); }));
+  // re-scale grid frames when the layout changes (grid breakpoints + vw-based heights shift frame size)
+  let frameResizeT;
+  window.addEventListener("resize", () => {
+    clearTimeout(frameResizeT);
+    frameResizeT = setTimeout(() => document.querySelectorAll(".frame iframe").forEach(scaleFrame), 120);
+  });
 
   // in-page preview modal (replaces opening previews in a new tab)
   const modal = document.getElementById("modal");
@@ -214,6 +374,40 @@
   document.getElementById("modalClose").addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+
+  // QA-1: composite menu-buttons (npm / GitHub). Clicking a trigger toggles its panel (one open at a time);
+  // click-outside or Esc closes. Rows are real links (open npmjs / GitHub in a new tab).
+  const menus = Array.from(document.querySelectorAll(".menu-btn"));
+  function closeMenus(except){
+    menus.forEach(m => {
+      if (m === except) return;
+      m.classList.remove("open");
+      m.querySelector("button[aria-haspopup]").setAttribute("aria-expanded", "false");
+    });
+  }
+  menus.forEach(m => {
+    const trigger = m.querySelector("button[aria-haspopup]");
+    trigger.addEventListener("click", e => {
+      e.stopPropagation();
+      const willOpen = !m.classList.contains("open");
+      closeMenus(m);
+      m.classList.toggle("open", willOpen);
+      trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    });
+  });
+  document.addEventListener("click", () => closeMenus(null));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenus(null); });
+
+  // QA-2: 't' toggles the gallery theme — MAIN PAGE ONLY. Ignore while a modal is open, while typing in a
+  // field, or when a modifier is held. (Keystrokes inside a preview iframe are captured by that frame and
+  // never reach this handler.)
+  document.addEventListener("keydown", e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (modal.classList.contains("open")) return;
+    const el = e.target;
+    if (el && el.matches && el.matches("input, textarea, select, [contenteditable]")) return;
+    if (e.key === "t" || e.key === "T") btn.click();
+  });
 </script>
 </body>
 </html>

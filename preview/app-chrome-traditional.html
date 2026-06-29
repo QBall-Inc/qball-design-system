@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>App Chrome — Traditional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +35,8 @@
   .tb-pop.open{display:block}
   .tb-pop--user{right:clamp(40px,6vw,160px)}.tb-pop--bell{right:calc(clamp(40px,6vw,160px) + 90px)}
   .appbar{position:relative;padding:0 clamp(40px,6vw,160px)}
+  /* QA Item 10: the inner watchlist table scrolls horizontally at narrow width (faithful app shell). */
+  @media (max-width: 600px){ .panel{overflow-x:auto} }
 </style>
 <template id="stocky-tpl">
   <span class="stocky-icon" role="img" aria-label="Ask Stocky"><svg viewBox="0 0 32 32" fill="none">

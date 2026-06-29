@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Table — Watchlist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,7 +11,7 @@
 <link rel="stylesheet" href="../packages/tokens/components.css">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <style>
-  html,body{margin:0;height:100%}
+  html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
@@ -28,6 +29,24 @@
   .panel__bar .ttl{font-family:var(--font-heading);font-size:14px;font-weight:600;color:var(--text-primary)}
   .panel__bar .cnt{font-family:var(--font-display);font-size:12px;color:var(--text-muted)}
   table{margin:0}
+  /* AC-6 (S110 QA Item 1): narrow-width header — shrink the title block so the light|dark switcher stays right and is never clipped (wrap as a fallback). */
+  @media (max-width: 600px){ .head{flex-wrap:wrap;gap:10px} .head>:first-child{min-width:0} .head>:last-child{margin-left:auto} }
+  /* QA Item 4 (gallery-only override): a compact card instead of the shipped generic label-above-value
+     stack — symbol+name left, price+change right, sparkline + alert below (native mobile-watchlist feel).
+     Specimen CSS loads after components.css, so it wins on source order at the same @container width. */
+  @container (max-width: 640px){
+    .dt tbody tr{display:grid;grid-template-columns:1fr auto auto;
+      grid-template-areas:"sym last rm" "sym day rm" "spk alert rm";
+      column-gap:14px;row-gap:3px;align-items:center;padding:13px 16px}
+    .dt tbody td{display:block;padding:0;border-bottom:0;text-align:left}
+    .dt tbody td[data-label]::before{content:none;display:none}
+    .dt tbody td[data-label="Symbol"]{grid-area:sym;display:flex;flex-direction:column;gap:1px;align-self:center}
+    .dt tbody td[data-label="Last"]{grid-area:last;text-align:right;font-family:var(--font-display);font-weight:600}
+    .dt tbody td[data-label="Day"]{grid-area:day;text-align:right;font-family:var(--font-display);font-size:12px}
+    .dt tbody td[data-label="Week"]{grid-area:spk;margin-top:5px}
+    .dt tbody td[data-label="Alert"]{grid-area:alert;text-align:right;margin-top:5px}
+    .dt tbody td:last-child{grid-area:rm;align-self:center}
+  }
 </style>
 </head><body>
   <div class="head">

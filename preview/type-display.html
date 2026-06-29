@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Type — Display</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700;800&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
 <style>
-  html,body{margin:0;height:100%}
+  html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);padding:28px 32px;display:flex;flex-direction:column;justify-content:center;gap:14px;box-sizing:border-box}
   .row{display:flex;align-items:baseline;gap:18px}
   .label{font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted);min-width:90px}
   .meta{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);margin-left:auto;letter-spacing:.5px}
   .specimen{font-family:var(--font-display);color:var(--text-primary)}
+  /* AC-6 responsive: reflow to narrow widths (stacks in modal + standalone-on-phone) */
+  @media (max-width: 600px){ .row{flex-wrap:wrap}.label{min-width:0} }
 </style>
 </head><body>
   <div class="row">

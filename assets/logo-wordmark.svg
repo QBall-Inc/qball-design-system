@@ -1,6 +1,4 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" width="360" height="64" role="img" aria-label="ashaykubal.com">
-  
-  <text x="0" y="46" class="ak-wm" fill="#141414">ashaykubal</text>
-  <text x="210" y="46" class="ak-wm" fill="#3F6B5B">.com</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 56" width="220" height="56" role="img" aria-label="QBall.com">
+  <text x="0" y="42" font-family="'Berkeley Mono','Fira Code',monospace" font-weight="700" font-size="40" letter-spacing="-1"><tspan fill="#141414">QBall</tspan><tspan fill="#3F6B5B">.com</tspan></text>
 </svg>

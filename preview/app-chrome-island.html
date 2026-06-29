@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en" data-theme="light"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>App Chrome — Island</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +52,8 @@
   .term__prompt{color:var(--color-signal);font-weight:600;padding-top:8px}
   .term__input{font-family:var(--font-display);font-size:12.5px;line-height:1.6;border:0;border-bottom:1px solid var(--border-strong);padding:8px 4px;background:transparent;color:var(--text-primary);outline:none;width:100%;resize:none;box-sizing:border-box}
   @keyframes cdblink{0%,50%{opacity:1}51%,100%{opacity:0}}
+  /* QA Item 10: the inner watchlist table scrolls horizontally at narrow width (faithful app shell). */
+  @media (max-width: 600px){ .panel{overflow-x:auto} }
 </style>
 <template id="stocky-tpl">
   <span class="stocky-icon" role="img" aria-label="Ask Stocky"><svg viewBox="0 0 32 32" fill="none">

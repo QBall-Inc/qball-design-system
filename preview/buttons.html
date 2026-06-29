@@ -1,15 +1,18 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Buttons</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
 <style>
-  html,body{margin:0;height:100%}
+  html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);padding:24px 32px;display:flex;flex-direction:column;justify-content:center;gap:16px;box-sizing:border-box}
   .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .label{font-family:var(--font-ui);font-size:10px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted);min-width:90px}
+  /* AC-6 responsive: reflow to narrow widths (stacks in modal + standalone-on-phone) */
+  @media (max-width: 600px){ .row{flex-wrap:wrap}.label{min-width:0} }
 </style>
 </head><body>
   <div class="row">
