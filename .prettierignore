@@ -6,6 +6,10 @@ coverage/
 # Generated lockfile — managed by pnpm, never prettier-formatted.
 pnpm-lock.yaml
 
+# QuBrain mock bundle — landed once as a byte-identical copy of the upstream
+# knowledge-builder export (plan AD-8); never reformatted or edited.
+/fixtures/qubrain/
+
 # Pre-existing DS-packet / gallery content — served and maintained as-authored
 # (browser HTML/CSS + design docs). Out of the workspace format scope; preserve
 # verbatim (D-09). The TS packages (packages/react) ARE formatted; the

@@ -1,0 +1,100 @@
+{
+  "name": "@qball-inc/elements",
+  "version": "0.0.0",
+  "description": "QBall Design System framework-free elements — plain TypeScript/DOM trust atoms, chat and knowledge-graph components that paint the @qball-inc/tokens CSS. No framework runtime.",
+  "keywords": [
+    "design-system",
+    "web-components",
+    "framework-free",
+    "vanilla-js",
+    "dom",
+    "knowledge-graph",
+    "three.js",
+    "typescript"
+  ],
+  "license": "Apache-2.0",
+  "author": "QBall Inc",
+  "homepage": "https://qball-inc.github.io/qball-design-system/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QBall-Inc/qball-design-system.git",
+    "directory": "packages/elements"
+  },
+  "bugs": "https://github.com/QBall-Inc/qball-design-system/issues",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./trust": {
+      "import": {
+        "types": "./dist/trust/index.d.ts",
+        "default": "./dist/trust/index.js"
+      },
+      "require": {
+        "types": "./dist/trust/index.d.cts",
+        "default": "./dist/trust/index.cjs"
+      }
+    },
+    "./chat": {
+      "import": {
+        "types": "./dist/chat/index.d.ts",
+        "default": "./dist/chat/index.js"
+      },
+      "require": {
+        "types": "./dist/chat/index.d.cts",
+        "default": "./dist/chat/index.cjs"
+      }
+    },
+    "./graph": {
+      "import": {
+        "types": "./dist/graph/index.d.ts",
+        "default": "./dist/graph/index.js"
+      },
+      "require": {
+        "types": "./dist/graph/index.d.cts",
+        "default": "./dist/graph/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "tsup && vitest run",
+    "test:browser": "playwright test",
+    "playwright:install": "playwright install chromium",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/three": "0.186.0",
+    "jsdom": "^25.0.1",
+    "three": "0.186.1",
+    "tsup": "^8.3.5",
+    "vitest": "^3.2.6"
+  }
+}

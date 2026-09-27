@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   },
   "packageManager": "pnpm@9.15.0",
   "scripts": {
@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "pnpm --filter \"@qball-inc/*\" --if-present run test",
+    "test:browser": "pnpm --filter \"@qball-inc/elements\" run test:browser",
     "license-check": "bash scripts/license-check.sh",
     "consumer-validate": "bash fixtures/consumer/scripts/validate-consumer.sh",
     "generate:icons:check": "pnpm --filter \"@qball-inc/react\" run generate:icons:check",

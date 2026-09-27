@@ -47,6 +47,16 @@ build:
 test:
     pnpm --filter "@qball-inc/*" --if-present run test
 
+# Install the headless Chromium used by the real-browser tests (one-time per
+# machine / Playwright version bump). CI installs it with --with-deps.
+playwright-install:
+    pnpm --filter "@qball-inc/elements" run playwright:install
+
+# Real-browser tests (Playwright, Chromium + SwiftShader WebGL) for
+# @qball-inc/elements — the canvas layer jsdom cannot exercise.
+test-browser:
+    pnpm run test:browser
+
 # Icon-system codegen: regenerate the committed src/icons/generated/**
 # from the manifest + pinned lucide-react@1.17.0. Run after editing the manifest.
 generate-icons:
@@ -77,8 +87,8 @@ spdx-check:
 consumer-validate:
     bash fixtures/consumer/scripts/validate-consumer.sh
 
-# Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> license-check -> spdx-check -> consumer-validate.
-ci: generate-icons-check typecheck lint test license-check spdx-check consumer-validate
+# Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> test-browser -> license-check -> spdx-check -> consumer-validate.
+ci: generate-icons-check typecheck lint test test-browser license-check spdx-check consumer-validate
     @echo "ci: all gates passed"
 
 # Release dry-run (non-mutating): asserts zero NPM_TOKEN + OIDC/provenance in the

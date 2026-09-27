@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "e2e",
+    "**/*.test.ts",
+    "tsup.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
+}
