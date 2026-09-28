@@ -1,0 +1,19 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL answer fixture: a transport-neutral AnswerTurn event script (start → appendText → authorize? → finalize | fail) replayed into packages/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins. Replaced by the backend's answer pack (plan OG-6(b)).",
+  "_case": "error — the stream failed mid-answer; the partial draft must never be shown",
+  "question": "how do eval harnesses handle flaky tools?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "most harnesses retry flaky tools up to"
+    },
+    {
+      "op": "fail",
+      "message": "the answer service is unavailable — try again in a moment."
+    }
+  ]
+}

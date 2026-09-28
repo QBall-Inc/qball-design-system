@@ -1,0 +1,60 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL detail payload in the backend's CURRENT serializer shape (dates under `freshness`, sources as a sibling provenance array). Input to packages/elements adaptConnection(). Synthetic, public-safe content; replaced by the backend's certified fixture pack (plan OG-6(a)).",
+  "_case": "typed hop: two current claims, one endorsed and verified",
+  "typed_claims": [
+    {
+      "claim_id": 101,
+      "subject": "agent memory",
+      "relation": "relates_to",
+      "object": "retrieval",
+      "claim_text": "episodic memory outperforms flat context past 100 turns",
+      "confidence": 0.94,
+      "confidence_tier": "high",
+      "episode_id": "ep-demo-0001",
+      "freshness": {
+        "valid_from": "2026-05-18",
+        "valid_to": null,
+        "is_current": true,
+        "superseded_by_claim_id": null
+      },
+      "endorsement_tier": "endorsed",
+      "verification": "verified"
+    },
+    {
+      "claim_id": 102,
+      "subject": "agent memory",
+      "relation": "relates_to",
+      "object": "retrieval",
+      "claim_text": "memory compaction loses retrieval accuracy on long-running agents",
+      "confidence": 0.71,
+      "confidence_tier": "medium",
+      "episode_id": "ep-demo-0002",
+      "freshness": {
+        "valid_from": "2026-05-18",
+        "valid_to": null,
+        "is_current": true,
+        "superseded_by_claim_id": null
+      }
+    }
+  ],
+  "shared_episodes": [],
+  "provenance": [
+    {
+      "episode_id": "ep-demo-0001",
+      "resolved": true,
+      "title": "Memory in the age of agents",
+      "url": "https://example.com/memory-in-the-age-of-agents",
+      "source_type": "blog",
+      "save_date": "2026-07-02"
+    },
+    {
+      "episode_id": "ep-demo-0002",
+      "resolved": true,
+      "title": "LLM-powered autonomous agents",
+      "url": "https://example.com/llm-powered-autonomous-agents",
+      "source_type": "blog",
+      "save_date": "2026-05-18"
+    }
+  ]
+}

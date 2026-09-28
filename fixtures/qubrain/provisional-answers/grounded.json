@@ -1,0 +1,82 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL answer fixture: a transport-neutral AnswerTurn event script (start → appendText → authorize? → finalize | fail) replayed into packages/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins. Replaced by the backend's answer pack (plan OG-6(b)).",
+  "_case": "grounded — 6 claims · 4 episodes · high confidence",
+  "question": "what’s the current thinking on agent memory?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: agent memory is drifting toward "
+    },
+    {
+      "op": "appendText",
+      "text": "episodic stores, roughly speaking."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "grounded",
+        "explanation": {
+          "claims": 6,
+          "episodes": 4,
+          "confidenceTier": "high"
+        },
+        "body": [
+          {
+            "kind": "text",
+            "text": "short version: memory’s moving from flat context to episodic recall. i’m drawing on "
+          },
+          {
+            "kind": "figure",
+            "text": "6 claims"
+          },
+          {
+            "kind": "text",
+            "text": " from "
+          },
+          {
+            "kind": "figure",
+            "text": "4 sources"
+          },
+          {
+            "kind": "text",
+            "text": " in QuBrain — freshest from july — and the evidence leans episodic for long-running agents."
+          }
+        ],
+        "sources": [
+          {
+            "episode_id": "ep-demo-0001",
+            "title": "Memory in the age of agents",
+            "url": "https://example.com/memory-in-the-age-of-agents",
+            "source_type": "blog",
+            "save_date": "2026-07-02"
+          },
+          {
+            "episode_id": "ep-demo-0002",
+            "title": "LLM-powered autonomous agents",
+            "url": "https://example.com/llm-powered-autonomous-agents",
+            "source_type": "blog",
+            "save_date": "2026-05-18"
+          },
+          {
+            "episode_id": "ep-demo-0003",
+            "title": "Context engineering notes",
+            "url": "https://example.com/context-engineering-notes",
+            "source_type": "web",
+            "save_date": "2026-07-30"
+          }
+        ],
+        "provenance": {
+          "claims": 6,
+          "episodes": 4,
+          "confidenceTier": "high",
+          "snapshotDate": "2026-07-17",
+          "supersededExcluded": 0
+        }
+      }
+    }
+  ]
+}

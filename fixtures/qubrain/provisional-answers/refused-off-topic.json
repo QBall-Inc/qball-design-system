@@ -1,0 +1,29 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL answer fixture: a transport-neutral AnswerTurn event script (start → appendText → authorize? → finalize | fail) replayed into packages/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins. Replaced by the backend's answer pack (plan OG-6(b)).",
+  "_case": "refused, off-topic — out of scope",
+  "question": "what’s a good sourdough hydration?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "most bakers start around 75 percent hydration"
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "refused",
+        "reason": "off_topic",
+        "body": [
+          {
+            "kind": "text",
+            "text": "honestly, that’s outside what my reading covers. QuBrain is agents, evals, serving, product craft. i’d rather pass than make something up."
+          }
+        ],
+        "closingLine": "where i’m actually useful: agent memory, eval harnesses, context engineering."
+      }
+    }
+  ]
+}

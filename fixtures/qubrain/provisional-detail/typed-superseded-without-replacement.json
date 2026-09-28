@@ -1,0 +1,74 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL detail payload in the backend's CURRENT serializer shape (dates under `freshness`, sources as a sibling provenance array). Input to packages/elements adaptConnection(). Synthetic, public-safe content; replaced by the backend's certified fixture pack (plan OG-6(a)).",
+  "_case": "typed hop: claim 301 superseded by 399, which is NOT in the payload; claim 302's source is unresolved; claim 303's episode is absent from provenance",
+  "typed_claims": [
+    {
+      "claim_id": 301,
+      "subject": "agent memory",
+      "relation": "relates_to",
+      "object": "retrieval",
+      "claim_text": "retrieval quality plateaus beyond eight memory slots",
+      "confidence": 0.41,
+      "confidence_tier": "low",
+      "episode_id": "ep-demo-0002",
+      "freshness": {
+        "valid_from": "2025-09-12",
+        "valid_to": "2026-06-20",
+        "is_current": false,
+        "superseded_by_claim_id": 399
+      }
+    },
+    {
+      "claim_id": 302,
+      "subject": "agent memory",
+      "relation": "relates_to",
+      "object": "retrieval",
+      "claim_text": "summarised memories drift from their sources over time",
+      "confidence": 0.68,
+      "confidence_tier": "medium",
+      "episode_id": "ep-demo-0009",
+      "freshness": {
+        "valid_from": "2026-05-18",
+        "valid_to": null,
+        "is_current": true,
+        "superseded_by_claim_id": null
+      }
+    },
+    {
+      "claim_id": 303,
+      "subject": "agent memory",
+      "relation": "relates_to",
+      "object": "retrieval",
+      "claim_text": "memory writes should be gated by relevance",
+      "confidence": 0.66,
+      "confidence_tier": "medium",
+      "episode_id": "ep-demo-0404",
+      "freshness": {
+        "valid_from": "2026-05-18",
+        "valid_to": null,
+        "is_current": true,
+        "superseded_by_claim_id": null
+      }
+    }
+  ],
+  "shared_episodes": [],
+  "provenance": [
+    {
+      "episode_id": "ep-demo-0002",
+      "resolved": true,
+      "title": "LLM-powered autonomous agents",
+      "url": "https://example.com/llm-powered-autonomous-agents",
+      "source_type": "blog",
+      "save_date": "2026-05-18"
+    },
+    {
+      "episode_id": "ep-demo-0009",
+      "resolved": false,
+      "title": null,
+      "url": null,
+      "source_type": null,
+      "save_date": null
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL detail payload in the backend's CURRENT serializer shape (dates under `freshness`, sources as a sibling provenance array). Input to packages/elements adaptConnection(). Synthetic, public-safe content; replaced by the backend's certified fixture pack (plan OG-6(a)).",
+  "_case": "co-mention hop: three shared sources, one unresolved",
+  "typed_claims": [],
+  "typed_claim_count": 0,
+  "shared_episodes": [
+    {
+      "episode_id": "ep-demo-0001",
+      "resolved": true,
+      "title": "Memory in the age of agents",
+      "url": "https://example.com/memory-in-the-age-of-agents",
+      "source_type": "blog",
+      "save_date": "2026-07-02"
+    },
+    {
+      "episode_id": "ep-demo-0003",
+      "resolved": true,
+      "title": "Context engineering notes",
+      "url": "https://example.com/context-engineering-notes",
+      "source_type": "web",
+      "save_date": "2026-07-30"
+    },
+    {
+      "episode_id": "ep-demo-0009",
+      "resolved": false,
+      "title": null,
+      "url": null,
+      "source_type": null,
+      "save_date": null
+    }
+  ],
+  "shared_episode_count": 3
+}

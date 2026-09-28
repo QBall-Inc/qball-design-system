@@ -1,0 +1,66 @@
+{
+  "_provisional": true,
+  "_note": "PROVISIONAL answer fixture: a transport-neutral AnswerTurn event script (start → appendText → authorize? → finalize | fail) replayed into packages/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins. Replaced by the backend's answer pack (plan OG-6(b)).",
+  "_case": "withheld — 2 of 5 claims untraceable · 2 claims shown; the streamed draft must never be shown",
+  "question": "how much does memory compaction cost in accuracy?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "compaction costs roughly 38% of retrieval accuracy "
+    },
+    {
+      "op": "appendText",
+      "text": "and doubles latency past 200 turns."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "withheld",
+        "explanation": {
+          "untraceable": 2,
+          "total": 5,
+          "shown": 2
+        },
+        "body": [
+          {
+            "kind": "text",
+            "text": "i wrote you an answer, then checked it — 2 of its 5 numbers don’t trace back to anything QuBrain holds. so i’m sitting on it until they do."
+          }
+        ],
+        "traceableClaims": [
+          {
+            "claim_id": 101,
+            "claim_text": "episodic memory outperforms flat context past 100 turns",
+            "confidence": 0.94,
+            "confidence_tier": "high",
+            "valid_from": "2026-07-02",
+            "source": {
+              "episode_id": "ep-demo-0001",
+              "title": "Memory in the age of agents",
+              "url": "https://example.com/memory-in-the-age-of-agents",
+              "source_type": "blog",
+              "save_date": "2026-07-02"
+            }
+          },
+          {
+            "claim_id": 102,
+            "claim_text": "memory compaction loses ~12% of retrieval accuracy",
+            "confidence": 0.71,
+            "confidence_tier": "medium",
+            "valid_from": "2026-05-18",
+            "source": {
+              "episode_id": "ep-demo-0002",
+              "title": "LLM-powered autonomous agents",
+              "url": "https://example.com/llm-powered-autonomous-agents",
+              "source_type": "blog",
+              "save_date": "2026-05-18"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
