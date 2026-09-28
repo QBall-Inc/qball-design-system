@@ -152,6 +152,18 @@ tightens as size grows: −2 (H1) → −1 (H2) → −0.5 (H3) → 0 (H4/body) 
 only blur is the app chrome's translucent bar/dock and the overlay scrim — never decorative glass on
 content. No `backdrop-filter` as ornament.
 
+**Sanctioned exceptions — QuBrain graph explorer + QuBae chat (owner-approved design, 1.1.0).**
+These are the only departures from the rules above; each is deliberate and scoped:
+1. **QuBae panel lift shadow** — `.qpanel` carries one soft shadow (`0 18px 48px`, 18% ink) so the
+   corner-anchored chat panel reads as floating over any page.
+2. **Explorer glass** — `.gx__panel`, `.gx__facets` and `.gx__pshow` use `backdrop-filter` blur over
+   the live 3D canvas, so graph context stays visible behind the overlays (these float over the
+   canvas, not over content).
+3. **Canvas label halo** — graph labels get a `text-shadow` halo in the stage colour (set by the
+   graph engine, `@qball-inc/elements`), so labels stay legible over dense node clouds.
+The chat's verdict-stamp and sources-line sweeps fall under the already-sanctioned grounding
+shimmer (see Motion), not new gradients.
+
 ## Shapes
 
 Radii: **`sm` 4px** (tags, buttons, inline code, chips, switches), **`md` 8px** (cards), **`lg` 12px**

@@ -33,12 +33,14 @@
     "./theme.css": "./theme.css",
     "./colors-and-type.css": "./colors_and_type.css",
     "./components.css": "./components.css",
+    "./graph.css": "./graph.css",
     "./tokens.json": "./tokens.json"
   },
   "files": [
     "theme.css",
     "colors_and_type.css",
     "components.css",
+    "graph.css",
     "tokens.json"
   ]
 }

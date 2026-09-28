@@ -458,3 +458,65 @@ hr, .rule {
 .num--up   { color: var(--data-up); }
 .num--down { color: var(--data-down); }
 .num--flat { color: var(--data-flat); }
+
+/* ============================================================
+   QuBrain graph stage + text scale (additive, 1.1.0)
+   Theme-INDEPENDENT constants: the graph explorer is dark-only
+   by ruling, so it never flips with the page theme. graph.css
+   maps the ordinary tokens (--bg-*, --text-*, --border-*,
+   --color-*, --data-*, --anno-*) onto these inside the
+   explorer; nothing else consumes them.
+   Two tiers, as approved:
+   · canvas — deep-ink stage + brighter labels (--stage-*)
+   · panel  — the entity panel, filter bar and details pill
+              (--stage-panel-*; lighter, accessibility-tested
+              greys than the page dark theme)
+   Accents are the luminous dark-theme values, pinned so a
+   light page can never repaint the nodes.
+   ============================================================ */
+:root {
+  /* canvas tier */
+  --stage-bg:              #12161F;   /* Deep ink */
+  --stage-surface:         #1A1F2B;
+  --stage-text-primary:    #EDE8E1;
+  --stage-text-secondary:  #D6D1C8;
+  --stage-text-muted:      #A8A29E;
+  --stage-border:          rgba(255, 255, 255, 0.06);
+  --stage-border-strong:   rgba(255, 255, 255, 0.25);
+
+  /* panel tier (panel, filter bar, details pill) */
+  --stage-panel-bg:            #1E1D1B;
+  --stage-panel-surface:       #2A2826;
+  --stage-panel-text-primary:  #E7E0D6;
+  --stage-panel-text-secondary: #CDC6BB;
+  --stage-panel-text-muted:    #8A847D;
+  --stage-panel-border:        rgba(255, 255, 255, 0.06);
+  --stage-panel-border-strong: rgba(255, 255, 255, 0.14);
+  --stage-panel-divider:       rgba(255, 255, 255, 0.07);   /* glass strip hairline */
+  --stage-mark:                #E7E2DA;   /* launcher mascot ink over the stage */
+
+  /* accents (shared by both tiers) */
+  --stage-signal:          #5B9E87;
+  --stage-highlight:       #D97706;
+  --stage-signal-bg:       rgba(91, 158, 135, 0.15);
+  --stage-highlight-bg:    rgba(217, 119, 6, 0.15);
+  --stage-data-up:         #4FB07A;
+  --stage-data-down:       #E2705F;
+  --stage-data-warn:       #D9B43C;
+  --stage-data-info:       #5B9BD6;
+  --stage-data-flat:       #A8A29E;
+  --stage-data-up-bg:      rgba(79, 176, 122, 0.15);
+  --stage-data-down-bg:    rgba(226, 112, 95, 0.15);
+  --stage-data-warn-bg:    rgba(217, 180, 60, 0.16);
+  --stage-data-info-bg:    rgba(91, 155, 214, 0.15);
+  --stage-anno-source:     #93A7B5;
+  --stage-anno-source-bg:  rgba(147, 167, 181, 0.16);
+
+  /* Light chat scrim — the QuBae overlay dims the page less than a modal. */
+  --color-scrim-light:     rgba(20, 20, 20, 0.22);
+
+  /* Text scale — multiplies the QuBrain / QuBae component text sizes.
+     1 = exactly as designed. A consumer that steps its type up on wide
+     screens sets it to match, e.g. 1.25 at min-width 1600px. */
+  --text-scale: 1;
+}

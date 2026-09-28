@@ -1,0 +1,103 @@
+/* ============================================================
+   @qball-inc/tokens — graph.css (opt-in, 1.1.0)
+   The QuBrain graph explorer: canvas chrome, explorer frame,
+   glass panel/filter strip, bottom sheet, details pill.
+   Load order: colors-and-type.css → components.css → graph.css.
+   Pages without a graph never load this file.
+   ============================================================ */
+
+/* ---- Dark stage (never follows the page theme) ----
+   Panel tier on the whole organism (panel, filter bar, pill and
+   everything inside them, incl. ClaimCards / SourceRows), then the
+   canvas tier on the canvas itself. Selectors out-rank any
+   [data-theme] attribute inside the explorer. */
+.gx,.gx [data-theme]{
+  --bg-primary:var(--stage-panel-bg);--bg-surface:var(--stage-panel-surface);
+  --text-primary:var(--stage-panel-text-primary);--text-secondary:var(--stage-panel-text-secondary);--text-muted:var(--stage-panel-text-muted);
+  --border-default:var(--stage-panel-border);--border-strong:var(--stage-panel-border-strong);
+  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--highlight-bg:var(--stage-highlight-bg);
+  --data-up:var(--stage-data-up);--data-down:var(--stage-data-down);--data-warn:var(--stage-data-warn);--data-info:var(--stage-data-info);--data-flat:var(--stage-data-flat);
+  --data-up-bg:var(--stage-data-up-bg);--data-down-bg:var(--stage-data-down-bg);--data-warn-bg:var(--stage-data-warn-bg);--data-info-bg:var(--stage-data-info-bg);
+  --anno-source:var(--stage-anno-source);--anno-source-bg:var(--stage-anno-source-bg);
+  color-scheme:dark;
+}
+.graphcanvas,.graphcanvas[data-theme],.gx .graphcanvas,.gx .graphcanvas[data-theme]{
+  --bg-primary:var(--stage-bg);--bg-surface:var(--stage-surface);
+  --text-primary:var(--stage-text-primary);--text-secondary:var(--stage-text-secondary);--text-muted:var(--stage-text-muted);
+  --border-default:var(--stage-border);--border-strong:var(--stage-border-strong);
+  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--highlight-bg:var(--stage-highlight-bg);
+  --data-up:var(--stage-data-up);--data-down:var(--stage-data-down);--data-warn:var(--stage-data-warn);--data-info:var(--stage-data-info);--data-flat:var(--stage-data-flat);
+  --anno-source:var(--stage-anno-source);--anno-source-bg:var(--stage-anno-source-bg);
+  color-scheme:dark;
+}
+
+/* ============================================================
+   GraphCanvas — QuBrain 3D knowledge-graph explorer
+   Dark-only by ruling: the stage below pins the palette, so it
+   renders identically inside a light or dark page.
+   Behavior: @qball-inc/elements graph.
+   ============================================================ */
+.graphcanvas{position:relative;overflow:hidden;background:var(--bg-primary);border:1px solid var(--border-strong);border-radius:var(--radius-md);font-family:var(--font-ui)}
+.graphcanvas .gc-canvas{position:relative;z-index:1;display:block}
+.graphcanvas .gc-labels{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2;font-family:var(--font-ui)}
+.graphcanvas .gc-hud{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:12px 16px;pointer-events:none}
+.graphcanvas .gc-status{font-size:calc(11px * var(--text-scale, 1));color:var(--text-muted);letter-spacing:.4px;max-width:45%}
+.graphcanvas .gc-hint{font-size:calc(10.5px * var(--text-scale, 1));color:var(--text-muted);text-align:right;max-width:50%}
+.graphcanvas .gc-chip{position:absolute;left:16px;bottom:40px;z-index:4;max-width:min(480px,80%);background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:10px 12px;font-size:calc(12px * var(--text-scale, 1));color:var(--text-secondary)}
+.graphcanvas .gc-chip b{color:var(--text-primary);font-weight:600}
+.graphcanvas .gc-cls{color:var(--color-signal);font-size:calc(10.5px * var(--text-scale, 1));text-transform:uppercase;letter-spacing:.8px}
+.graphcanvas .gc-chip button{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:transparent;color:var(--color-signal);padding:2px 8px;cursor:pointer;margin-left:6px}
+.graphcanvas .gc-chip button:hover{background:var(--signal-bg)}
+.graphcanvas .gc-hover{position:absolute;z-index:5;background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px 8px;font-size:calc(11px * var(--text-scale, 1));color:var(--text-primary);pointer-events:none}
+.graphcanvas .gc-lgwrap{position:absolute;right:16px;bottom:40px;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.graphcanvas .gc-legend{display:flex;flex-direction:column;gap:5px;background:color-mix(in srgb, var(--bg-primary) 72%, transparent);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:10px 12px}
+.graphcanvas .gc-legend.is-collapsed{display:none}
+.graphcanvas .gc-lgbtn{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:color-mix(in srgb, var(--bg-primary) 72%, transparent);color:var(--text-secondary);padding:4px 8px;cursor:pointer}
+.graphcanvas .gc-lgbtn:hover{color:var(--color-signal);border-color:var(--color-signal)}
+@media (max-width:640px){.graphcanvas .gc-lgwrap{bottom:72px}}
+.graphcanvas .gc-li{display:flex;align-items:center;gap:8px;font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.5px;color:var(--text-secondary)}
+.graphcanvas .gc-sw{width:9px;height:9px;border-radius:50%}
+.graphcanvas .gc-note{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:12px 18px;font-size:calc(12.5px * var(--text-scale, 1));color:var(--text-secondary)}
+.graphcanvas .gc-error{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg-primary);color:var(--text-secondary);font-size:calc(13px * var(--text-scale, 1))}
+
+
+/* ---- GraphExplorer: the assembled organism (canvas full-bleed, panel as hideable overlay;
+   ≤900px the panel becomes a near-full bottom sheet and the pill names the entity) ---- */
+.gx{position:relative;isolation:isolate;height:100%;min-height:480px;border:1px solid var(--border-strong);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-primary)}
+.gx__stage{position:absolute;inset:0;min-width:0}
+.gx__stage .graphcanvas{position:absolute;inset:0;border:0;border-radius:0}
+.gx .gc-lgwrap{right:auto;left:16px;align-items:flex-start}
+.gx__panel{position:absolute;top:44px;right:12px;bottom:42px;width:400px;max-width:calc(100% - 24px);z-index:8;display:flex;background:color-mix(in srgb,var(--stage-bg) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--stage-panel-border-strong);border-radius:var(--radius-md);overflow:hidden;transition:transform var(--dur-base) var(--ease-out),opacity var(--dur-base) var(--ease-out)}
+.gx__panel .epanel{flex:1;min-width:0;background:transparent}
+.gx__panel.is-hidden{transform:translateX(calc(100% + 24px));opacity:0;pointer-events:none}
+.gx__pshow{position:absolute;top:44px;right:12px;z-index:8;font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;padding:6px 10px;border:1px solid var(--stage-panel-border-strong);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--stage-bg) 88%,transparent);backdrop-filter:blur(8px);color:var(--stage-text-muted);cursor:pointer}
+.gx__pshow:hover{color:var(--stage-signal);border-color:var(--stage-signal)}
+.gx__pshow b{color:var(--stage-signal);font-weight:600;margin-left:6px;text-transform:none;letter-spacing:0;display:inline-block;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+.gx__phide{border:0;background:none;font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted);cursor:pointer;padding:2px 0;align-self:flex-start;white-space:nowrap}
+.gx__phide:hover{color:var(--color-signal)}
+.gx__facets{position:absolute;top:0;left:0;right:0;z-index:9;padding:7px 14px;background:color-mix(in srgb,var(--stage-bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--stage-panel-divider);display:flex;align-items:center;gap:10px}
+.gx:has(.gx__panel:not(.is-hidden)) .gx__facets{right:424px;border-right:1px solid var(--stage-panel-divider)}
+.gx .gx__facets.is-collapsed,.gx:has(.gx__panel:not(.is-hidden)) .gx__facets.is-collapsed{right:auto;width:auto;border-right:1px solid var(--stage-panel-divider);border-bottom-right-radius:var(--radius-md)}
+.gx__facets .facetbar{flex:1;min-width:0;gap:4px 14px}
+.gx__facets.is-collapsed .facetbar{display:none}
+.gx__ftoggle{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;border:0;background:none;color:var(--text-muted);cursor:pointer;padding:3px 0;white-space:nowrap}
+.gx__ftoggle:hover{color:var(--color-signal)}
+.gx__ftoggle b{color:var(--color-signal);font-weight:600}
+.gx__facets .fchip{font-size:calc(9.5px * var(--text-scale, 1));padding:2px 7px}
+.gx__facets .facetbar__dom{font-size:calc(9px * var(--text-scale, 1))}
+.gx .epanel{min-width:0}
+@media (max-width:900px){
+  .gx__panel{left:12px;right:12px;width:auto;top:44px;bottom:12px;max-height:none}
+  .gx__panel.is-hidden{transform:translateY(calc(100% + 24px))}
+  .gx:has(.gx__panel:not(.is-hidden)) .gx__facets{right:0;border-right:0}
+}
+
+
+/* ---- QuBae launcher over the stage (opt-in modifier) ----
+   The launcher floats bare; over the dark canvas it borrows the stage ink. */
+.qlaunch--on-stage{color:var(--stage-mark)}
+.qlaunch--on-stage:hover{color:var(--stage-signal)}
+.qlaunch--on-stage .qlaunch__cap{color:var(--stage-text-muted)}
+.qlaunch--on-stage .keycap{background:var(--stage-surface);color:var(--stage-text-secondary);border-color:var(--stage-border-strong)}
+
+@media (prefers-reduced-motion:reduce){.gx__panel{transition:none}.gx__panel.is-hidden{transform:none}}

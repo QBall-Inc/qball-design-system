@@ -119,3 +119,69 @@ so a `getComputedStyle` sweep of `:root` doesn't flag them as "missing":
 directly and reference the custom properties above — see
 [consumer-setup.md](./consumer-setup.md). `theme.css` is **not** required for the components to
 be fully styled.
+
+---
+
+## QuBrain graph stage & text scale (added in 1.1.0)
+
+Additive tokens for the QuBrain knowledge-graph explorer and the QuBae chat surface. All are
+**theme-independent** (defined once on `:root`, never re-themed). The same stability contract
+applies: renaming or removing one is a major bump.
+
+**Import order** (fixed): `colors-and-type.css` → `components.css` → `graph.css`. Load
+`@qball-inc/tokens/graph.css` only on pages that render the graph explorer; `components.css`
+alone never pulls it in, so existing consumers get no new bytes from it.
+
+### Text scale
+| Token | Default | Meaning |
+|---|---|---|
+| `--text-scale` | `1` | Multiplies every QuBrain / QuBae component text size. `1` = exactly as designed. A site that steps its type up on wide screens sets it to match, e.g. `@media (min-width:1600px){:root{--text-scale:1.25}}`. The chat launcher keeps its own fluid `clamp()` sizing. |
+
+### Chat scrim
+| Token | Value |
+|---|---|
+| `--color-scrim-light` | `rgba(20,20,20,.22)` (QuBae overlay — dims the page less than a modal) |
+
+### Graph stage (dark-only by ruling)
+The explorer never follows the page theme. `graph.css` maps the ordinary tokens (`--bg-*`,
+`--text-*`, `--border-*`, `--color-signal/highlight`, `--data-*`, `--anno-*`) onto these inside
+the explorer, so it renders identically in a light or dark page. Consumers normally never
+reference them directly.
+
+**Canvas tier** (the 3D canvas, its HUD, legend and labels)
+| Token | Value |
+|---|---|
+| `--stage-bg` | `#12161F` (deep ink) |
+| `--stage-surface` | `#1A1F2B` |
+| `--stage-text-primary` | `#EDE8E1` |
+| `--stage-text-secondary` | `#D6D1C8` |
+| `--stage-text-muted` | `#A8A29E` |
+| `--stage-border` | `rgba(255,255,255,.06)` |
+| `--stage-border-strong` | `rgba(255,255,255,.25)` |
+
+**Panel tier** (entity panel, filter bar, details pill and everything inside them)
+| Token | Value |
+|---|---|
+| `--stage-panel-bg` | `#1E1D1B` |
+| `--stage-panel-surface` | `#2A2826` |
+| `--stage-panel-text-primary` | `#E7E0D6` |
+| `--stage-panel-text-secondary` | `#CDC6BB` |
+| `--stage-panel-text-muted` | `#8A847D` |
+| `--stage-panel-border` | `rgba(255,255,255,.06)` |
+| `--stage-panel-border-strong` | `rgba(255,255,255,.14)` |
+| `--stage-panel-divider` | `rgba(255,255,255,.07)` (glass filter-strip hairline) |
+| `--stage-mark` | `#E7E2DA` (chat launcher mascot ink over the stage) |
+
+**Accents** (both tiers — the luminous palette, pinned)
+| Token | Value |
+|---|---|
+| `--stage-signal` / `--stage-highlight` | `#5B9E87` / `#D97706` |
+| `--stage-signal-bg` / `--stage-highlight-bg` | `rgba(91,158,135,.15)` / `rgba(217,119,6,.15)` |
+| `--stage-data-up` / `-down` / `-warn` / `-info` / `-flat` | `#4FB07A` / `#E2705F` / `#D9B43C` / `#5B9BD6` / `#A8A29E` |
+| `--stage-data-up-bg` / `-down-bg` / `-warn-bg` / `-info-bg` | `rgba(79,176,122,.15)` / `rgba(226,112,95,.15)` / `rgba(217,180,60,.16)` / `rgba(91,155,214,.15)` |
+| `--stage-anno-source` / `--stage-anno-source-bg` | `#93A7B5` / `rgba(147,167,181,.16)` |
+
+### Component-provided (not consumer tokens)
+| Token | Set by | Where |
+|---|---|---|
+| `--tdur` | chat verdict row | inline style on `.vrow__txt` when its explanation overflows and tickers |
