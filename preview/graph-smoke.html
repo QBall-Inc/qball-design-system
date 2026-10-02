@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- Deploy smoke page (not a gallery card): proves the staged site ships the
+     graph styles and a working bundled graph specimen. Checked before every
+     gallery deploy by e2e-pages/graph-smoke.spec.mjs. -->
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graph smoke</title>
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<link rel="stylesheet" href="../packages/tokens/graph.css">
+<style>
+  html,body{margin:0}
+  body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-ui);padding:24px}
+  .graphcanvas{width:320px;height:200px}
+  .graphcanvas canvas{display:block;width:100%;height:100%}
+</style>
+</head><body>
+<p>Graph pipeline smoke check.</p>
+<div class="graphcanvas" id="stage"><canvas id="smoke" width="64" height="64"></canvas></div>
+<script type="module" src="../specimens/graph-smoke.bundle.js"></script>
+</body></html>

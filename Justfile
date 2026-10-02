@@ -91,6 +91,19 @@ consumer-validate:
 ci: generate-icons-check typecheck lint test test-browser license-check spdx-check consumer-validate
     @echo "ci: all gates passed"
 
+# Gallery deploy gate, staged-site half: serve the already-staged _site and run
+# the Playwright check (graph.css applied + bundled graph specimen renders a
+# WebGL frame). pages.yml runs this after its own staging step.
+pages-smoke-test:
+    pnpm exec playwright test --config playwright.pages.config.mjs
+
+# Full local gallery deploy rehearsal: build elements -> stage _site (needs
+# FONTS_SRC pointing at the private font dir) -> run the browser gate.
+pages-smoke:
+    pnpm --filter @qball-inc/elements build
+    bash scripts/build-pages-site.sh
+    just --justfile {{justfile()}} pages-smoke-test
+
 # Release dry-run (non-mutating): asserts zero NPM_TOKEN + OIDC/provenance in the
 # workflows, previews the 1.0.0 version jump via an ephemeral changeset, and prints
 # the semver-contract scenarios. Publishes nothing. Multi-line shell lives in the

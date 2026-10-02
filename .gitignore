@@ -12,6 +12,9 @@ build/
 # deploy time (and on a local dry-run). Never committed.
 _site/
 _fonts_src/
+# Specimen bundles are produced into _site/specimens/ at stage time; never
+# commit a stray bundle written next to its entry.
+specimens/**/*.bundle.js
 
 # Test / coverage
 coverage/

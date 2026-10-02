@@ -67,6 +67,9 @@ export default defineConfig(
       "**/dist/**",
       "**/build/**",
       "**/coverage/**",
+      // Ephemeral Pages artifact (scripts/build-pages-site.sh) — holds generated
+      // specimen bundles after a local `just pages-smoke`; never committed.
+      "_site/**",
       "**/*.d.ts",
       // Pre-existing static gallery / DS-packet content — browser HTML/CSS
       // served as-authored, not part of the workspace lint scope (D-09).
@@ -88,6 +91,12 @@ export default defineConfig(
       sourceType: "module",
       globals: { ...globals.node },
     },
+  },
+  // Gallery specimens + the staged-site browser gate run (or evaluate code) in
+  // the browser: add browser globals on top of the plain-JS lane.
+  {
+    files: ["specimens/**/*.mjs", "e2e-pages/**/*.mjs"],
+    languageOptions: { globals: { ...globals.browser } },
   },
   // TypeScript files: type-aware rules via projectService (resolves the owning
   // tsconfig per file automatically).

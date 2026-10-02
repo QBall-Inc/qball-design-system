@@ -17,7 +17,9 @@
 # The font @font-face src urls are document-relative to the CSS file, so they
 # resolve under the /qball-design-system/ Pages subpath without a base path.
 #
-# Local dry-run against a checkout of the private repo:
+# Requires a prior `pnpm --filter @qball-inc/elements build` (the specimen
+# bundler imports its dist). Local dry-run against a checkout of the private
+# repo (or `just pages-smoke`, which also builds and runs the browser gate):
 #   FONTS_SRC=/mnt/c/projects/stock-watcher/docs/stocky-github-pages/fonts \
 #     bash scripts/build-pages-site.sh
 set -euo pipefail
@@ -52,8 +54,17 @@ cp -r assets "${SITE}/assets"
 cp packages/tokens/colors_and_type.css \
    packages/tokens/components.css \
    packages/tokens/theme.css \
+   packages/tokens/graph.css \
    "${SITE}/packages/tokens/"
 [ -f packages/tokens/tokens.json ] && cp packages/tokens/tokens.json "${SITE}/packages/tokens/"
+# The scrubbed QuBrain mock bundle, staged by explicit path for the graph
+# specimens (no fixture directory is staged wholesale).
+mkdir -p "${SITE}/fixtures/qubrain"
+cp fixtures/qubrain/mock-bundle.json "${SITE}/fixtures/qubrain/"
+
+# --- 1b. Bundle the live specimens into _site/specimens/ ---------------------
+# Needs the built @qball-inc/elements (fails fast with the build command if not).
+node scripts/bundle-pages-specimens.mjs
 
 # --- 2. Copy the licensed woff2 into the artifact (fail fast if missing) ------
 for entry in "${WEIGHTS[@]}"; do

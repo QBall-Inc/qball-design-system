@@ -1,12 +1,14 @@
 # .github/workflows/pages.yml — GitHub Pages gallery deploy.
 #
 # Publishes the component gallery (index.html redirect + gallery.html + preview/
-# + packages/tokens/ + assets/) to https://qball-inc.github.io/qball-design-system/
+# + packages/tokens/ + assets/ + bundled specimens/) to
+# https://qball-inc.github.io/qball-design-system/
 # via an Actions ARTIFACT deploy, injecting the licensed Berkeley Mono display
 # face at deploy time from the PRIVATE ashaykubal/stock-watcher repo. The woff2
 # binaries are NEVER committed to this public repo (LR-02 Website Grant: the
 # deployed site may SERVE Berkeley Mono; it may not redistribute the binaries via
-# a public git tree). The license gate runs first as a fail-fast guard.
+# a public git tree). The license gate runs first as a fail-fast guard, and a
+# headless-browser gate checks the STAGED site before anything is uploaded.
 #
 # OWNER PREREQUISITES (one-time — see AD-03 / AD-05):
 #   1. Settings -> Pages -> Build and deployment -> Source = "GitHub Actions"
@@ -44,10 +46,10 @@ jobs:
   build:
     name: Build _site (inject Berkeley)
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
-      contents: read   # checkout the public repo
-      pages: write     # actions/configure-pages
+      contents: read # checkout the public repo
+      pages: write # actions/configure-pages
     steps:
       - name: Checkout (public DS repo)
         uses: actions/checkout@v6
@@ -71,6 +73,11 @@ jobs:
       - name: License-clean gate (committed tree must be font-free)
         run: pnpm run license-check
 
+      # The specimen bundler imports the built @qball-inc/elements (dist/ is
+      # gitignored), so build it before staging.
+      - name: Build @qball-inc/elements
+        run: pnpm --filter @qball-inc/elements build
+
       # Fetch ONLY the font directory from the private source, via the PAT.
       # Sparse cone checkout keeps the rest of the private repo off the runner;
       # persist-credentials:false so the PAT never lands in .git/config.
@@ -93,6 +100,15 @@ jobs:
       - name: Stage _site + inject @font-face (artifact only)
         run: bash scripts/build-pages-site.sh
 
+      # Deploy gate: serve the staged _site and check it in headless Chromium
+      # (graph.css applied + the bundled graph specimen renders a WebGL frame).
+      # A failure stops the deploy before anything is uploaded.
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps --only-shell chromium
+
+      - name: Staged-site browser gate
+        run: pnpm exec playwright test --config playwright.pages.config.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -103,8 +119,8 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     permissions:
-      pages: write     # deploy-pages publishes the artifact
-      id-token: write  # deploy-pages OIDC attestation
+      pages: write # deploy-pages publishes the artifact
+      id-token: write # deploy-pages OIDC attestation
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
