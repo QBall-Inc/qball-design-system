@@ -5,10 +5,14 @@
 #   1. Zero-secret assertion — no NPM_TOKEN / NODE_AUTH_TOKEN in any workflow
 #      (publishing is npm OIDC trusted publishing only).
 #   2. OIDC assertion — release.yml grants id-token: write + sets provenance.
-#   3. 1.0.0 version-jump preview — drops an EPHEMERAL `major` changeset for both
-#      packages, runs `changeset status`, asserts tokens 0.1.0 -> 1.0.0 and react
-#      (unpublished) -> 1.0.0, then removes the ephemeral changeset.
-#   4. Prints the semver-contract scenarios for the releaser.
+#   3. Unreleased-package check — with the REAL pending changesets only, asserts
+#      `changeset status` plans NO release for @qball-inc/elements while it sits
+#      at the 0.0.0 placeholder (publish-packages.sh skips 0.0.0 for the same
+#      reason: it is invisible to a release until a changeset versions it).
+#   4. First-release preview — drops an EPHEMERAL `minor` changeset for
+#      @qball-inc/elements alone and asserts `changeset status` proposes
+#      0.0.0 -> 0.1.0 (elements stays on 0.x until its 1.0 is cut deliberately).
+#   5. Prints the semver-contract scenarios for the releaser.
 #
 # Invoked by `just release-dry-run`. Safe to run repeatedly: it mutates nothing
 # permanent — the ephemeral changeset is always cleaned up via the EXIT trap.
@@ -40,27 +44,40 @@ grep -q 'NPM_CONFIG_PROVENANCE' .github/workflows/release.yml || fail "NPM_CONFI
 echo "OK — id-token: write + NPM_CONFIG_PROVENANCE present"
 
 echo
-echo "== 3. 1.0.0 version-jump preview (ephemeral changeset) =="
+echo "== 3. Unreleased package is invisible to a release (@qball-inc/elements@0.0.0) =="
 tmp=".changeset/zzz-dry-run-probe.md"
 out="$(mktemp -u)"
 cleanup() { rm -f "$tmp" "$out"; }
 trap cleanup EXIT
-printf '%s\n' '---' '"@qball-inc/tokens": major' '"@qball-inc/react": major' '---' '' 'release-dry-run probe (ephemeral).' > "$tmp"
-pnpm exec changeset status --verbose --output "$out"
-node -e '
-  const fs = require("fs");
-  const s = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
-  const want = { "@qball-inc/tokens": "1.0.0", "@qball-inc/react": "1.0.0" };
-  let ok = true;
-  for (const [name, newVersion] of Object.entries(want)) {
-    const r = (s.releases || []).find((x) => x.name === name);
-    if (!r) { console.error("FAIL: no planned release for " + name); ok = false; continue; }
-    console.log("  " + name + ": " + r.oldVersion + " -> " + r.newVersion + " (" + r.type + ")");
-    if (r.newVersion !== newVersion) { console.error("FAIL: " + name + " expected -> " + newVersion); ok = false; }
-  }
-  process.exit(ok ? 0 : 1);
-' "$out"
-echo "OK — both packages bump to 1.0.0 (the strict contract takes effect at 1.0.0)"
+
+elements_ver="$(node -p "require('./packages/elements/package.json').version")"
+[ "$elements_ver" = "0.0.0" ] || fail "@qball-inc/elements is $elements_ver, not the 0.0.0 placeholder — update sections 3-4 for the released state"
+
+# planned_release <status.json> <name> -> prints "old -> new (type)" or "none".
+planned_release() {
+  node -e '
+    const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+    const r = (s.releases || []).find((x) => x.name === process.argv[2]);
+    console.log(r ? r.oldVersion + " -> " + r.newVersion + " (" + r.type + ")" : "none");
+  ' "$1" "$2"
+}
+
+pnpm exec changeset status --verbose --output "$out" >/dev/null
+plan="$(planned_release "$out" "@qball-inc/elements")"
+echo "  @qball-inc/elements: planned release = $plan"
+[ "$plan" = "none" ] || fail "@qball-inc/elements has a planned release ($plan) while still at 0.0.0"
+echo "OK — @qball-inc/elements@0.0.0 has no planned release (publish-packages.sh would SKIP it)"
+
+echo
+echo "== 4. First-release preview (ephemeral minor changeset, @qball-inc/elements) =="
+rm -f "$out"
+printf '%s\n' '---' '"@qball-inc/elements": minor' '---' '' 'release-dry-run probe (ephemeral).' > "$tmp"
+pnpm exec changeset status --verbose --output "$out" >/dev/null
+plan="$(planned_release "$out" "@qball-inc/elements")"
+echo "  @qball-inc/elements: $plan"
+[ "$plan" = "0.0.0 -> 0.1.0 (minor)" ] || fail "@qball-inc/elements expected 0.0.0 -> 0.1.0 (minor), got: $plan"
+rm -f "$tmp"
+echo "OK — once versioned, @qball-inc/elements would publish as 0.1.0"
 
 echo
 echo "== Semver contract scenarios (declared per changeset; see RELEASING.md / CAVEATS.md) =="

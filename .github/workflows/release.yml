@@ -1,13 +1,16 @@
 name: Release
 
-# Publishes @qball-inc/tokens + @qball-inc/react to npm via Changesets.
+# Publishes @qball-inc/tokens, @qball-inc/elements and @qball-inc/react to npm
+# via Changesets.
 #
 # Flow:
 #   1. On push to main with pending changesets, Changesets opens/updates a
 #      "Version Packages" PR (runs `changeset version` -> bumps versions +
 #      writes per-package CHANGELOGs).
 #   2. When that PR is merged (the changesets are consumed), this workflow runs
-#      the topological publish (scripts/publish-packages.sh: tokens -> react).
+#      the topological publish (scripts/publish-packages.sh:
+#      tokens -> elements -> react). A package still at the 0.0.0 placeholder
+#      or already live on npm is skipped, so a no-changeset push is a no-op.
 #
 # Auth: npm OIDC trusted publishing -- there is NO NPM_TOKEN anywhere in this
 # workflow. The @qball-inc scope must have OIDC trusted publishing enabled on
@@ -69,6 +72,9 @@ jobs:
       - name: Upgrade npm to an OIDC-capable version (>= 11.5.1)
         run: npm install -g npm@latest
 
+      # Pending changesets -> open/update the Version Packages PR. None pending ->
+      # run the publish script (tokens -> elements -> react, each skipped when
+      # at 0.0.0 or already on npm).
       - name: Version PR or publish
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:

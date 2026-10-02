@@ -2,10 +2,14 @@
 # scripts/publish-packages.sh — idempotent, topological npm publish for the
 # QBall Design System, via npm OIDC trusted publishing.
 #
-# Publish ORDER is load-bearing: @qball-inc/react depends on @qball-inc/tokens
-# (`workspace:*`, rewritten to the published version on pack), so tokens MUST be
-# live on npm before react resolves. tokens is static (no build); react builds
-# via tsup (only when it will actually publish).
+# Publish ORDER is tokens -> elements -> react. The load-bearing edge is
+# react -> tokens: @qball-inc/react depends on @qball-inc/tokens (`workspace:*`,
+# rewritten to the published version on pack), so tokens MUST be live on npm
+# before react resolves. @qball-inc/elements has no package dependency on tokens
+# (consumers install both and import the tokens CSS themselves); it goes after
+# tokens so a release carrying new styles makes them live before the elements
+# that paint them. tokens is static (no build); elements and react build via
+# tsup (only when they will actually publish).
 #
 # IDEMPOTENT by design: changesets/action runs this `publish` command on any push
 # to main that carries no changesets, so re-publishing must be a clean no-op. Per
@@ -66,6 +70,7 @@ publish_tarball() {
 }
 
 TOKENS_VER="$(node -p "require('./packages/tokens/package.json').version")"
+ELEMENTS_VER="$(node -p "require('./packages/elements/package.json').version")"
 REACT_VER="$(node -p "require('./packages/react/package.json').version")"
 
 # tokens first (react depends on it via workspace:*). tokens is static — no build.
@@ -73,7 +78,15 @@ if needs_publish "@qball-inc/tokens" "$TOKENS_VER"; then
   publish_tarball "@qball-inc/tokens" "packages/tokens" "$TOKENS_VER" "qball-inc-tokens"
 fi
 
-# react second. Build (tsup) only when it will actually publish.
+# elements second (framework-free; no package dependency on tokens). Build (tsup)
+# only when it will actually publish — the tarball ships `dist` only.
+if needs_publish "@qball-inc/elements" "$ELEMENTS_VER"; then
+  echo "==> Building @qball-inc/elements (tsup)"
+  pnpm --filter @qball-inc/elements build
+  publish_tarball "@qball-inc/elements" "packages/elements" "$ELEMENTS_VER" "qball-inc-elements"
+fi
+
+# react last. Build (tsup) only when it will actually publish.
 if needs_publish "@qball-inc/react" "$REACT_VER"; then
   echo "==> Building @qball-inc/react (tsup)"
   pnpm --filter @qball-inc/react build

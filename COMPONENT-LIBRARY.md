@@ -10,6 +10,11 @@ class referenced below exists there), `reference/COMPONENTS-usage.md` (the CSS-c
 each class's states), `reference/component-audit.md` (the original build/extend/create verdicts),
 `preview/*.html` + `gallery.html` (live state matrices), `packages/tokens/theme.css` + `packages/tokens/tokens.json`.
 
+**Scope:** this document covers `@qball-inc/react`. `@qball-inc/elements` is a separate,
+framework-free package (plain TypeScript + DOM, no React) for the knowledge-graph explorer and
+the grounded-answer chat surface. It paints the same `@qball-inc/tokens` CSS but follows its own
+build plan; see [`packages/elements/README.md`](./packages/elements/README.md). Nothing here applies to it.
+
 ---
 
 ## 0. Target stack & conventions

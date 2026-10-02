@@ -26,6 +26,7 @@
   <a href="./COMPONENT-LIBRARY.md">Components</a> ·
   <a href="./packages/tokens">@qball-inc/tokens</a> ·
   <a href="./packages/react">@qball-inc/react</a> ·
+  <a href="./packages/elements">@qball-inc/elements</a> ·
   <a href="./llms.txt">llms.txt</a>
 </p>
 
@@ -59,6 +60,7 @@ packages/tokens/         — the canonical, published token layer (@qball-inc/to
   theme.css              — Tailwind v4 @theme export of the tokens
   tokens.json            — DTCG / Style-Dictionary shape (cross-platform)
 packages/react/          — the @qball-inc/react component library
+packages/elements/       — @qball-inc/elements: framework-free DOM components (unreleased)
 assets/                  — logos (wordmark + mark + favicon) + assets/icons/ (Lucide)
 preview/                 — one live card per component (the canonical state matrices)
 reference/               — usage guide + upstream foundations + historical audit
@@ -75,22 +77,23 @@ reference/               — usage guide + upstream foundations + historical aud
 
 ## Packages (npm)
 
-This repo is a **pnpm workspace** that publishes the design system as two versioned,
+This repo is a **pnpm workspace** that publishes the design system as versioned,
 public packages under the `@qball-inc` scope (Apache-2.0):
 
 - **[`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
 - **[`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)** — the framework-agnostic component layer as a React library.
+- **[`@qball-inc/elements`](./packages/elements)** — framework-free TypeScript + DOM components (no React needed), with subpaths `./trust`, `./chat` and `./graph`. **Not yet published**; first release coming on 0.x.
 
 ```bash
 pnpm add @qball-inc/tokens @qball-inc/react
 ```
 
-> **Status:** both packages are published at **v1.0.0**. The canonical CSS source is
+> **Status:** `@qball-inc/tokens` and `@qball-inc/react` are published (1.x). The canonical CSS source is
 > `packages/tokens/` (`colors_and_type.css` / `components.css` / `theme.css` / `tokens.json`)
 > — what the npm package ships verbatim. See [docs/consumer-setup.md](./docs/consumer-setup.md)
 > for the full consumer wiring sequence.
 
-Workspace layout: `packages/tokens/` and `packages/react/`. Local development uses
+Workspace layout: `packages/tokens/`, `packages/react/` and `packages/elements/`. Local development uses
 `pnpm install` at the repo root + the `Justfile` recipes (`just typecheck`, `just lint`,
 `just build`, `just test`).
 
