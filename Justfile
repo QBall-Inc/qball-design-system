@@ -110,3 +110,9 @@ pages-smoke:
 # committed script (WSL exec-bit pattern), invoked via bash.
 release-dry-run:
     bash scripts/release-dry-run.sh
+
+# QuBrain derived fixture: fixtures/qubrain/mock-bundle.with-layout.json = the
+# fixture of record + the package's seeded layout (deterministic; re-run after a
+# simulation change and commit the result). Prints the node-env sim timing.
+elements-layout-fixture:
+    node packages/elements/scripts/generate-with-layout-fixture.mjs
