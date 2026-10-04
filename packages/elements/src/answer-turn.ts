@@ -14,8 +14,40 @@
 import type { Claim, ClaimSource } from "./types";
 import type { RefusalKind } from "./locked-strings";
 
-/** Answer text as segments; `figure` marks a count the renderer emphasises. */
-export type AnswerSegment = { kind: "text"; text: string } | { kind: "figure"; text: string };
+/**
+ * One run of answer text. Every run renders as plain text, never as markup.
+ * `figure` marks a count the renderer emphasises; `citation` points at one of
+ * the turn's sources by episode id (for a withheld turn, its claims' sources;
+ * an unknown id renders as an unavailable source); `marker` is a gap notice
+ * such as "[source not found]".
+ */
+export type AnswerInline =
+  | { kind: "text"; text: string }
+  | { kind: "emphasis"; strength: "strong" | "em"; text: string }
+  | { kind: "code"; text: string }
+  | { kind: "figure"; text: string }
+  | { kind: "citation"; episode_id: string }
+  | { kind: "marker"; text: string };
+
+/** One list item, with at most one level of nested items. */
+export interface AnswerListItem {
+  inlines: AnswerInline[];
+  sublist?: { ordered: boolean; items: AnswerInline[][] };
+}
+
+/**
+ * One block of an answer body. The consumer builds these from its backend's
+ * answer text (for example by parsing markdown); the DS never parses text.
+ */
+export type AnswerBlock =
+  | { kind: "paragraph"; inlines: AnswerInline[] }
+  | { kind: "heading"; level: 1 | 2 | 3; inlines: AnswerInline[] }
+  | { kind: "list"; ordered: boolean; items: AnswerListItem[] }
+  | { kind: "table"; header: AnswerInline[][]; rows: AnswerInline[][][] }
+  | { kind: "code"; text: string };
+
+/** An answer body: blocks in reading order. */
+export type AnswerBody = AnswerBlock[];
 
 /** Counts behind the answer-variant provenance footer. */
 export interface AnswerProvenance {
@@ -30,7 +62,7 @@ export interface GroundedTurn {
   verdict: "grounded";
   /** Numbers behind `N claims · M episodes · <tier> confidence`. */
   explanation: { claims: number; episodes: number; confidenceTier: string };
-  body: AnswerSegment[];
+  body: AnswerBody;
   sources: ClaimSource[];
   provenance: AnswerProvenance;
   /** Optional link into the graph explorer for this answer. */
@@ -39,10 +71,10 @@ export interface GroundedTurn {
 
 export interface WithheldTurn {
   verdict: "withheld";
-  /** Numbers behind `X of Y claims untraceable · Z claims shown`. */
-  explanation: { untraceable: number; total: number; shown: number };
+  /** Numbers behind `N figures untraceable · M claims shown`. */
+  explanation: { untraceableFigures: number; claimsShown: number };
   /** The held-draft note (why the answer is being held back). */
-  body: AnswerSegment[];
+  body: AnswerBody;
   /** "The part i can stand behind": the traceable claims, shown with confidence. */
   traceableClaims: Claim[];
 }
@@ -50,7 +82,8 @@ export interface WithheldTurn {
 export interface RefusedTurn {
   verdict: "refused";
   reason: RefusalKind;
-  body: AnswerSegment[];
+  /** Always shown. For `abstained` it is the agent's own explanation. */
+  body: AnswerBody;
   /** Consumer-supplied closing line (e.g. where the agent is useful). */
   closingLine?: string;
 }

@@ -1,7 +1,14 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { AnswerTurn, type FinalTurn, type TurnView } from "./answer-turn";
+import {
+  type AnswerBlock,
+  type AnswerBody,
+  type AnswerInline,
+  AnswerTurn,
+  type FinalTurn,
+  type TurnView,
+} from "./answer-turn";
 import { groundedExplanation, refusedExplanation, withheldExplanation } from "./locked-strings";
 
 // vitest runs with the package directory as cwd.
@@ -47,26 +54,97 @@ function neverShows(views: readonly TurnView[], drafts: readonly string[]): void
   for (const draft of drafts) expect(everything).not.toContain(draft);
 }
 
-describe("answer fixtures", () => {
-  it("every fixture is an event script that opens with start", () => {
-    const files = readdirSync(ANSWERS_DIR).filter((f) => f.endsWith(".json"));
-    expect(files.length).toBeGreaterThanOrEqual(5);
-    for (const file of files) {
-      const { events } = load(file.replace(/\.json$/, ""));
-      expect(events[0]).toEqual({ op: "start" });
+const BLOCK_KINDS = new Set(["paragraph", "heading", "list", "table", "code"]);
+const INLINE_KINDS = new Set(["text", "emphasis", "code", "figure", "citation", "marker"]);
+
+/** Every block and inline in a body, flattened in reading order. */
+function walk(body: AnswerBody): { blocks: AnswerBlock[]; inlines: AnswerInline[] } {
+  const inlines: AnswerInline[] = [];
+  for (const block of body) {
+    switch (block.kind) {
+      case "paragraph":
+      case "heading":
+        inlines.push(...block.inlines);
+        break;
+      case "list":
+        for (const item of block.items) {
+          inlines.push(...item.inlines);
+          for (const sub of item.sublist?.items ?? []) inlines.push(...sub);
+        }
+        break;
+      case "table":
+        for (const cell of [...block.header, ...block.rows.flat()]) inlines.push(...cell);
+        break;
+      case "code":
+        break;
+      default: {
+        // A new block kind fails typecheck here until walk() learns it.
+        const unknown: never = block;
+        throw new Error(`unknown block ${JSON.stringify(unknown)}`);
+      }
     }
+  }
+  return { blocks: body, inlines };
+}
+
+function finalTurn(name: string): FinalTurn {
+  const final = load(name).events.find((event) => event.op === "finalize");
+  if (final?.op !== "finalize") throw new Error(`${name} has no finalize event`);
+  return final.turn;
+}
+
+describe("answer fixtures", () => {
+  const names = readdirSync(ANSWERS_DIR)
+    .filter((file) => file.endsWith(".json"))
+    .map((file) => file.replace(/\.json$/, ""));
+
+  it("every fixture is an event script that opens with start", () => {
+    expect(names.length).toBeGreaterThanOrEqual(7);
+    for (const name of names) expect(load(name).events[0]).toEqual({ op: "start" });
+  });
+
+  it("every finalized body uses only the allowed block and inline kinds", () => {
+    const finalized = names.filter((name) => load(name).events.some((e) => e.op === "finalize"));
+    expect(finalized.length).toBeGreaterThan(0);
+    for (const name of finalized) {
+      const { blocks, inlines } = walk(finalTurn(name).body);
+      expect(blocks.length).toBeGreaterThan(0);
+      for (const block of blocks) expect(BLOCK_KINDS).toContain(block.kind);
+      for (const inline of inlines) expect(INLINE_KINDS).toContain(inline.kind);
+    }
+  });
+
+  it("the structured fixture exercises every block and inline kind", () => {
+    const { blocks, inlines } = walk(finalTurn("grounded-structured").body);
+    expect(new Set(blocks.map((block) => block.kind))).toEqual(BLOCK_KINDS);
+    expect(new Set(inlines.map((inline) => inline.kind))).toEqual(INLINE_KINDS);
+  });
+
+  it("the structured fixture has exactly one citation its sources cannot resolve", () => {
+    const turn = finalTurn("grounded-structured");
+    if (turn.verdict !== "grounded") throw new Error("not grounded");
+    const known = new Set(turn.sources.flatMap((source) => source.episode_id ?? []));
+    const cited = walk(turn.body).inlines.flatMap((inline) =>
+      inline.kind === "citation" ? [inline.episode_id] : [],
+    );
+    expect(cited.filter((id) => !known.has(id))).toEqual(["ep-demo-0404"]);
   });
 });
 
 describe("AnswerTurn — trust rule (early display off, the default)", () => {
-  it.each(["grounded", "withheld", "refused-in-scope-empty", "refused-off-topic", "error"])(
-    "%s: no streamed draft text ever reaches a view",
-    (name) => {
-      const { events } = load(name);
-      const { seen, turn } = replay(events);
-      neverShows([...seen, turn.view()], streamedText(events));
-    },
-  );
+  it.each([
+    "grounded",
+    "grounded-structured",
+    "withheld",
+    "refused-in-scope-empty",
+    "refused-off-topic",
+    "refused-abstained",
+    "error",
+  ])("%s: no streamed draft text ever reaches a view", (name) => {
+    const { events } = load(name);
+    const { seen, turn } = replay(events);
+    neverShows([...seen, turn.view()], streamedText(events));
+  });
 
   it("shows only the thinking state while text streams in", () => {
     const turn = new AnswerTurn();
@@ -84,8 +162,9 @@ describe("AnswerTurn — trust rule (early display off, the default)", () => {
     if (view.status !== "final" || view.turn.verdict !== "withheld")
       throw new Error("not withheld");
     expect(view.turn.traceableClaims).toHaveLength(2);
+    expect(view.turn.explanation.claimsShown).toBe(view.turn.traceableClaims.length);
     expect(withheldExplanation(view.turn.explanation)).toBe(
-      "2 of 5 claims untraceable · 2 claims shown",
+      "2 figures untraceable · 2 claims shown",
     );
   });
 
@@ -96,6 +175,13 @@ describe("AnswerTurn — trust rule (early display off, the default)", () => {
     if (offTopic.status !== "final" || offTopic.turn.verdict !== "refused") throw new Error("y");
     expect(refusedExplanation(inScope.turn.reason)).toBe("unable to answer · 0 references found");
     expect(refusedExplanation(offTopic.turn.reason)).toBe("out of scope");
+  });
+
+  it("refused (abstained): keeps the agent's own explanation as the body", () => {
+    const view = replay(load("refused-abstained").events).turn.view();
+    if (view.status !== "final" || view.turn.verdict !== "refused") throw new Error("not refused");
+    expect(refusedExplanation(view.turn.reason)).toBe("insufficient evidence");
+    expect(JSON.stringify(view.turn.body)).toContain("not enough to call a winner");
   });
 
   it("grounded: exposes the final answer and the numbers behind its explanation", () => {

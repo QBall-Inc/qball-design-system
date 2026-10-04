@@ -17,8 +17,13 @@
         "reason": "off_topic",
         "body": [
           {
-            "kind": "text",
-            "text": "honestly, that’s outside what my reading covers. QuBrain is agents, evals, serving, product craft. i’d rather pass than make something up."
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "honestly, that’s outside what my reading covers. QuBrain is agents, evals, serving, product craft. i’d rather pass than make something up."
+              }
+            ]
           }
         ],
         "closingLine": "where i’m actually useful: agent memory, eval harnesses, context engineering."

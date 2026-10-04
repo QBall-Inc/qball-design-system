@@ -17,8 +17,13 @@
         "reason": "in_scope_empty",
         "body": [
           {
-            "kind": "text",
-            "text": "honestly — i’ve got nothing on crypto staking. QuBrain doesn’t cover it, and i’d rather pass than make something up."
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "honestly — i’ve got nothing on crypto staking. QuBrain doesn’t cover it, and i’d rather pass than make something up."
+              }
+            ]
           }
         ],
         "closingLine": "where i’m actually useful: agent memory, eval harnesses, context engineering."

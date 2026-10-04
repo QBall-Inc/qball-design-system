@@ -25,24 +25,29 @@
         },
         "body": [
           {
-            "kind": "text",
-            "text": "short version: memory’s moving from flat context to episodic recall. i’m drawing on "
-          },
-          {
-            "kind": "figure",
-            "text": "6 claims"
-          },
-          {
-            "kind": "text",
-            "text": " from "
-          },
-          {
-            "kind": "figure",
-            "text": "4 sources"
-          },
-          {
-            "kind": "text",
-            "text": " in QuBrain — freshest from july — and the evidence leans episodic for long-running agents."
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "short version: memory’s moving from flat context to episodic recall. i’m drawing on "
+              },
+              {
+                "kind": "figure",
+                "text": "6 claims"
+              },
+              {
+                "kind": "text",
+                "text": " from "
+              },
+              {
+                "kind": "figure",
+                "text": "4 sources"
+              },
+              {
+                "kind": "text",
+                "text": " in QuBrain — freshest from july — and the evidence leans episodic for long-running agents."
+              }
+            ]
           }
         ],
         "sources": [

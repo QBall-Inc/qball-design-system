@@ -127,8 +127,8 @@ dates and enums, never free text. Nouns follow their count (`1 claim`, `2 claims
 | Function              | Output                                                                                                                |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `groundedExplanation` | `6 claims · 4 episodes · high confidence`                                                                             |
-| `withheldExplanation` | `2 of 5 claims untraceable · 2 claims shown`                                                                          |
-| `refusedExplanation`  | `out of scope` (off-topic) · `unable to answer · 0 references found` (in scope)                                       |
+| `withheldExplanation` | `2 figures untraceable · 12 claims shown`                                                                             |
+| `refusedExplanation`  | `out of scope` (off-topic) · `unable to answer · 0 references found` (in scope) · `insufficient evidence` (abstained) |
 | `answerFooter`        | `7 claims · 5 episodes · high confidence · 2026-07-17 · 1 superseded excluded`                                        |
 | `panelFooter`         | `1 claim · 1 source · revision 2026-07-17 · 0 superseded shown`                                                       |
 | `sourcesLine`         | `[3 sources · newest jul 2026]` (needs at least one source; omit the line at zero)                                    |
@@ -160,6 +160,41 @@ guarantees an irreversible grounded verdict before any tokens. With it on, a lat
 non-grounded `finalize()` is a contract violation: the shown text is withdrawn and the view
 becomes an error.
 
+## Building the answer body
+
+Every turn's `body` is a list of blocks your adapter builds, typically by parsing your
+backend's markdown. The package never parses text and renders every run as plain text, so
+markup in your data can never become live HTML.
+
+| Block       | Shape                                                                        |
+| ----------- | ---------------------------------------------------------------------------- |
+| `paragraph` | `{ inlines }`                                                                |
+| `heading`   | `{ level: 1 \| 2 \| 3, inlines }`                                            |
+| `list`      | `{ ordered, items: [{ inlines, sublist? }] }` (one level of nesting at most) |
+| `table`     | `{ header: cells, rows: cells[] }`, where each cell is a list of inlines     |
+| `code`      | `{ text }`, shown as preformatted text, no highlighting                      |
+
+| Inline     | Shape                                  | Rendered as                                |
+| ---------- | -------------------------------------- | ------------------------------------------ |
+| `text`     | `{ text }`                             | Plain text                                 |
+| `emphasis` | `{ strength: "strong" \| "em", text }` | Bold or italic                             |
+| `code`     | `{ text }`                             | Inline code                                |
+| `figure`   | `{ text }`                             | An emphasised count, such as `6 claims`    |
+| `citation` | `{ episode_id }`                       | A reference to one of the turn's sources   |
+| `marker`   | `{ text }`                             | A gap notice, such as `[source not found]` |
+
+Rules for the adapter:
+
+- **Citations resolve by episode id.** A `citation` points at the turn's `sources` (or the
+  withheld turn's claim sources). An id with no matching source renders as an unavailable
+  source; it is never dropped.
+- **Degrade, never invent.** Map anything the block set cannot express (images, raw HTML,
+  deeper nesting) to plain paragraphs of text.
+- **Strip what the turn already shows.** Leave out a trailing "Sources:" list; the sources
+  line renders from `sources`.
+- **Refused bodies always show.** For an `abstained` refusal, the body is the agent's own
+  explanation of why it declined.
+
 ## Fixtures
 
 - `fixtures/qubrain/mock-bundle.json`: the skeleton-bundle fixture of record. It is
@@ -167,7 +202,8 @@ becomes an error.
 - `fixtures/qubrain/detail/*.json`: `ConnectionDetail` values in the input-model shape.
   They cover typed hops, superseded claims with and without their replacement,
   unavailable sources, and a co-mention hop.
-- `fixtures/qubrain/answers/*.json`: answer-turn event scripts for grounded, withheld,
-  refused (in scope / off-topic) and error.
+- `fixtures/qubrain/answers/*.json`: answer-turn event scripts for grounded (plain and
+  with every block and inline kind), withheld, refused (in scope / off-topic / abstained)
+  and error.
 
 All fixture content is synthetic and public-safe.

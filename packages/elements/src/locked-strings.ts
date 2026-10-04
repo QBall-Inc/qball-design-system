@@ -8,11 +8,15 @@ import { confidenceMark } from "./confidence";
 /** Separator between the segments of a locked line (renderers may split on it). */
 export const LOCKED_SEPARATOR = " · ";
 
-/** Why a question was refused: off-topic, or in scope but nothing in the graph. */
-export type RefusalKind = "off_topic" | "in_scope_empty";
+/**
+ * Why a question was refused: off-topic; in scope but nothing in the graph; or
+ * the agent judged the evidence too weak and explains why in its own words.
+ */
+export type RefusalKind = "off_topic" | "in_scope_empty" | "abstained";
 
 const PLURALS = {
   claim: "claims",
+  figure: "figures",
   episode: "episodes",
   source: "sources",
   entity: "entities",
@@ -65,26 +69,18 @@ export function groundedExplanation(input: {
   );
 }
 
-/** Withheld verdict explanation: `X of Y claims untraceable · Z claims shown`. */
+/**
+ * Withheld verdict explanation: `N figures untraceable · M claims shown`.
+ * Counts the answer's figures that no saved evidence supports, and the
+ * traceable claims shown in their place.
+ */
 export function withheldExplanation(input: {
-  untraceable: number;
-  total: number;
-  shown: number;
+  untraceableFigures: number;
+  claimsShown: number;
 }): string {
-  const untraceable = count(input.untraceable, "untraceable");
-  const total = count(input.total, "total");
-  const shown = count(input.shown, "shown");
-  if (untraceable > total) {
-    throw new RangeError(`untraceable (${untraceable}) cannot exceed total (${total}).`);
-  }
-  if (shown > total - untraceable) {
-    throw new RangeError(
-      `shown (${shown}) cannot exceed the traceable claims (${total - untraceable} of ${total}).`,
-    );
-  }
   return line(
-    `${untraceable} of ${total} ${noun(total, "claim")} untraceable`,
-    `${shown} ${noun(shown, "claim")} shown`,
+    `${counted(input.untraceableFigures, "figure", "untraceableFigures")} untraceable`,
+    `${counted(input.claimsShown, "claim", "claimsShown")} shown`,
   );
 }
 
@@ -95,6 +91,8 @@ export function refusedExplanation(kind: RefusalKind): string {
       return "out of scope";
     case "in_scope_empty":
       return line("unable to answer", "0 references found");
+    case "abstained":
+      return "insufficient evidence";
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
-  "_case": "withheld — 2 of 5 claims untraceable · 2 claims shown; the streamed draft must never be shown",
+  "_case": "withheld — 2 figures untraceable · 2 claims shown; the streamed draft must never be shown",
   "question": "how much does memory compaction cost in accuracy?",
   "events": [
     {
@@ -19,14 +19,18 @@
       "turn": {
         "verdict": "withheld",
         "explanation": {
-          "untraceable": 2,
-          "total": 5,
-          "shown": 2
+          "untraceableFigures": 2,
+          "claimsShown": 2
         },
         "body": [
           {
-            "kind": "text",
-            "text": "i wrote you an answer, then checked it — 2 of its 5 numbers don’t trace back to anything QuBrain holds. so i’m sitting on it until they do."
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "i wrote you an answer, then checked it — 2 of its 5 numbers don’t trace back to anything QuBrain holds. so i’m sitting on it until they do."
+              }
+            ]
           }
         ],
         "traceableClaims": [

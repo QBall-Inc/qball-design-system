@@ -1,0 +1,221 @@
+{
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
+  "_case": "grounded, structured body — every block kind (paragraph, heading, list with a sublist, table, code) and inline kind (text, emphasis, code, figure, citation, marker), including one citation whose source is not in the turn",
+  "question": "how do agents compact long memories?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: compaction usually means "
+    },
+    {
+      "op": "appendText",
+      "text": "summarising, give or take."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "grounded",
+        "explanation": {
+          "claims": 3,
+          "episodes": 2,
+          "confidenceTier": "medium"
+        },
+        "body": [
+          {
+            "kind": "heading",
+            "level": 2,
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "the short version"
+              }
+            ]
+          },
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "most teams summarise old turns and keep a "
+              },
+              {
+                "kind": "emphasis",
+                "strength": "em",
+                "text": "retrievable"
+              },
+              {
+                "kind": "text",
+                "text": " index. i'm drawing on "
+              },
+              {
+                "kind": "figure",
+                "text": "3 claims"
+              },
+              {
+                "kind": "text",
+                "text": " here "
+              },
+              {
+                "kind": "citation",
+                "episode_id": "ep-demo-0001"
+              },
+              {
+                "kind": "text",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "ordered": true,
+            "items": [
+              {
+                "inlines": [
+                  {
+                    "kind": "text",
+                    "text": "summarise turns older than a window"
+                  }
+                ],
+                "sublist": {
+                  "ordered": false,
+                  "items": [
+                    [
+                      {
+                        "kind": "text",
+                        "text": "keep named entities verbatim"
+                      }
+                    ],
+                    [
+                      {
+                        "kind": "text",
+                        "text": "drop pleasantries"
+                      }
+                    ]
+                  ]
+                }
+              },
+              {
+                "inlines": [
+                  {
+                    "kind": "text",
+                    "text": "store summaries with a "
+                  },
+                  {
+                    "kind": "code",
+                    "text": "turn_range"
+                  },
+                  {
+                    "kind": "text",
+                    "text": " key "
+                  },
+                  {
+                    "kind": "citation",
+                    "episode_id": "ep-demo-0002"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "table",
+            "header": [
+              [
+                {
+                  "kind": "text",
+                  "text": "approach"
+                }
+              ],
+              [
+                {
+                  "kind": "text",
+                  "text": "accuracy cost"
+                }
+              ]
+            ],
+            "rows": [
+              [
+                [
+                  {
+                    "kind": "text",
+                    "text": "rolling summary"
+                  }
+                ],
+                [
+                  {
+                    "kind": "figure",
+                    "text": "~12%"
+                  }
+                ]
+              ],
+              [
+                [
+                  {
+                    "kind": "text",
+                    "text": "episodic index"
+                  }
+                ],
+                [
+                  {
+                    "kind": "marker",
+                    "text": "[figure not in saved evidence]"
+                  }
+                ]
+              ]
+            ]
+          },
+          {
+            "kind": "code",
+            "text": "summary = summarise(turns[:-window])"
+          },
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "one claim points at a source i can't find "
+              },
+              {
+                "kind": "citation",
+                "episode_id": "ep-demo-0404"
+              },
+              {
+                "kind": "text",
+                "text": " "
+              },
+              {
+                "kind": "marker",
+                "text": "[source not found]"
+              }
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "episode_id": "ep-demo-0001",
+            "title": "Memory in the age of agents",
+            "url": "https://example.com/memory-in-the-age-of-agents",
+            "source_type": "blog",
+            "save_date": "2026-07-02"
+          },
+          {
+            "episode_id": "ep-demo-0002",
+            "title": "LLM-powered autonomous agents",
+            "url": "https://example.com/llm-powered-autonomous-agents",
+            "source_type": "blog",
+            "save_date": "2026-05-18"
+          }
+        ],
+        "provenance": {
+          "claims": 3,
+          "episodes": 2,
+          "confidenceTier": "medium",
+          "snapshotDate": "2026-07-17",
+          "supersededExcluded": 0
+        }
+      }
+    }
+  ]
+}

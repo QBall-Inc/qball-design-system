@@ -31,28 +31,28 @@ describe("groundedExplanation", () => {
 
 describe("withheldExplanation", () => {
   it.each([
-    [0, 0, 0, "0 of 0 claims untraceable · 0 claims shown"],
-    [1, 1, 0, "1 of 1 claim untraceable · 0 claims shown"],
-    [1, 3, 1, "1 of 3 claims untraceable · 1 claim shown"],
-    [2, 5, 2, "2 of 5 claims untraceable · 2 claims shown"],
-  ])("untraceable=%i total=%i shown=%i → %s", (untraceable, total, shown, expected) => {
-    expect(withheldExplanation({ untraceable, total, shown })).toBe(expected);
+    [0, 0, "0 figures untraceable · 0 claims shown"],
+    [1, 1, "1 figure untraceable · 1 claim shown"],
+    [2, 12, "2 figures untraceable · 12 claims shown"],
+  ])("untraceableFigures=%i claimsShown=%i → %s", (untraceableFigures, claimsShown, expected) => {
+    expect(withheldExplanation({ untraceableFigures, claimsShown })).toBe(expected);
   });
 
-  it("rejects counts that cannot describe a real withheld answer", () => {
-    expect(() => withheldExplanation({ untraceable: 4, total: 3, shown: 0 })).toThrow(
-      "untraceable (4) cannot exceed total (3).",
+  it("rejects counts that are not non-negative integers", () => {
+    expect(() => withheldExplanation({ untraceableFigures: -1, claimsShown: 0 })).toThrow(
+      "untraceableFigures must be a non-negative integer (got -1).",
     );
-    expect(() => withheldExplanation({ untraceable: 2, total: 5, shown: 4 })).toThrow(
-      "shown (4) cannot exceed the traceable claims (3 of 5).",
+    expect(() => withheldExplanation({ untraceableFigures: 1, claimsShown: 1.5 })).toThrow(
+      "claimsShown must be a non-negative integer (got 1.5).",
     );
   });
 });
 
 describe("refusedExplanation", () => {
-  it("distinguishes off-topic from in-scope-but-empty", () => {
+  it("has one locked line per refusal kind", () => {
     expect(refusedExplanation("off_topic")).toBe("out of scope");
     expect(refusedExplanation("in_scope_empty")).toBe("unable to answer · 0 references found");
+    expect(refusedExplanation("abstained")).toBe("insufficient evidence");
   });
 });
 

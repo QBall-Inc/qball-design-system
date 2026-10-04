@@ -1,0 +1,76 @@
+{
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
+  "_case": "refused, abstained — insufficient evidence; the agent's own explanation is the body and is shown",
+  "question": "which memory architecture will win by 2030?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: probably episodic, if the trend "
+    },
+    {
+      "op": "appendText",
+      "text": "holds for another few years."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "refused",
+        "reason": "abstained",
+        "body": [
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "i can see what people are betting on, but not enough to call a winner. what QuBrain holds is "
+              },
+              {
+                "kind": "emphasis",
+                "strength": "strong",
+                "text": "early benchmarks"
+              },
+              {
+                "kind": "text",
+                "text": ", not long-run results:"
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "ordered": false,
+            "items": [
+              {
+                "inlines": [
+                  {
+                    "kind": "text",
+                    "text": "episodic recall leads on long-running agents "
+                  },
+                  {
+                    "kind": "citation",
+                    "episode_id": "ep-demo-0001"
+                  }
+                ]
+              },
+              {
+                "inlines": [
+                  {
+                    "kind": "text",
+                    "text": "flat context still wins on short tasks "
+                  },
+                  {
+                    "kind": "citation",
+                    "episode_id": "ep-demo-0002"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "closingLine": "ask me what the evidence says today and i can walk you through it."
+      }
+    }
+  ]
+}

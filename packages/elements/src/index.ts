@@ -43,8 +43,11 @@ export {
 } from "./locked-strings";
 
 export type {
+  AnswerBlock,
+  AnswerBody,
+  AnswerInline,
+  AnswerListItem,
   AnswerProvenance,
-  AnswerSegment,
   AnswerTurnOptions,
   FinalTurn,
   GroundedTurn,
