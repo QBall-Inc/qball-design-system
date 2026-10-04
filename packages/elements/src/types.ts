@@ -16,10 +16,23 @@ export interface BundleStats {
   snapshot_date: string;
 }
 
-/** An entity's facet tags: the UNION of its sources' tags (may span both domains). */
+/** One `(domain, sub_domain)` facet tag exactly as a source was filed. */
+export interface FacetPair {
+  domain: string;
+  sub_domain: string;
+}
+
+/** An entity's facet tags: the UNION of its sources' tags (may span several domains). */
 export interface BundleFacets {
   domains: string[];
   sub_domains: string[];
+  /**
+   * The same tags kept as pairs. When present, facet matching uses these and
+   * ignores the flat arrays; without them, a sub-domain shared by several of
+   * the entity's domains (e.g. `other`) cannot be attributed and is reported
+   * as unattributable rather than guessed.
+   */
+  pairs?: FacetPair[];
 }
 
 export interface BundleNode {

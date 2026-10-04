@@ -8,3 +8,4 @@ export * from "./scales";
 export * from "./neighbors";
 export * from "./labels";
 export * from "./resolveByName";
+export * from "./facets";

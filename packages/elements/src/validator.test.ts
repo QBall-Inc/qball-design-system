@@ -168,6 +168,35 @@ describe("validateSkeletonBundle", () => {
     expect(rejection(badFacets).path).toBe("nodes[1].facets.sub_domains");
   });
 
+  it("accepts optional facet pairs and rejects malformed ones", () => {
+    const withPairs = (pairs: unknown): Record<string, unknown> => {
+      const bundle = validBundle();
+      (bundle["nodes"] as Record<string, unknown>[])[1] = {
+        id: 2,
+        name: "retrieval",
+        cls: "concept",
+        eps: 2,
+        aliases: [],
+        facets: { domains: ["ai"], sub_domains: ["memory"], pairs },
+      };
+      return bundle;
+    };
+
+    expect(() =>
+      validateSkeletonBundle(withPairs([{ domain: "ai", sub_domain: "memory" }])),
+    ).not.toThrow();
+    expect(() => validateSkeletonBundle(withPairs([]))).not.toThrow();
+
+    expect(rejection(withPairs({ domain: "ai" })).path).toBe("nodes[1].facets.pairs");
+    expect(rejection(withPairs(["ai|memory"])).path).toBe("nodes[1].facets.pairs[0]");
+    expect(rejection(withPairs([{ domain: "ai" }])).path).toBe(
+      "nodes[1].facets.pairs[0].sub_domain",
+    );
+    expect(
+      rejection(withPairs([{ domain: "ai", sub_domain: "memory" }, { sub_domain: "x" }])).path,
+    ).toBe("nodes[1].facets.pairs[1].domain");
+  });
+
   it("requires layout to be present, and null or [x, y, z] per node", () => {
     const missing = validBundle();
     delete missing["layout"];

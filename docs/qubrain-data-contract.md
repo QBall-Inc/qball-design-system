@@ -57,7 +57,12 @@ file.
 
 `BundleNode`: `id` (number), `name` (display name), `cls` (entity class such as person or
 org), `eps` (source count, drives size), `aliases` (for search; may be empty), and optional
-`facets: { domains, sub_domains }`.
+`facets: { domains, sub_domains, pairs? }`. `domains` and `sub_domains` are the union of the
+entity's sources' tags. `pairs` is the same union kept as `{ domain, sub_domain }` objects,
+one per tag as each source was filed. Send `pairs` whenever your backend knows them: facet
+filtering then matches them exactly. Without `pairs`, a sub-domain that several of the
+entity's domains share (such as `other`) cannot be attributed to one domain, so the filter
+counts the entity as unattributable for those chips instead of guessing.
 
 **`Claim`**
 

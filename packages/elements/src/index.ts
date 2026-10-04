@@ -15,6 +15,7 @@ export type {
   ClaimSource,
   ComentionEdge,
   ConnectionDetail,
+  FacetPair,
   SkeletonBundle,
   SourceRef,
   TypedEdge,

@@ -1,0 +1,29 @@
+{
+  "_note": "FacetTaxonomy fixture in the @qball-inc/elements input-model shape: domains → their sub-domains in display order, 'other' last per domain. Synthetic stand-in matching the mock bundle's facet labels; a consumer passes its own backend's vocab (extra keys such as vocab_version are ignored). Display labels are not part of the taxonomy.",
+  "vocab_version": "fixture",
+  "domains": {
+    "ai-engineering": [
+      "agentic",
+      "harness-engineering",
+      "models-research",
+      "devtools-frameworks",
+      "prompting",
+      "infra-serving",
+      "rag-retrieval",
+      "evals",
+      "safety-alignment",
+      "training-finetuning-rl",
+      "other"
+    ],
+    "pm-craft": [
+      "career-advice",
+      "trends",
+      "frameworks",
+      "craft",
+      "metrics-analytics",
+      "growth",
+      "leadership",
+      "other"
+    ]
+  }
+}

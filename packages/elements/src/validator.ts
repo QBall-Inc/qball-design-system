@@ -99,6 +99,14 @@ function validateNodes(value: unknown): Set<number> {
       const facets = object(node["facets"], `${path}.facets`);
       strings(facets["domains"], `${path}.facets.domains`);
       strings(facets["sub_domains"], `${path}.facets.sub_domains`);
+      if (facets["pairs"] !== undefined) {
+        array(facets["pairs"], `${path}.facets.pairs`).forEach((item, j) => {
+          const pairPath = `${path}.facets.pairs[${j}]`;
+          const pair = object(item, pairPath);
+          string(pair["domain"], `${pairPath}.domain`);
+          string(pair["sub_domain"], `${pairPath}.sub_domain`);
+        });
+      }
     }
   });
   return new Set(firstSeen.keys());
