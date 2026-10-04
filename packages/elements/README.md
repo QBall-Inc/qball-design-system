@@ -11,7 +11,7 @@ framework runtime is required.
 
 | Import                      | Contents                                                           |
 | --------------------------- | ------------------------------------------------------------------ |
-| `@qball-inc/elements`       | Types and the data contract (no DOM)                               |
+| `@qball-inc/elements`       | Types, input-model validator and AnswerTurn model (no DOM)         |
 | `@qball-inc/elements/trust` | Claim card, source row, provenance footer, verdict stamp, feedback |
 | `@qball-inc/elements/chat`  | Ask launcher, overlay, answer turns                                |
 | `@qball-inc/elements/graph` | Knowledge-graph canvas and explorer (needs `three`)                |

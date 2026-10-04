@@ -1,0 +1,45 @@
+{
+  "_note": "ConnectionDetail fixture in the @qball-inc/elements input-model shape: what a consumer's adapter hands the panel for one clicked edge or path hop. Synthetic, public-safe content.",
+  "_case": "typed hop: claim 301 superseded by 399, which is NOT among the claims; claims 302 and 303 have unavailable sources (one unresolved, one never named)",
+  "kind": "typed",
+  "claims": [
+    {
+      "claim_id": 301,
+      "claim_text": "retrieval quality plateaus beyond eight memory slots",
+      "confidence": 0.41,
+      "confidence_tier": "low",
+      "valid_from": "2025-09-12",
+      "source": {
+        "episode_id": "ep-demo-0002",
+        "title": "LLM-powered autonomous agents",
+        "url": "https://example.com/llm-powered-autonomous-agents",
+        "source_type": "blog",
+        "save_date": "2026-05-18"
+      },
+      "valid_to": "2026-06-20",
+      "superseded_by_claim_id": 399
+    },
+    {
+      "claim_id": 302,
+      "claim_text": "summarised memories drift from their sources over time",
+      "confidence": 0.68,
+      "confidence_tier": "medium",
+      "valid_from": "2026-05-18",
+      "source": {
+        "kind": "unavailable",
+        "episode_id": "ep-demo-0009"
+      }
+    },
+    {
+      "claim_id": 303,
+      "claim_text": "memory writes should be gated by relevance",
+      "confidence": 0.66,
+      "confidence_tier": "medium",
+      "valid_from": "2026-05-18",
+      "source": {
+        "kind": "unavailable",
+        "episode_id": "ep-demo-0404"
+      }
+    }
+  ]
+}

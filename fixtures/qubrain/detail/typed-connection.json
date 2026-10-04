@@ -1,0 +1,37 @@
+{
+  "_note": "ConnectionDetail fixture in the @qball-inc/elements input-model shape: what a consumer's adapter hands the panel for one clicked edge or path hop. Synthetic, public-safe content.",
+  "_case": "typed hop: two current claims, one endorsed and verified",
+  "kind": "typed",
+  "claims": [
+    {
+      "claim_id": 101,
+      "claim_text": "episodic memory outperforms flat context past 100 turns",
+      "confidence": 0.94,
+      "confidence_tier": "high",
+      "valid_from": "2026-05-18",
+      "source": {
+        "episode_id": "ep-demo-0001",
+        "title": "Memory in the age of agents",
+        "url": "https://example.com/memory-in-the-age-of-agents",
+        "source_type": "blog",
+        "save_date": "2026-07-02"
+      },
+      "endorsement_tier": "endorsed",
+      "verification": "verified"
+    },
+    {
+      "claim_id": 102,
+      "claim_text": "memory compaction loses retrieval accuracy on long-running agents",
+      "confidence": 0.71,
+      "confidence_tier": "medium",
+      "valid_from": "2026-05-18",
+      "source": {
+        "episode_id": "ep-demo-0002",
+        "title": "LLM-powered autonomous agents",
+        "url": "https://example.com/llm-powered-autonomous-agents",
+        "source_type": "blog",
+        "save_date": "2026-05-18"
+      }
+    }
+  ]
+}

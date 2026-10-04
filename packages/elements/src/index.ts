@@ -1,6 +1,6 @@
-// @qball-inc/elements — core entry ('.'): the data contract, its validator and
-// adapter, confidence and superseded semantics, the locked-string formatter and
-// the AnswerTurn model. Zero DOM: this entry must stay importable in a DOM-less
+// @qball-inc/elements — core entry ('.'): the input model the components render
+// from, its validator, confidence and superseded semantics, the locked-string
+// formatter and the AnswerTurn model. Zero DOM: this entry must stay importable in a DOM-less
 // SSG build (plan AD-6).
 
 /** Identifies which public entry a module was loaded from. */
@@ -23,9 +23,6 @@ export type {
 export { isSourceUnavailable } from "./types";
 
 export { BundleValidationError, validateSkeletonBundle } from "./validator";
-
-export type { ProvisionalClaim, ProvisionalConnection, ProvisionalProvenance } from "./adapter";
-export { DetailAdapterError, adaptConnection } from "./adapter";
 
 export type { Replacement } from "./claims";
 export { isSuperseded, resolveReplacement } from "./claims";

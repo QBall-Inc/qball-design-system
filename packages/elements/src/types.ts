@@ -1,8 +1,7 @@
-// Public data contract for QuBrain surfaces. Field names and types mirror the
-// backend build brief §2 verbatim. The bundle shape is stable; the
-// detail shapes (Claim, SourceRef, ConnectionDetail) are PROVISIONAL until the
-// backend's certified contract lands — the single place a nesting change is
-// absorbed is `adapter.ts`, never these types.
+// The input model for QuBrain surfaces: the shapes the components render from.
+// It is backend-agnostic. Each consumer maps its own backend's payloads into
+// these types (its adapter lives in the consumer, never in this package) and
+// validates the result where it enters the page.
 
 /** Graph-wide counts carried by every skeleton bundle. Dates are ISO `YYYY-MM-DD`. */
 export interface BundleStats {
@@ -80,9 +79,9 @@ export interface SourceRef {
 }
 
 /**
- * A source the backend could not resolve (its record is gone, or the payload
- * did not carry it). Rendered as "source unavailable" — never dropped, never
- * dressed up as a real source with empty fields.
+ * A source that cannot be resolved (its record is gone, or the consumer's
+ * payload did not carry it). Rendered as "source unavailable" — never dropped,
+ * never dressed up as a real source with empty fields.
  */
 export interface UnavailableSource {
   kind: "unavailable";

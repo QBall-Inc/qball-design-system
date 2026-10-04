@@ -5,7 +5,7 @@ import { AnswerTurn, type FinalTurn, type TurnView } from "./answer-turn";
 import { groundedExplanation, refusedExplanation, withheldExplanation } from "./locked-strings";
 
 // vitest runs with the package directory as cwd.
-const ANSWERS_DIR = resolve(process.cwd(), "../../fixtures/qubrain/provisional-answers");
+const ANSWERS_DIR = resolve(process.cwd(), "../../fixtures/qubrain/answers");
 
 type Event =
   | { op: "start" }
@@ -15,7 +15,6 @@ type Event =
   | { op: "fail"; message: string };
 
 interface AnswerFixture {
-  _provisional: boolean;
   events: Event[];
 }
 
@@ -48,11 +47,14 @@ function neverShows(views: readonly TurnView[], drafts: readonly string[]): void
   for (const draft of drafts) expect(everything).not.toContain(draft);
 }
 
-describe("provisional answer fixtures", () => {
-  it("every fixture is labelled provisional", () => {
+describe("answer fixtures", () => {
+  it("every fixture is an event script that opens with start", () => {
     const files = readdirSync(ANSWERS_DIR).filter((f) => f.endsWith(".json"));
     expect(files.length).toBeGreaterThanOrEqual(5);
-    for (const file of files) expect(load(file.replace(/\.json$/, ""))._provisional).toBe(true);
+    for (const file of files) {
+      const { events } = load(file.replace(/\.json$/, ""));
+      expect(events[0]).toEqual({ op: "start" });
+    }
   });
 });
 

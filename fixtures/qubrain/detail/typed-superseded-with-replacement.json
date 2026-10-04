@@ -1,0 +1,37 @@
+{
+  "_note": "ConnectionDetail fixture in the @qball-inc/elements input-model shape: what a consumer's adapter hands the panel for one clicked edge or path hop. Synthetic, public-safe content.",
+  "_case": "typed hop: claim 201 superseded by 202, and 202 is among the claims",
+  "kind": "typed",
+  "claims": [
+    {
+      "claim_id": 201,
+      "claim_text": "flat context windows are sufficient for agent memory",
+      "confidence": 0.62,
+      "confidence_tier": "medium",
+      "valid_from": "2025-11-04",
+      "source": {
+        "episode_id": "ep-demo-0002",
+        "title": "LLM-powered autonomous agents",
+        "url": "https://example.com/llm-powered-autonomous-agents",
+        "source_type": "blog",
+        "save_date": "2026-05-18"
+      },
+      "valid_to": "2026-07-02",
+      "superseded_by_claim_id": 202
+    },
+    {
+      "claim_id": 202,
+      "claim_text": "episodic recall beats flat context for long-running agents",
+      "confidence": 0.91,
+      "confidence_tier": "high",
+      "valid_from": "2026-07-02",
+      "source": {
+        "episode_id": "ep-demo-0001",
+        "title": "Memory in the age of agents",
+        "url": "https://example.com/memory-in-the-age-of-agents",
+        "source_type": "blog",
+        "save_date": "2026-07-02"
+      }
+    }
+  ]
+}

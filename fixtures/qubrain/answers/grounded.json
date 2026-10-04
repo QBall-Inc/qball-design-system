@@ -1,6 +1,5 @@
 {
-  "_provisional": true,
-  "_note": "PROVISIONAL answer fixture: a transport-neutral AnswerTurn event script (start → appendText → authorize? → finalize | fail) replayed into packages/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins. Replaced by the backend's answer pack (plan OG-6(b)).",
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
   "_case": "grounded — 6 claims · 4 episodes · high confidence",
   "question": "what’s the current thinking on agent memory?",
   "events": [

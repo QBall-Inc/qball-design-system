@@ -1,0 +1,25 @@
+{
+  "_note": "ConnectionDetail fixture in the @qball-inc/elements input-model shape: what a consumer's adapter hands the panel for one clicked edge or path hop. Synthetic, public-safe content.",
+  "_case": "co-mention hop: three shared sources, one unresolved",
+  "kind": "comention",
+  "shared_sources": [
+    {
+      "episode_id": "ep-demo-0001",
+      "title": "Memory in the age of agents",
+      "url": "https://example.com/memory-in-the-age-of-agents",
+      "source_type": "blog",
+      "save_date": "2026-07-02"
+    },
+    {
+      "episode_id": "ep-demo-0003",
+      "title": "Context engineering notes",
+      "url": "https://example.com/context-engineering-notes",
+      "source_type": "web",
+      "save_date": "2026-07-30"
+    },
+    {
+      "kind": "unavailable",
+      "episode_id": "ep-demo-0009"
+    }
+  ]
+}
