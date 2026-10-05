@@ -14,3 +14,9 @@ export { SOURCE_UNAVAILABLE, renderReadingList, renderSourceRow } from "./Source
 export { renderProvenanceFooter } from "./ProvenanceFooter";
 
 export type { SourceBadge, SourceBadgeOptions } from "./source-badge";
+
+export type { VerdictInput, VerdictStampOptions } from "./VerdictStamp";
+export { markStampSeen, renderVerdictStamp, verdictExplanation } from "./VerdictStamp";
+
+export type { FeedbackChange, FeedbackOptions, FeedbackValue } from "./Feedback";
+export { renderFeedback } from "./Feedback";

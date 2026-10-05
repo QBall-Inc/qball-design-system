@@ -23,6 +23,7 @@ const ELEMENTS_DIST = join(ROOT, "packages", "elements", "dist", "index.js");
 const SPECIMENS = [
   { name: "graph-smoke", entry: "specimens/graph-smoke.entry.mjs" },
   { name: "claim-card", entry: "specimens/claim-card.entry.mjs" },
+  { name: "verdict-stamp", entry: "specimens/verdict-stamp.entry.mjs" },
 ];
 
 if (!existsSync(ELEMENTS_DIST)) {

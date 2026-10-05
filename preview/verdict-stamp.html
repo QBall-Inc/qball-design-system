@@ -1,0 +1,86 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VerdictStamp · Feedback — trust atoms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<style>
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 18px;max-width:880px}
+  .lab{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .sec{margin:22px 0 8px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .cell{padding:10px 12px;border:.5px dashed var(--border-default);border-radius:var(--radius-sm)}
+  .stack{display:flex;flex-direction:column;gap:10px;max-width:520px}
+  .narrow{max-width:260px}
+  .box-demo{max-width:520px}
+  .box-demo p{margin:0;font-family:var(--font-body);font-size:13px;color:var(--text-primary)}
+  .log{margin:8px 0 0;font-size:10.5px;color:var(--text-muted);min-height:1.4em}
+  .note{margin:16px 0 0;font-size:10.5px;color:var(--text-muted);max-width:640px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
+  html[data-specimens="ready"] .pending{display:none}
+  @media (max-width:600px){ body{padding:16px} }
+</style>
+</head><body>
+<div class="head">
+  <div>
+    <div class="eyebrow">Component · QuBae answers · @qball-inc/elements/trust</div>
+    <h3>VerdictStamp · Feedback</h3>
+  </div>
+  <div class="seg-th" role="group" aria-label="Theme">
+    <button data-theme-set="light" aria-pressed="true">light</button>
+    <button data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+<p class="pending">Live specimen not loaded. This page renders the built package: run <code>pnpm --filter @qball-inc/elements build</code> and <code>node scripts/bundle-pages-specimens.mjs</code>, or view it on the deployed gallery.</p>
+
+<p class="sec">Closed · shimmering until first opened (click a stamp)</p>
+<div class="grid">
+  <div class="cell"><p class="lab">Grounded</p><div data-specimen="grounded"></div></div>
+  <div class="cell"><p class="lab">Withheld</p><div data-specimen="withheld"></div></div>
+  <div class="cell"><p class="lab">Refused · off topic</p><div data-specimen="refused-off-topic"></div></div>
+</div>
+
+<p class="sec">Open · explanation shown, shimmer retired (answer-box width)</p>
+<div class="stack">
+  <div class="cell"><p class="lab">Grounded</p><div data-specimen="grounded" data-open></div></div>
+  <div class="cell"><p class="lab">Withheld</p><div data-specimen="withheld" data-open></div></div>
+  <div class="cell"><p class="lab">Refused · off topic</p><div data-specimen="refused-off-topic" data-open></div></div>
+  <div class="cell"><p class="lab">Refused · in scope, graph empty</p><div data-specimen="refused-empty" data-open></div></div>
+  <div class="cell"><p class="lab">Refused · insufficient evidence</p><div data-specimen="refused-abstained" data-open></div></div>
+</div>
+
+<p class="sec">Overflow · ticker (hover pauses; wraps under reduced motion)</p>
+<div class="cell narrow"><div data-specimen="ticker" data-open></div></div>
+
+<p class="sec">Feedback · +1 / −1 (inside the answer box)</p>
+<div class="grid">
+  <div class="vbox vbox--grounded box-demo"><p>none pressed — wakes on box hover</p><div data-specimen="fb-none"></div></div>
+  <div class="vbox vbox--grounded box-demo"><p>+1 pressed</p><div data-specimen="fb-up"></div></div>
+  <div class="vbox vbox--withheld box-demo"><p>−1 pressed</p><div data-specimen="fb-down"></div></div>
+</div>
+<p class="log" id="fb-log" aria-live="polite"></p>
+
+<p class="note">Glyph + word, never colour alone: ● grounded (sage) · ◐ withheld (amber) · ∅ refused (stone, dashed — a boundary, not an error). Click a stamp or press Enter/Space to toggle its explanation; › closes. The explanation is an owner-locked line built from counts only. Feedback marks are mutually exclusive; pressing the pressed one clears it.</p>
+
+<script type="module" src="../specimens/verdict-stamp.bundle.js"></script>
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>
