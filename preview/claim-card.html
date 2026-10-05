@@ -1,0 +1,76 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimCard · SourceRow · ProvenanceFooter — trust atoms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<style>
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;max-width:880px}
+  .lab{margin:18px 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .grid .lab{margin-top:0}
+  .box{max-width:640px;border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden}
+  .foot{max-width:640px}
+  .note{margin:14px 0 0;font-size:10.5px;color:var(--text-muted);max-width:640px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
+  html[data-specimens="ready"] .pending{display:none}
+  @media (max-width:600px){ body{padding:16px} .grid{grid-template-columns:1fr} }
+</style>
+</head><body>
+<div class="head">
+  <div>
+    <div class="eyebrow">Component · QuBrain trust family · @qball-inc/elements/trust</div>
+    <h3>ClaimCard · SourceRow · ProvenanceFooter</h3>
+  </div>
+  <div class="seg-th" role="group" aria-label="Theme">
+    <button data-theme-set="light" aria-pressed="true">light</button>
+    <button data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+<p class="pending">Live specimen not loaded. This page renders the built package: run <code>pnpm --filter @qball-inc/elements build</code> and <code>node scripts/bundle-pages-specimens.mjs</code>, or view it on the deployed gallery.</p>
+
+<div class="grid">
+  <div><p class="lab">High · endorsed + verified</p><div data-specimen="high-both"></div></div>
+  <div><p class="lab">Medium · no marks · host label (no badge)</p><div data-specimen="medium-none"></div></div>
+  <div><p class="lab">Endorsed only</p><div data-specimen="endorsed-only"></div></div>
+  <div><p class="lab">Verified only · consumer company label</p><div data-specimen="verified-only"></div></div>
+  <div><p class="lab">Low · long sentence (200ch)</p><div data-specimen="low-long"></div></div>
+  <div><p class="lab">Superseded · replacement shown</p><div data-specimen="superseded-replacement"></div></div>
+  <div><p class="lab">Superseded · replacement not available</p><div data-specimen="superseded-unavailable"></div></div>
+  <div><p class="lab">Source unavailable</p><div data-specimen="source-unavailable"></div></div>
+</div>
+
+<p class="lab">SourceRow · reading list (one row per episode; unknown source → no badge)</p>
+<div class="box" data-specimen="reading-list"></div>
+
+<p class="lab">ProvenanceFooter · answer variant</p>
+<div class="foot" data-specimen="footer-answer"></div>
+<p class="lab">ProvenanceFooter · panel variant</p>
+<div class="foot" data-specimen="footer-panel"></div>
+<p class="lab">ProvenanceFooter · panel, singular counts</p>
+<div class="foot" data-specimen="footer-singular"></div>
+
+<p class="note">Confidence is never colour alone: ◆/◈/◇ + score + tier word. Superseded keeps the struck original above what replaced it, or says the replacement is not available — never hidden, never invented. Endorsed (✓) and verified (⁂) render only when present. Only http(s) sources become links; anything else renders as inert text without ↗. Footer strings are owner-locked — rendered, never rephrased.</p>
+
+<script type="module" src="../specimens/claim-card.bundle.js"></script>
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

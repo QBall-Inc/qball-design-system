@@ -134,7 +134,7 @@ dates and enums, never free text. Nouns follow their count (`1 claim`, `2 claims
 | `groundedExplanation` | `6 claims · 4 episodes · high confidence`                                                                             |
 | `withheldExplanation` | `2 figures untraceable · 12 claims shown`                                                                             |
 | `refusedExplanation`  | `out of scope` (off-topic) · `unable to answer · 0 references found` (in scope) · `insufficient evidence` (abstained) |
-| `answerFooter`        | `7 claims · 5 episodes · high confidence · 2026-07-17 · 1 superseded excluded`                                        |
+| `answerFooter`        | `7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded`                               |
 | `panelFooter`         | `1 claim · 1 source · revision 2026-07-17 · 0 superseded shown`                                                       |
 | `sourcesLine`         | `[3 sources · newest jul 2026]` (needs at least one source; omit the line at zero)                                    |
 | `canvasStatus`        | `3294 entities · 2857 typed · 10003 co-mention · snapshot 2026-07-17` (narrow: `3294 entities · snapshot 2026-07-17`) |

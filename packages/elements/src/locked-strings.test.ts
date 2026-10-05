@@ -58,9 +58,24 @@ describe("refusedExplanation", () => {
 
 describe("answerFooter", () => {
   it.each([
-    [0, 0, 0, "0 claims · 0 episodes · high confidence · 2026-07-17 · 0 superseded excluded"],
-    [1, 1, 1, "1 claim · 1 episode · high confidence · 2026-07-17 · 1 superseded excluded"],
-    [7, 5, 1, "7 claims · 5 episodes · high confidence · 2026-07-17 · 1 superseded excluded"],
+    [
+      0,
+      0,
+      0,
+      "0 claims · 0 episodes · high confidence · snapshot 2026-07-17 · 0 superseded excluded",
+    ],
+    [
+      1,
+      1,
+      1,
+      "1 claim · 1 episode · high confidence · snapshot 2026-07-17 · 1 superseded excluded",
+    ],
+    [
+      7,
+      5,
+      1,
+      "7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded",
+    ],
   ])("claims=%i episodes=%i superseded=%i → %s", (claims, episodes, superseded, expected) => {
     expect(
       answerFooter({

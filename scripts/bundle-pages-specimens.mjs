@@ -20,7 +20,10 @@ const ROOT = resolve(import.meta.dirname, "..");
 const OUT_DIR = join(ROOT, "_site", "specimens");
 const ELEMENTS_DIST = join(ROOT, "packages", "elements", "dist", "index.js");
 
-const SPECIMENS = [{ name: "graph-smoke", entry: "specimens/graph-smoke.entry.mjs" }];
+const SPECIMENS = [
+  { name: "graph-smoke", entry: "specimens/graph-smoke.entry.mjs" },
+  { name: "claim-card", entry: "specimens/claim-card.entry.mjs" },
+];
 
 if (!existsSync(ELEMENTS_DIST)) {
   console.error(

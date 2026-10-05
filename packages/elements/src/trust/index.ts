@@ -4,3 +4,13 @@
 
 /** Identifies which public entry a module was loaded from. */
 export const ENTRY = "trust" as const;
+
+export type { ClaimCardOptions } from "./ClaimCard";
+export { REPLACEMENT_UNAVAILABLE, renderClaimCard } from "./ClaimCard";
+
+export type { SourceRowOptions } from "./SourceRow";
+export { SOURCE_UNAVAILABLE, renderReadingList, renderSourceRow } from "./SourceRow";
+
+export { renderProvenanceFooter } from "./ProvenanceFooter";
+
+export type { SourceBadge, SourceBadgeOptions } from "./source-badge";

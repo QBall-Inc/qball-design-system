@@ -96,36 +96,40 @@ export function refusedExplanation(kind: RefusalKind): string {
   }
 }
 
-/**
- * Answer-variant provenance footer:
- * `N claims · M episodes · <tier> confidence · <snapshot date> · K superseded excluded`.
- */
-export function answerFooter(input: {
+export interface AnswerFooterInput {
   claims: number;
   episodes: number;
   confidenceTier: string;
   snapshotDate: string;
   supersededExcluded: number;
-}): string {
+}
+
+/**
+ * Answer-variant provenance footer:
+ * `N claims · M episodes · <tier> confidence · snapshot <date> · K superseded excluded`.
+ */
+export function answerFooter(input: AnswerFooterInput): string {
   return line(
     counted(input.claims, "claim", "claims"),
     counted(input.episodes, "episode", "episodes"),
     `${confidenceMark(input.confidenceTier).word} confidence`,
-    isoDate(input.snapshotDate, "snapshotDate"),
+    `snapshot ${isoDate(input.snapshotDate, "snapshotDate")}`,
     `${count(input.supersededExcluded, "supersededExcluded")} superseded excluded`,
   );
+}
+
+export interface PanelFooterInput {
+  claims: number;
+  sources: number;
+  revisionDate: string;
+  supersededShown: number;
 }
 
 /**
  * Panel-variant provenance footer (no confidence slot; panels never hide
  * superseded claims): `N claims · M sources · revision <date> · K superseded shown`.
  */
-export function panelFooter(input: {
-  claims: number;
-  sources: number;
-  revisionDate: string;
-  supersededShown: number;
-}): string {
+export function panelFooter(input: PanelFooterInput): string {
   return line(
     counted(input.claims, "claim", "claims"),
     counted(input.sources, "source", "sources"),
