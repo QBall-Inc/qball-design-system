@@ -1,0 +1,77 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask launcher · overlay — chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<link rel="stylesheet" href="../packages/tokens/graph.css">
+<style>
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .sec{margin:22px 0 8px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 18px;max-width:880px}
+  .lab{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  /* a frame is a mini page: transform makes it the containing block for the
+     launcher's and overlay's position:fixed, so each specimen stays inside it */
+  .frame{position:relative;transform:translateZ(0);overflow:hidden;border:.5px dashed var(--border-default);border-radius:var(--radius-sm);background:var(--bg-primary)}
+  .frame--sm{height:150px}
+  .frame--lg{height:760px;max-width:880px}
+  .frame--stage{background:var(--stage-bg)}
+  .mline{height:8px;border-radius:2px;background:var(--bg-surface);margin:14px 16px 0}
+  .frame--stage .mline{background:var(--stage-surface)}
+  .note{margin:16px 0 0;font-size:10.5px;color:var(--text-muted);max-width:640px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
+  html[data-specimens="ready"] .pending{display:none}
+  @media (max-width:600px){ body{padding:16px} }
+</style>
+</head><body>
+<div class="head">
+  <div>
+    <div class="eyebrow">Component · QuBae · @qball-inc/elements/chat</div>
+    <h3>Ask launcher · overlay</h3>
+  </div>
+  <div class="seg-th" role="group" aria-label="Theme">
+    <button data-theme-set="light" aria-pressed="true">light</button>
+    <button data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+<p class="pending">Live specimen not loaded. This page renders the built package: run <code>pnpm --filter @qball-inc/elements build</code> and <code>node scripts/bundle-pages-specimens.mjs</code>, or view it on the deployed gallery.</p>
+
+<p class="sec">Live · press Q (not while typing) or click the mark · Esc, scrim or esc closes</p>
+<div class="frame frame--lg" data-specimen="live">
+  <div class="mline" style="width:40%"></div><div class="mline" style="width:86%"></div><div class="mline" style="width:78%"></div><div class="mline" style="width:64%"></div><div class="mline" style="width:80%"></div>
+</div>
+
+<p class="sec">Launcher variants</p>
+<div class="grid">
+  <div><p class="lab">Corner (default)</p><div class="frame frame--sm" data-specimen="corner"></div></div>
+  <div><p class="lab">Post-page · bottom-left under 720px</p><div class="frame frame--sm" data-specimen="post-page"></div></div>
+  <div><p class="lab">On stage · light ink over the graph</p><div class="frame frame--sm frame--stage" data-specimen="on-stage"><div class="mline" style="width:60%"></div><div class="mline" style="width:80%"></div></div></div>
+</div>
+
+<p class="sec">Overlay · open (display only)</p>
+<div class="frame frame--lg" data-specimen="open"></div>
+
+<p class="note">The launcher is the mascot with the antenna pulse-dot — the one sanctioned idle motion, static under reduced motion — and an <code>ask [Q]</code> caption that hides under 720px. The overlay is a ~460px portrait panel lifted 18 / 16 off the corner with a hairline frame and a translucent scrim; it traps focus, makes the page behind it inert and returns focus to the launcher on close. Copy here is the neutral default; a site passes its own title, hint, placeholder and disclaimer.</p>
+
+<script type="module" src="../specimens/qubae-launcher.bundle.js"></script>
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

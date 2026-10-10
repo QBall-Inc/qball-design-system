@@ -97,6 +97,8 @@
    The launcher floats bare; over the dark canvas it borrows the stage ink. */
 .qlaunch--on-stage{color:var(--stage-mark)}
 .qlaunch--on-stage:hover{color:var(--stage-signal)}
+/* .qbmark sets its own ink; on the stage the mascot follows the launcher's */
+.qlaunch--on-stage .qbmark{color:inherit}
 .qlaunch--on-stage .qlaunch__cap{color:var(--stage-text-muted)}
 .qlaunch--on-stage .keycap{background:var(--stage-surface);color:var(--stage-text-secondary);border-color:var(--stage-border-strong)}
 

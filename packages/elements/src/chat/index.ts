@@ -4,3 +4,9 @@
 
 /** Identifies which public entry a module was loaded from. */
 export const ENTRY = "chat" as const;
+
+export type { ChatEventMap, ChatEventType, ChatHandle, ChatMountOptions } from "./mount";
+export { isOpenHotkey, mount } from "./mount";
+
+export type { LauncherVariant } from "./Launcher";
+export { MASCOT_SVG, defaultMascot } from "./Launcher";

@@ -24,6 +24,7 @@ const SPECIMENS = [
   { name: "graph-smoke", entry: "specimens/graph-smoke.entry.mjs" },
   { name: "claim-card", entry: "specimens/claim-card.entry.mjs" },
   { name: "verdict-stamp", entry: "specimens/verdict-stamp.entry.mjs" },
+  { name: "qubae-launcher", entry: "specimens/qubae-launcher.entry.mjs" },
 ];
 
 if (!existsSync(ELEMENTS_DIST)) {
