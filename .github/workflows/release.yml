@@ -33,7 +33,9 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # 20 (was 15, same as ci.yml): `pnpm run ci` now includes the Astro consumer gate (Chromium
+    # install + fixture install + astro build + browser checks).
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -58,6 +60,12 @@ jobs:
 
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
+
+      # consumer-validate (inside `pnpm run ci`) runs the Astro consumer gate's
+      # browser checks, so headless Chromium must be installed first — same
+      # step as ci.yml.
+      - name: Install Playwright Chromium
+        run: pnpm --filter "@qball-inc/elements" exec playwright install --with-deps --only-shell chromium
 
       # Full quality + font-license gate before any publish. The license gate
       # (scripts/license-check.sh, inside `pnpm run ci`) is the hard precondition
