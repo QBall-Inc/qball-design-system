@@ -34,8 +34,10 @@ cd "$REPO_ROOT"
 
 if [ -n "${QBALL_FROM_REGISTRY:-}" ]; then
   IFS=, read -r TOKENS_VER ELEMENTS_VER <<<"$QBALL_FROM_REGISTRY"
-  if [ -z "$TOKENS_VER" ] || [ -z "$ELEMENTS_VER" ]; then
-    echo "FAIL: QBALL_FROM_REGISTRY must be '<tokens-version>,<elements-version>'"; exit 1
+  # Exact published versions only (no ranges, tags, file: or git specs).
+  semver='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'
+  if ! [[ "$TOKENS_VER" =~ $semver && "$ELEMENTS_VER" =~ $semver ]]; then
+    echo "FAIL: QBALL_FROM_REGISTRY must be '<tokens-version>,<elements-version>' (exact versions, e.g. 1.1.0,0.1.0)"; exit 1
   fi
   echo "==> [1-3/5] Registry mode: install @qball-inc/tokens@$TOKENS_VER + @qball-inc/elements@$ELEMENTS_VER from npm"
   cp "$FIXTURE_DIR/package.json" "$FIXTURE_DIR/package.json.bak"
@@ -55,18 +57,18 @@ if [ -n "${QBALL_FROM_REGISTRY:-}" ]; then
     [ "$got" = "$want" ] || { echo "FAIL: installed @qball-inc/$pkg@$got, expected $want"; exit 1; }
   done
 else
-echo "==> [1/5] Build @qball-inc/elements (tsup) so dist/ is packable"
-pnpm --filter @qball-inc/elements run build >/dev/null
+  echo "==> [1/5] Build @qball-inc/elements (tsup) so dist/ is packable"
+  pnpm --filter @qball-inc/elements run build >/dev/null
 
-echo "==> [2/5] Pack tokens + elements (pnpm pack) under stable file names"
-rm -f "$FIXTURE_DIR"/qball-inc-*.tgz
-( cd "$TOKENS_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
-( cd "$ELEMENTS_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
-mv -f "$FIXTURE_DIR"/qball-inc-tokens-*.tgz "$FIXTURE_DIR/qball-inc-tokens.tgz"
-mv -f "$FIXTURE_DIR"/qball-inc-elements-*.tgz "$FIXTURE_DIR/qball-inc-elements.tgz"
+  echo "==> [2/5] Pack tokens + elements (pnpm pack) under stable file names"
+  rm -f "$FIXTURE_DIR"/qball-inc-*.tgz
+  ( cd "$TOKENS_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
+  ( cd "$ELEMENTS_DIR" && pnpm pack --pack-destination "$FIXTURE_DIR" >/dev/null )
+  mv -f "$FIXTURE_DIR"/qball-inc-tokens-*.tgz "$FIXTURE_DIR/qball-inc-tokens.tgz"
+  mv -f "$FIXTURE_DIR"/qball-inc-elements-*.tgz "$FIXTURE_DIR/qball-inc-elements.tgz"
 
-echo "==> [3/5] Install the tarballs into the fixture (standalone; no workspace link)"
-( cd "$FIXTURE_DIR" && rm -rf node_modules dist .astro && pnpm install --ignore-workspace --no-frozen-lockfile >/dev/null )
+  echo "==> [3/5] Install the tarballs into the fixture (standalone; no workspace link)"
+  ( cd "$FIXTURE_DIR" && rm -rf node_modules dist .astro && pnpm install --ignore-workspace --no-frozen-lockfile >/dev/null )
 fi
 
 echo "==> [4/5] Type-check against the packed types, then astro build"
