@@ -1224,8 +1224,12 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 .claim__conf--low{color:var(--data-flat)}
 .claim__mark--endorsed{color:var(--color-signal);font-weight:500}
 .claim__mark--verified{color:var(--anno-source);font-weight:500}
-.claim__src{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:subgrid;row-gap:4px;align-items:baseline;justify-items:end;text-align:right;color:var(--anno-source);text-decoration:none;white-space:nowrap;position:relative}
-.claim__src-label,.claim__src-date{min-width:0}
+.claim__src{grid-column:2;grid-row:1 / 3;display:grid;grid-template-rows:subgrid;grid-template-columns:auto auto;column-gap:.5ch;row-gap:4px;align-items:baseline;justify-items:end;text-align:right;color:var(--anno-source);text-decoration:none;white-space:nowrap;position:relative}
+.claim__src-label,.claim__src-date{grid-column:1;min-width:0}
+.claim__src-label{grid-row:1}
+.claim__src-date{grid-row:2}
+/* the ↗ hangs past the shared right edge of `view source` and the date */
+.claim__src-out{grid-column:2;grid-row:1}
 /* the whole block is one tap target; the hit area grows without moving layout */
 a.claim__src::after{content:"";position:absolute;inset:-6px -8px}
 a.claim__src:hover{color:var(--color-signal)}

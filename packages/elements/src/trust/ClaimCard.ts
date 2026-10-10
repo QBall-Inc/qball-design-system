@@ -64,7 +64,10 @@ function sourceElement(source: ClaimSource, options: ClaimCardOptions): HTMLElem
     return inert;
   }
   const link = el("a", "claim__src");
-  link.append(el("span", "claim__src-label", "view source ↗"), date);
+  // The ↗ sits in its own column so `view source` and the date share a right edge.
+  const out = el("span", "claim__src-out", "↗");
+  out.setAttribute("aria-hidden", "true");
+  link.append(el("span", "claim__src-label", "view source"), out, date);
   link.setAttribute("href", url.href);
   link.setAttribute("rel", EXTERNAL_LINK_REL);
   if (name !== null) link.setAttribute("title", name);

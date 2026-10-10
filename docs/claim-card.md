@@ -63,7 +63,9 @@ superseded range breaks before `- {valid_to}` and nowhere else.
 
 **The source block** (see also Source labels and URL policy):
 
-- **Linked** (`<a>`, http(s) URL): `view source ↗` over the bare `{save_date}`. The
+- **Linked** (`<a>`, http(s) URL): `view source ↗` over the bare `{save_date}`.
+  `view source` and the date end on the same edge; the `↗` (`.claim__src-out`,
+  `aria-hidden`) sits in its own column past it. The
   whole block is one link with a tap area at least 44px tall. The source name
   (badge label, else host) is not shown; it is the accessible name
   `View source: {name}, {save_date}` and the `title` tooltip `{name}`.

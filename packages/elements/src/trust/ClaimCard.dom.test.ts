@@ -166,7 +166,10 @@ describe("renderClaimCard — superseded", () => {
 describe("renderClaimCard — source link", () => {
   it("links the whole two-line block: `view source ↗` over the bare save date", () => {
     const link = renderClaimCard(claim()).querySelector("a.claim__src");
-    expect(link?.querySelector(".claim__src-label")?.textContent).toBe("view source ↗");
+    expect(link?.querySelector(".claim__src-label")?.textContent).toBe("view source");
+    const out = link?.querySelector(".claim__src-out");
+    expect(out?.textContent).toBe("↗");
+    expect(out?.getAttribute("aria-hidden")).toBe("true");
     expect(link?.querySelector(".claim__src-date")?.textContent).toBe("2025-06-20");
     expect(link?.textContent).not.toContain("saved");
     expect(link?.getAttribute("href")).toBe("https://example.org/notes");
@@ -232,7 +235,7 @@ describe("renderClaimCard — hostile payloads (rendered as text; execution is c
     expect(card.querySelector("img")).toBeNull();
     expect(link?.getAttribute("title")).toBe(HOSTILE_MARKUP);
     expect(link?.getAttribute("aria-label")).toBe(`View source: ${HOSTILE_MARKUP}, 2025-06-20`);
-    expect(link?.textContent).toBe("view source ↗2025-06-20");
+    expect(link?.textContent).toBe("view source↗2025-06-20");
   });
 
   it.each([

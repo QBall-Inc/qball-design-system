@@ -73,6 +73,7 @@ interface Geometry {
   valid: Box;
   src: Box;
   label: Box | null;
+  out: Box | null;
   date: Box | null;
   text: Box;
   tags: Box | null;
@@ -127,6 +128,7 @@ function geometry(page: Page, variant: Variant): Promise<Geometry> {
       valid: need(".claim__valid"),
       src: need(".claim__src"),
       label: box(card.querySelector(".claim__src-label")),
+      out: box(card.querySelector(".claim__src-out")),
       date: box(card.querySelector(".claim__src-date")),
       text: need(".claim__text"),
       tags: box(card.querySelector(".claim__tags")),
@@ -179,6 +181,12 @@ for (const width of [320, 390, 1024]) {
           expect(near(g.label.right, g.date.right), `${variant} label/date right-aligned`).toBe(
             true,
           );
+        }
+        // A link's ↗ hangs past that shared edge, on row 1, flush with the meta's right edge.
+        if (g.out !== null && g.label !== null) {
+          expect(g.out.left, `${variant} ↗ after the label`).toBeGreaterThanOrEqual(g.label.right);
+          expect(near(g.out.top, g.label.top, 3), `${variant} ↗ on row 1`).toBe(true);
+          expect(near(g.out.right, g.meta.right), `${variant} ↗ flush right`).toBe(true);
         }
       }
     });

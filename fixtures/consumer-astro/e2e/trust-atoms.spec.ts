@@ -113,7 +113,7 @@ for (const theme of THEMES) {
       // The card reads `view source ↗` over the date; the source name lives in the
       // accessible name — a consumer company badge by domain, else only the host.
       const companySrc = atom(page, "claim-company-badge").locator(".claim__src");
-      await expect(companySrc).toHaveText("view source ↗2025-06-20");
+      await expect(companySrc).toHaveText("view source↗2025-06-20");
       await expect(companySrc).toHaveAttribute(
         "aria-label",
         "View source: Example Lab, 2025-06-20",
