@@ -15,6 +15,11 @@
 # Astro, and later WPs add pages + specs here. Nothing below names a page, so
 # new pages and specs are picked up without editing this script.
 #
+# Registry mode (post-publish check, never part of `ci`): set
+#   QBALL_FROM_REGISTRY="<tokens-version>,<elements-version>"
+# to skip build + pack and install those PUBLISHED versions from npm instead;
+# every later step is identical. package.json is restored afterwards.
+#
 # Non-interactive. Exit 0 on PASS, non-zero on any FAIL.
 # =============================================================================
 set -euo pipefail
@@ -27,6 +32,29 @@ export ASTRO_TELEMETRY_DISABLED=1
 # pnpm --filter / exec resolve against the workspace root, whatever the caller's cwd.
 cd "$REPO_ROOT"
 
+if [ -n "${QBALL_FROM_REGISTRY:-}" ]; then
+  IFS=, read -r TOKENS_VER ELEMENTS_VER <<<"$QBALL_FROM_REGISTRY"
+  if [ -z "$TOKENS_VER" ] || [ -z "$ELEMENTS_VER" ]; then
+    echo "FAIL: QBALL_FROM_REGISTRY must be '<tokens-version>,<elements-version>'"; exit 1
+  fi
+  echo "==> [1-3/5] Registry mode: install @qball-inc/tokens@$TOKENS_VER + @qball-inc/elements@$ELEMENTS_VER from npm"
+  cp "$FIXTURE_DIR/package.json" "$FIXTURE_DIR/package.json.bak"
+  trap 'mv -f "$FIXTURE_DIR/package.json.bak" "$FIXTURE_DIR/package.json"' EXIT
+  node -e '
+    const fs = require("fs");
+    const [file, tokens, elements] = process.argv.slice(1);
+    const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+    pkg.dependencies["@qball-inc/tokens"] = tokens;
+    pkg.dependencies["@qball-inc/elements"] = elements;
+    fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n");
+  ' "$FIXTURE_DIR/package.json" "$TOKENS_VER" "$ELEMENTS_VER"
+  ( cd "$FIXTURE_DIR" && rm -rf node_modules dist .astro pnpm-lock.yaml && pnpm install --ignore-workspace --no-frozen-lockfile >/dev/null )
+  for pkg in tokens elements; do
+    want="$([ "$pkg" = tokens ] && echo "$TOKENS_VER" || echo "$ELEMENTS_VER")"
+    got="$(node -p "require('$FIXTURE_DIR/node_modules/@qball-inc/$pkg/package.json').version")"
+    [ "$got" = "$want" ] || { echo "FAIL: installed @qball-inc/$pkg@$got, expected $want"; exit 1; }
+  done
+else
 echo "==> [1/5] Build @qball-inc/elements (tsup) so dist/ is packable"
 pnpm --filter @qball-inc/elements run build >/dev/null
 
@@ -39,6 +67,7 @@ mv -f "$FIXTURE_DIR"/qball-inc-elements-*.tgz "$FIXTURE_DIR/qball-inc-elements.t
 
 echo "==> [3/5] Install the tarballs into the fixture (standalone; no workspace link)"
 ( cd "$FIXTURE_DIR" && rm -rf node_modules dist .astro && pnpm install --ignore-workspace --no-frozen-lockfile >/dev/null )
+fi
 
 echo "==> [4/5] Type-check against the packed types, then astro build"
 pnpm exec tsc --noEmit -p "$FIXTURE_DIR/tsconfig.json"

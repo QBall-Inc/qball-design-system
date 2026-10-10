@@ -89,6 +89,11 @@ spdx-check:
 consumer-validate:
     bash scripts/consumer-validate.sh
 
+# Post-publish check (not part of ci): re-run the Astro consumer gate against the
+# PUBLISHED npm versions, e.g. `just consumer-validate-published 1.1.0 0.1.0`.
+consumer-validate-published tokens elements:
+    QBALL_FROM_REGISTRY="{{tokens}},{{elements}}" bash fixtures/consumer-astro/scripts/validate-consumer-astro.sh
+
 # Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> test-browser -> license-check -> spdx-check -> consumer-validate.
 ci: generate-icons-check typecheck lint test test-browser license-check spdx-check consumer-validate
     @echo "ci: all gates passed"

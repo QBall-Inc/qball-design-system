@@ -17,6 +17,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@qball-inc/tokens"><img src="https://img.shields.io/npm/v/@qball-inc/tokens?color=3F6B5B&label=%40qball-inc%2Ftokens" alt="@qball-inc/tokens on npm"></a>
   <a href="https://www.npmjs.com/package/@qball-inc/react"><img src="https://img.shields.io/npm/v/@qball-inc/react?color=3F6B5B&label=%40qball-inc%2Freact" alt="@qball-inc/react on npm"></a>
+  <a href="https://www.npmjs.com/package/@qball-inc/elements"><img src="https://img.shields.io/npm/v/@qball-inc/elements?color=3F6B5B&label=%40qball-inc%2Felements" alt="@qball-inc/elements on npm"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/npm/l/@qball-inc/tokens?color=3F6B5B" alt="Apache-2.0 license"></a>
 </p>
 
@@ -60,7 +61,7 @@ packages/tokens/         — the canonical, published token layer (@qball-inc/to
   theme.css              — Tailwind v4 @theme export of the tokens
   tokens.json            — DTCG / Style-Dictionary shape (cross-platform)
 packages/react/          — the @qball-inc/react component library
-packages/elements/       — @qball-inc/elements: framework-free DOM components (unreleased)
+packages/elements/       — @qball-inc/elements: framework-free DOM components (0.x)
 assets/                  — logos (wordmark + mark + favicon) + assets/icons/ (Lucide)
 preview/                 — one live card per component (the canonical state matrices)
 reference/               — usage guide + upstream foundations + historical audit
@@ -82,13 +83,16 @@ public packages under the `@qball-inc` scope (Apache-2.0):
 
 - **[`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
 - **[`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)** — the framework-agnostic component layer as a React library.
-- **[`@qball-inc/elements`](./packages/elements)** — framework-free TypeScript + DOM components (no React needed), with subpaths `./trust`, `./chat` and `./graph`. **Not yet published**; first release coming on 0.x.
+- **[`@qball-inc/elements`](https://www.npmjs.com/package/@qball-inc/elements)** — framework-free TypeScript + DOM components (no React needed), on 0.x. `0.1.0` ships the trust components (`./trust`: claim card, source row, provenance footer, verdict stamp, feedback) and the input model (`.`); `./chat` and `./graph` come in later releases.
 
 ```bash
 pnpm add @qball-inc/tokens @qball-inc/react
+# framework-free trust components (no React):
+pnpm add @qball-inc/tokens @qball-inc/elements
 ```
 
-> **Status:** `@qball-inc/tokens` and `@qball-inc/react` are published (1.x). The canonical CSS source is
+> **Status:** `@qball-inc/tokens` and `@qball-inc/react` are published (1.x); `@qball-inc/elements` is published on 0.x
+> (see [docs/consumer-handback-elements.md](./docs/consumer-handback-elements.md)). The canonical CSS source is
 > `packages/tokens/` (`colors_and_type.css` / `components.css` / `theme.css` / `tokens.json`)
 > — what the npm package ships verbatim. See [docs/consumer-setup.md](./docs/consumer-setup.md)
 > for the full consumer wiring sequence.

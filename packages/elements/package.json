@@ -1,6 +1,6 @@
 {
   "name": "@qball-inc/elements",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "QBall Design System framework-free elements — plain TypeScript/DOM trust atoms, chat and knowledge-graph components that paint the @qball-inc/tokens CSS. No framework runtime.",
   "keywords": [
     "design-system",

@@ -5,7 +5,7 @@
 > framework-agnostic React component layer, shipped in both light and dark from
 > the same tokens. It publishes to npm as `@qball-inc/tokens` and
 > `@qball-inc/react` (Apache-2.0); a third package, `@qball-inc/elements`
-> (framework-free DOM components), is in development and not yet published.
+> (framework-free DOM components), is published on 0.x with the trust components.
 
 The token layer is drop-in CSS custom properties plus a DTCG / Style-Dictionary
 JSON mirror (zero build step). The React layer is thin, accessible className
@@ -33,9 +33,10 @@ live gallery renders every component in light and dark.
 
 - [@qball-inc/tokens](packages/tokens/): The locked token layer as drop-in CSS + DTCG JSON (zero build step). Subpaths: `./theme.css` (Tailwind v4 `@theme`), `./colors-and-type.css`, `./components.css`, `./tokens.json`.
 - [@qball-inc/react](packages/react/): The framework-agnostic component layer as a React library (dual ESM/CJS + types). Token-driven.
-- [@qball-inc/elements](packages/elements/): Framework-free TypeScript + DOM components that paint the tokens CSS (no React needed). Subpaths: `./trust`, `./chat`, `./graph` (the graph needs `three`). Not yet published.
+- [@qball-inc/elements](packages/elements/): Framework-free TypeScript + DOM components that paint the tokens CSS (no React needed). 0.x. `./trust` (claim card, source row, provenance footer, verdict stamp, feedback) and `.` (input model) ship in 0.1.0; `./chat` and `./graph` (needs `three`) come in later releases.
 - [docs/consumer-setup.md](docs/consumer-setup.md): How to install and wire the packages in a consumer app.
 - [docs/consumer-handback.md](docs/consumer-handback.md): Peer dependencies, the theme mechanism, and the SSR island matrix for consumers.
+- [docs/consumer-handback-elements.md](docs/consumer-handback-elements.md): Installing and using `@qball-inc/elements` (CSS order, trust components, URL rules).
 - [docs/font-override.md](docs/font-override.md): Restoring Berkeley Mono in a licensed consumer build.
 
 ## Component specimens & design specs
