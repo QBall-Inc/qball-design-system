@@ -1,6 +1,6 @@
 {
   "name": "@qball-inc/react",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "QBall Design System React components — token-driven, framework-agnostic at the CSS layer. Dual ESM/CJS build with TypeScript declarations.",
   "keywords": [
     "react",
