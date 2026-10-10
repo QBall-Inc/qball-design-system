@@ -80,11 +80,12 @@ Re-check this finding before that release. If npm has since added pre-publish co
 1. The Version PR (tokens `1.1.0` + react `1.0.2`, a dependency-only bump) was merged and published by CI through OIDC, with provenance. Elements stayed at `0.0.0` and was skipped.
 2. Elements was versioned locally (`pnpm changeset version`). The elements changeset never sat in the Version PR: a CI publish would have published tokens, failed on elements (no trusted publisher yet) and never reached react.
 
-`publish-packages.sh` stopped with `EOTP`, because the owner's npm account asks for a one-time password on every publish. The script rebuilds before publishing, which can outlast a 30-second code. So the fallback is to pack first and then publish the tarball with the code:
+`publish-packages.sh` stopped with `EOTP` when run from a non-interactive shell, because the owner's npm account requires 2FA on every publish. In an interactive terminal, npm instead prints a sign-in URL: the owner opens it in the browser and approves with their security key (passkey), and the publish then completes. So the fallback is to pack first, then have the owner publish the tarball from their own terminal:
 
 ```sh
 (cd packages/elements && pnpm pack --pack-destination /tmp/elements-release)
-npm publish /tmp/elements-release/qball-inc-elements-<version>.tgz --access public --otp=<code>
+npm publish /tmp/elements-release/qball-inc-elements-<version>.tgz --access public
+# npm prints an authentication URL -> open it, approve with the security key
 ```
 
 The local publish carries no provenance. Later elements releases get it through OIDC once its trusted publisher is configured (step 4 above).
