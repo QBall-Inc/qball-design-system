@@ -1,0 +1,34 @@
+---
+// Shared page shell for every consumer page. The three token stylesheets are
+// imported in the locked order (colors-and-type → components → graph) through
+// the packages' public subpaths; graph.css comes in even on pages with no
+// graph so the ordering contract is exercised end to end.
+import "@qball-inc/tokens/colors-and-type.css";
+import "@qball-inc/tokens/components.css";
+import "@qball-inc/tokens/graph.css";
+// Evaluated during the static prerender (Node, no DOM): proves importing the
+// entries touches no browser global at module load. The values are written
+// into the page so the gate can check the server-side import really ran.
+import { ENTRY as CORE_ENTRY } from "@qball-inc/elements";
+import { ENTRY as TRUST_ENTRY } from "@qball-inc/elements/trust";
+
+interface Props {
+  title: string;
+  theme: "light" | "dark";
+}
+
+const { title, theme } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="qball-ssr-entries" content={`${CORE_ENTRY},${TRUST_ENTRY}`} />
+    <title>{title}</title>
+  </head>
+  <body style="background: var(--bg-primary); color: var(--text-primary); padding: 24px;">
+    <slot />
+  </body>
+</html>

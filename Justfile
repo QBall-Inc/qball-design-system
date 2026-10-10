@@ -82,10 +82,12 @@ spdx-check:
 # NOT the @source utility-purge model), installs them into the throwaway
 # fixtures/consumer app, and asserts the Strategy-2 component CSS (.btn) delivers +
 # its token vars resolve self-contained + the optional token utility generates +
-# a single Tailwind base block + a negative control. Multi-line shell lives in the
-# committed script (WSL exec-bit pattern), invoked via bash.
+# a single Tailwind base block + a negative control. A second gate packs tokens +
+# elements into the static fixtures/consumer-astro site and checks the trust atoms
+# in Chromium. scripts/consumer-validate.sh runs both (CI calls the same script).
+# Multi-line shell lives in the committed scripts (WSL exec-bit pattern), invoked via bash.
 consumer-validate:
-    bash fixtures/consumer/scripts/validate-consumer.sh
+    bash scripts/consumer-validate.sh
 
 # Full local gate (mirrors CI): generate-icons-check -> typecheck -> lint -> test -> test-browser -> license-check -> spdx-check -> consumer-validate.
 ci: generate-icons-check typecheck lint test test-browser license-check spdx-check consumer-validate

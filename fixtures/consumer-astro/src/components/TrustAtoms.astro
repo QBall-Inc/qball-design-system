@@ -1,0 +1,32 @@
+---
+// Every trust-atom state, as empty slots the client script fills from the
+// PACKED @qball-inc/elements/trust build. A plain processed <script> (Astro
+// bundles it as a type="module" script) — no framework island, no hydration.
+const SLOTS = [
+  "claim-high-both",
+  "claim-endorsed-only",
+  "claim-verified-only",
+  "claim-medium-none",
+  "claim-low",
+  "claim-superseded-replacement",
+  "claim-superseded-unavailable",
+  "claim-company-badge",
+  "claim-no-badge",
+  "reading-list",
+  "footer-answer",
+  "footer-panel",
+  "stamp-grounded",
+  "stamp-withheld",
+  "stamp-refused",
+  "feedback",
+];
+---
+
+<main>
+  {SLOTS.map((slot) => <section data-atom={slot} />)}
+  <section data-atom="hostile" />
+</main>
+
+<script>
+  import "../trust-demo";
+</script>

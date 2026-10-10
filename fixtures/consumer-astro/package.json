@@ -1,0 +1,21 @@
+{
+  "name": "qball-consumer-astro-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway Astro consumer harness — installs the PACKED @qball-inc/tokens + @qball-inc/elements tarballs (not workspace:*) and proves the trust atoms render, style and stay inert in a real static Astro site. Not a workspace member (AR15).",
+  "scripts": {
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@qball-inc/elements": "file:./qball-inc-elements.tgz",
+    "@qball-inc/tokens": "file:./qball-inc-tokens.tgz",
+    "astro": "^6.4.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
