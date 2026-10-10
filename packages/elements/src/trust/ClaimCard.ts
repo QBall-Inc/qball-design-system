@@ -1,8 +1,10 @@
 // ClaimCard: the one way a claim renders anywhere. The sentence is primary;
-// confidence is glyph + score + word, never colour alone; endorsed/verified
-// marks render only when present; a superseded claim stays visible, struck,
-// with what replaced it — or an explicit "replacement not available" line,
-// never an omission or an invented sentence.
+// confidence is glyph + score + word, never colour alone; status labels
+// (superseded / endorsed / verified) sit in a strip above the sentence and
+// render only when present; the meta is a fixed two-row grid at every width.
+// A superseded claim stays visible, struck, with what replaced it — or an
+// explicit "replacement not available" line, never an omission or an invented
+// sentence.
 
 import { isSuperseded, type Replacement } from "../claims";
 import { confidenceMark, type ConfidenceTier } from "../confidence";
@@ -47,17 +49,58 @@ function confidenceSpan(claim: Claim): HTMLElement {
   );
 }
 
+// The right-hand source block spans both meta rows: label on row 1, save date
+// on row 2. A linked source reads `view source ↗`; its name stays in the
+// accessible name and the tooltip. An inert source shows its name instead.
 function sourceElement(source: ClaimSource, options: ClaimCardOptions): HTMLElement {
-  if (isSourceUnavailable(source)) return el("span", "claim__src", SOURCE_UNAVAILABLE);
-  const label = resolveSourceBadge(source, options.sourceBadges)?.label ?? sourceHost(source);
-  const saved = `saved ${source.save_date}`;
-  const text = label === null ? saved : `${label} · ${saved}`;
+  if (isSourceUnavailable(source))
+    return el("span", "claim__src claim__src--unavailable", SOURCE_UNAVAILABLE);
+  const name = resolveSourceBadge(source, options.sourceBadges)?.label ?? sourceHost(source);
   const url = safeExternalUrl(source.url);
-  if (url === null) return el("span", "claim__src", text);
-  const link = el("a", "claim__src", `${text} ↗`);
+  const date = el("span", "claim__src-date", source.save_date);
+  if (url === null) {
+    const inert = el("span", "claim__src");
+    inert.append(el("span", "claim__src-label", name ?? "source"), date);
+    return inert;
+  }
+  const link = el("a", "claim__src");
+  link.append(el("span", "claim__src-label", "view source ↗"), date);
   link.setAttribute("href", url.href);
   link.setAttribute("rel", EXTERNAL_LINK_REL);
+  if (name !== null) link.setAttribute("title", name);
+  link.setAttribute(
+    "aria-label",
+    name === null
+      ? `View source, ${source.save_date}`
+      : `View source: ${name}, ${source.save_date}`,
+  );
   return link;
+}
+
+/** `validity: current`, or `validity: <from> - <to>` with a break point before the end date. */
+function validityElement(claim: Claim): HTMLElement {
+  const validity = el("span", "claim__valid");
+  if (claim.valid_to === undefined) {
+    validity.textContent = "validity: current";
+    return validity;
+  }
+  validity.append(
+    el("span", undefined, `validity: ${claim.valid_from}`),
+    document.createTextNode(" "),
+    el("span", undefined, `- ${claim.valid_to}`),
+  );
+  return validity;
+}
+
+/** Status labels above the sentence, or null when the claim carries none. */
+function tagsElement(claim: Claim, superseded: boolean): HTMLElement | null {
+  const tags = el("div", "claim__tags");
+  if (superseded) tags.append(el("span", "badge badge--highlight", "superseded"));
+  if (claim.endorsement_tier !== undefined)
+    tags.append(el("span", "claim__mark--endorsed", "✓ endorsed"));
+  if (claim.verification !== undefined)
+    tags.append(el("span", "claim__mark--verified", "⁂ verified"));
+  return tags.childElementCount === 0 ? null : tags;
 }
 
 function replacementText(claim: Claim, replacement: Replacement | null): string {
@@ -81,9 +124,9 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
   }
 
   const card = el("article", superseded ? "claim claim--superseded" : "claim");
+  const tags = tagsElement(claim, superseded);
+  if (tags !== null) card.append(tags);
   card.append(el("p", "claim__text", claim.claim_text));
-
-  const meta = el("div", "claim__meta");
   if (superseded) {
     const now = el("p", "claim__now");
     now.append(
@@ -91,23 +134,12 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
       document.createTextNode(replacementText(claim, replacement)),
     );
     card.append(now);
-    meta.append(el("span", "badge badge--highlight", "superseded"));
   }
-  meta.append(confidenceSpan(claim));
-  meta.append(
-    el(
-      "span",
-      undefined,
-      claim.valid_to === undefined
-        ? `valid from ${claim.valid_from}`
-        : `valid ${claim.valid_from} → ${claim.valid_to}`,
-    ),
-  );
-  if (claim.endorsement_tier !== undefined)
-    meta.append(el("span", "claim__mark--endorsed", "✓ endorsed"));
-  if (claim.verification !== undefined)
-    meta.append(el("span", "claim__mark--verified", "⁂ verified"));
-  meta.append(sourceElement(claim.source, options));
+
+  // Fixed 2x2 grid (components.css): confidence | source on row 1, validity on
+  // row 2; the source block spans both rows. DOM order is the reading order.
+  const meta = el("div", "claim__meta");
+  meta.append(confidenceSpan(claim), validityElement(claim), sourceElement(claim.source, options));
   card.append(meta);
   return card;
 }

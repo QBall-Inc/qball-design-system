@@ -18,6 +18,11 @@ function meta(card: HTMLElement): HTMLElement {
   return node;
 }
 
+/** Direct children of the meta grid, by class, in DOM order. */
+function metaCells(card: HTMLElement): string[] {
+  return [...meta(card).children].map((child) => child.className);
+}
+
 beforeEach(() => {
   document.body.replaceChildren();
   resetPwned();
@@ -46,8 +51,25 @@ describe("renderClaimCard — sentence and confidence", () => {
     expect(conf?.classList.contains(cls)).toBe(true);
   });
 
-  it("renders the valid-from date for a current claim", () => {
-    expect(meta(renderClaimCard(claim())).textContent).toContain("valid from 2025-06-20");
+  it("renders `validity: current` for a current claim", () => {
+    expect(renderClaimCard(claim()).querySelector(".claim__valid")?.textContent).toBe(
+      "validity: current",
+    );
+  });
+
+  it("keeps the meta to exactly confidence, validity and source, in reading order", () => {
+    for (const card of [
+      renderClaimCard(claim()),
+      renderClaimCard(claim({ endorsement_tier: "owner", verification: "checked" })),
+      renderClaimCard(supersededPair().old),
+      renderClaimCard(claim({ source: unavailableSource() })),
+    ]) {
+      expect(metaCells(card)).toEqual([
+        expect.stringContaining("claim__conf"),
+        "claim__valid",
+        expect.stringContaining("claim__src"),
+      ]);
+    }
   });
 
   it("fails fast on an unknown tier or an out-of-range score", () => {
@@ -65,14 +87,30 @@ describe("renderClaimCard — endorsed / verified marks", () => {
     ["both", { endorsement_tier: "owner", verification: "checked" }, true, true],
   ])("%s", (_name, overrides, endorsed, verified) => {
     const card = renderClaimCard(claim(overrides));
-    expect(card.querySelector(".claim__mark--endorsed")?.textContent ?? null).toBe(
+    const tags = card.querySelector(".claim__tags");
+    expect(tags?.querySelector(".claim__mark--endorsed")?.textContent ?? null).toBe(
       endorsed ? "✓ endorsed" : null,
     );
-    expect(card.querySelector(".claim__mark--verified")?.textContent ?? null).toBe(
+    expect(tags?.querySelector(".claim__mark--verified")?.textContent ?? null).toBe(
       verified ? "⁂ verified" : null,
     );
-    expect(meta(card).textContent.includes("endorsed")).toBe(endorsed);
-    expect(meta(card).textContent.includes("verified")).toBe(verified);
+    expect(meta(card).textContent.includes("endorsed")).toBe(false);
+    expect(meta(card).textContent.includes("verified")).toBe(false);
+  });
+
+  it("renders no tag strip when the claim carries no status", () => {
+    expect(renderClaimCard(claim()).querySelector(".claim__tags")).toBeNull();
+  });
+
+  it("puts the strip above the sentence, superseded first", () => {
+    const { old } = supersededPair();
+    const card = renderClaimCard({ ...old, endorsement_tier: "owner", verification: "checked" });
+    expect(card.firstElementChild?.className).toBe("claim__tags");
+    expect([...(card.firstElementChild?.children ?? [])].map((t) => t.textContent)).toEqual([
+      "superseded",
+      "✓ endorsed",
+      "⁂ verified",
+    ]);
   });
 });
 
@@ -84,9 +122,16 @@ describe("renderClaimCard — superseded", () => {
     expect(card.querySelector(".claim__text")?.textContent).toBe(old.claim_text);
     expect(card.querySelector(".claim__now")?.textContent).toBe(`now${replacement.claim_text}`);
     expect(card.querySelector(".claim__now b")?.textContent).toBe("now");
-    expect(card.querySelector(".badge.badge--highlight")?.textContent).toBe("superseded");
-    expect(meta(card).textContent).toContain("valid 2025-03-11 → 2025-06-20");
-    expect(meta(card).textContent).not.toContain("valid from");
+    expect(card.querySelector(".claim__tags .badge.badge--highlight")?.textContent).toBe(
+      "superseded",
+    );
+    const validity = card.querySelector(".claim__valid");
+    expect(validity?.textContent).toBe("validity: 2025-03-11 - 2025-06-20");
+    // Two unbreakable halves: a narrow card may break only before the end date.
+    expect([...(validity?.children ?? [])].map((part) => part.textContent)).toEqual([
+      "validity: 2025-03-11",
+      "- 2025-06-20",
+    ]);
   });
 
   it.each([
@@ -119,33 +164,46 @@ describe("renderClaimCard — superseded", () => {
 });
 
 describe("renderClaimCard — source link", () => {
-  it("links a platform source with its label, save date and rel", () => {
+  it("links the whole two-line block: `view source ↗` over the bare save date", () => {
     const link = renderClaimCard(claim()).querySelector("a.claim__src");
-    expect(link?.textContent).toBe("GitHub · saved 2025-06-20 ↗");
+    expect(link?.querySelector(".claim__src-label")?.textContent).toBe("view source ↗");
+    expect(link?.querySelector(".claim__src-date")?.textContent).toBe("2025-06-20");
+    expect(link?.textContent).not.toContain("saved");
     expect(link?.getAttribute("href")).toBe("https://example.org/notes");
     expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
     expect(link?.hasAttribute("tabindex")).toBe(false);
   });
 
-  it("uses a consumer domain badge's label", () => {
+  it("keeps the source name in the accessible name and tooltip", () => {
+    const link = renderClaimCard(claim()).querySelector("a.claim__src");
+    expect(link?.getAttribute("aria-label")).toBe("View source: GitHub, 2025-06-20");
+    expect(link?.getAttribute("title")).toBe("GitHub");
+  });
+
+  it("uses a consumer domain badge's label as the name", () => {
     const card = renderClaimCard(
       claim({ source: sourceRef({ source_type: "web", url: "https://news.example-lab.com/a" }) }),
       { sourceBadges: { domains: { "example-lab.com": { mark: "EL", label: "Example Lab" } } } },
     );
-    expect(card.querySelector(".claim__src")?.textContent).toBe("Example Lab · saved 2025-06-20 ↗");
+    expect(card.querySelector(".claim__src")?.getAttribute("aria-label")).toBe(
+      "View source: Example Lab, 2025-06-20",
+    );
   });
 
   it("falls back to the host when no badge matches", () => {
     const card = renderClaimCard(
       claim({ source: sourceRef({ source_type: "web", url: "https://www.example.org/x" }) }),
     );
-    expect(card.querySelector(".claim__src")?.textContent).toBe("example.org · saved 2025-06-20 ↗");
+    expect(card.querySelector(".claim__src")?.getAttribute("title")).toBe("example.org");
   });
 
-  it("renders an unavailable source as plain text, never an empty link", () => {
+  it("renders an unavailable source as plain text in the same slot, no date, never an empty link", () => {
     const card = renderClaimCard(claim({ source: unavailableSource() }));
     expect(card.querySelector("a")).toBeNull();
-    expect(card.querySelector(".claim__src")?.textContent).toBe("source unavailable");
+    const src = card.querySelector(".claim__src");
+    expect(src?.textContent).toBe("source unavailable");
+    expect(src?.classList.contains("claim__src--unavailable")).toBe(true);
+    expect(src?.querySelector(".claim__src-date")).toBeNull();
   });
 });
 
@@ -170,10 +228,11 @@ describe("renderClaimCard — hostile payloads (rendered as text; execution is c
       claim({ source: sourceRef({ source_type: "web", url: "https://example-lab.com/a" }) }),
       { sourceBadges: { domains: { "example-lab.com": { mark: "EL", label: HOSTILE_MARKUP } } } },
     );
+    const link = card.querySelector(".claim__src");
     expect(card.querySelector("img")).toBeNull();
-    expect(card.querySelector(".claim__src")?.textContent).toBe(
-      `${HOSTILE_MARKUP} · saved 2025-06-20 ↗`,
-    );
+    expect(link?.getAttribute("title")).toBe(HOSTILE_MARKUP);
+    expect(link?.getAttribute("aria-label")).toBe(`View source: ${HOSTILE_MARKUP}, 2025-06-20`);
+    expect(link?.textContent).toBe("view source ↗2025-06-20");
   });
 
   it.each([
@@ -189,7 +248,8 @@ describe("renderClaimCard — hostile payloads (rendered as text; execution is c
     const src = card.querySelector<HTMLElement>(".claim__src");
     expect(src?.tagName).toBe("SPAN");
     expect(card.querySelector("[href]")).toBeNull();
-    expect(src?.textContent).toBe("GitHub · saved 2025-06-20");
+    // Inert: the name replaces `view source`, the ↗ is dropped, the date stays.
+    expect(src?.textContent).toBe("GitHub2025-06-20");
     src?.click();
     await settle();
     expect(pwned()).toBe(false);

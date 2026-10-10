@@ -40,18 +40,36 @@ interface ClaimCardOptions {
 }
 ```
 
-Anatomy (`<article class="claim">`):
+Anatomy (`<article class="claim">`), top to bottom:
 
-| Part                     | Content                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------- |
-| `.claim__text`           | `claim_text` in full. Never truncated: designed for 40–200 characters.                |
-| `.claim__now`            | Superseded only: `now` + the replacement's sentence, or `replacement not available`.  |
-| `.badge--highlight`      | Superseded only: `superseded`.                                                        |
-| `.claim__conf--{tier}`   | Glyph + score (2 decimals) + tier word: `◆ 0.95 high`, `◈ 0.82 medium`, `◇ 0.55 low`. |
-| date                     | `valid from {valid_from}`. Superseded: `valid {valid_from} → {valid_to}`.             |
-| `.claim__mark--endorsed` | `✓ endorsed` — only when `endorsement_tier` is set.                                   |
-| `.claim__mark--verified` | `⁂ verified` — only when `verification` is set.                                       |
-| `.claim__src`            | `{label} · saved {save_date} ↗` (see Source labels and URL policy).                   |
+| Part                     | Content                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------- |
+| `.claim__tags`           | Status strip, only when at least one applies, in this order:                            |
+| `.badge--highlight`      | Superseded only: `superseded`.                                                          |
+| `.claim__mark--endorsed` | `✓ endorsed` — only when `endorsement_tier` is set.                                     |
+| `.claim__mark--verified` | `⁂ verified` — only when `verification` is set.                                         |
+| `.claim__text`           | `claim_text` in full. Never truncated: designed for 40–200 characters.                  |
+| `.claim__now`            | Superseded only: `now` + the replacement's sentence, or `replacement not available`.    |
+| `.claim__meta`           | Fixed two-row grid (below).                                                             |
+| `.claim__conf--{tier}`   | Row 1, left. Glyph + score (2 decimals) + tier word: `◆ 0.95 high`, `◈ 0.82 medium`.    |
+| `.claim__valid`          | Row 2, left. `validity: current`; superseded: `validity: {valid_from} - {valid_to}`.    |
+| `.claim__src`            | Right, spanning both rows: `.claim__src-label` (row 1) over `.claim__src-date` (row 2). |
+
+**The meta is one fixed layout at every width.** Row 1 is confidence | source, row 2
+is validity | source date. Status labels never share these rows: with every label
+present they need more width than a phone has beside the source link, so they sit
+in the strip above the sentence instead. Cells wrap only inside themselves: a long
+superseded range breaks before `- {valid_to}` and nowhere else.
+
+**The source block** (see also Source labels and URL policy):
+
+- **Linked** (`<a>`, http(s) URL): `view source ↗` over the bare `{save_date}`. The
+  whole block is one link with a tap area at least 44px tall. The source name
+  (badge label, else host) is not shown; it is the accessible name
+  `View source: {name}, {save_date}` and the `title` tooltip `{name}`.
+- **Inert** (`<span>`, any other URL): `{name}` over `{save_date}`, no `↗`, no href.
+- **Unavailable** (`span.claim__src--unavailable`): `source unavailable`, no date.
+  On ≤720px it wraps to two lines.
 
 Rules:
 
@@ -125,9 +143,10 @@ current source. A `RangeError` is thrown for:
 Keys are case-insensitive, and a leading `www.` is ignored. Marks and labels render
 as text.
 
-**ClaimCard's link label** is the badge label (`GitHub · saved …`). Without a badge it
-falls back to the host (`example.org · saved …`). With no usable URL it is just
-`saved {save_date}`. The full title appears only in the reading list.
+**ClaimCard's source name** is the badge label (`GitHub`). Without a badge it falls
+back to the host (`example.org`). On a link the name is the accessible name and
+tooltip; on an inert source it is the visible label (`source` when there is no
+usable host). The full title appears only in the reading list.
 
 ## URL policy
 

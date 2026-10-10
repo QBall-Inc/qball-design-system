@@ -110,13 +110,21 @@ for (const theme of THEMES) {
       await expect(noReplacement.locator("article.claim--superseded")).toHaveCount(1);
       await expect(noReplacement.locator(".claim__now")).toContainText("replacement not available");
 
-      // Consumer company badge by domain; an unknown host gets no badge, only its host.
-      await expect(atom(page, "claim-company-badge").locator(".claim__src")).toContainText(
-        "Example Lab · saved 2025-06-20",
+      // The card reads `view source ↗` over the date; the source name lives in the
+      // accessible name — a consumer company badge by domain, else only the host.
+      const companySrc = atom(page, "claim-company-badge").locator(".claim__src");
+      await expect(companySrc).toHaveText("view source ↗2025-06-20");
+      await expect(companySrc).toHaveAttribute(
+        "aria-label",
+        "View source: Example Lab, 2025-06-20",
       );
       const noBadge = atom(page, "claim-no-badge").locator(".claim__src");
-      await expect(noBadge).toContainText("blog.example.org · saved 2025-06-20");
-      await expect(noBadge).not.toContainText("Example Lab");
+      await expect(noBadge).toHaveAttribute(
+        "aria-label",
+        "View source: blog.example.org, 2025-06-20",
+      );
+      await expect(atom(page, "claim-high-both").locator(".claim__tags")).toHaveCount(1);
+      await expect(atom(page, "claim-medium-none").locator(".claim__tags")).toHaveCount(0);
 
       const list = atom(page, "reading-list");
       await expect(list.locator(".srcrow")).toHaveCount(4);
