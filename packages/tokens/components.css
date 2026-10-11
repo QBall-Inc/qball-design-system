@@ -1375,6 +1375,7 @@ a.claim__src:hover{color:var(--color-signal)}
 /* sources line — [N sources · newest …]: count + freshness only, titles on expand */
 .qsrcline{display:inline-flex;background-color:transparent;border:0;padding:0;cursor:pointer;font-family:var(--font-display);font-size:calc(10.5px * var(--text-scale, 1));margin-top:7px}
 .ground-wave--sources{--wave-base:var(--data-info);--wave-hi:#A7D0F0}
+@media (prefers-reduced-motion:reduce){.qsrcline.ground-wave{background-image:none}}
 .qsrclist{display:none;flex-direction:column;margin-top:2px}
 .qsrclist.open{display:flex}
 

@@ -58,6 +58,13 @@ function channels(computed: string): number[] {
   return [];
 }
 
+/** Largest channel difference; Infinity for a colour that did not parse (so polls retry). */
+function distance(actual: string, expected: number[]): number {
+  const got = channels(actual);
+  if (got.length !== 3) return Number.POSITIVE_INFINITY;
+  return Math.max(...expected.map((v, i) => Math.abs((got[i] ?? 0) - v)));
+}
+
 function expectNear(actual: string, expected: number[]): void {
   const got = channels(actual);
   expect(got, `unparsed colour ${actual}`).toHaveLength(3);
@@ -98,13 +105,13 @@ interface AxeApi {
   run(
     context: Document,
     options: { runOnly: string[] },
-  ): Promise<{
-    violations: {
-      impact?: string | null;
-      help: string;
-      nodes: { target: string[]; failureSummary?: string }[];
-    }[];
-  }>;
+  ): Promise<Record<"violations" | "incomplete" | "passes", AxeRuleResult[]>>;
+}
+
+interface AxeRuleResult {
+  impact?: string | null;
+  help: string;
+  nodes: { target: string[]; failureSummary?: string }[];
 }
 
 /** Opens a themed page, records errors/dialogs, and waits for the client script. */
@@ -250,39 +257,87 @@ for (const theme of THEMES) {
       await feedback.locator(".qfb__down").click();
       const highlight = mixedColor(theme, "color-highlight", 72, "text-primary");
       await expect
-        .poll(async () => channels(await color(".qfb__down")).map(Math.round))
-        .toEqual(highlight.map(Math.round));
+        .poll(async () => distance(await color(".qfb__down"), highlight))
+        .toBeLessThan(1.5);
       await feedback.locator(".qfb__up").click();
       const signal = mixedColor(theme, "color-signal", 72, "text-primary");
-      await expect
-        .poll(async () => channels(await color(".qfb__up")).map(Math.round))
-        .toEqual(signal.map(Math.round));
+      await expect.poll(async () => distance(await color(".qfb__up"), signal)).toBeLessThan(1.5);
     });
 
-    test("every atom and chat answer meets WCAG AA contrast (axe, serious/critical)", async ({
-      page,
-    }) => {
+    test("every atom and chat answer meets WCAG AA contrast (axe)", async ({ page }) => {
+      // Reduced motion paints the stamp labels in their solid ink (the shimmer
+      // is a gradient axe cannot measure) and settles colour transitions.
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await openPage(page, theme);
-      // Show the hidden text too: every explanation open, every source list open,
-      // and one pressed feedback mark of each kind.
+      // Show the hidden text too: every explanation and source list open, and
+      // one pressed feedback mark of each kind.
       await page.evaluate(() => {
         for (const node of document.querySelectorAll<HTMLElement>(".vstamp, .qsrcline"))
           node.click();
-        document.querySelector<HTMLElement>('[data-atom="chat-answers"] .qfb__up')?.click();
-        document.querySelectorAll<HTMLElement>('[data-atom="chat-answers"] .qfb__down')[1]?.click();
       });
-      await expect(page.locator('[data-atom="chat-answers"] .qturn')).toHaveCount(5);
+      const chat = atom(page, "chat-answers");
+      await expect(chat.locator(".qturn")).toHaveCount(5);
+      await chat.locator(".qfb__up").first().click();
+      await chat.locator(".qfb__down").nth(1).click();
+      // Prove the hidden states are really showing before measuring.
+      const rows = page.locator(".vrow");
+      expect(await rows.count()).toBeGreaterThanOrEqual(6);
+      await expect(page.locator(".vrow:not(.open)")).toHaveCount(0);
+      await expect(page.locator(".qsrcline")).toHaveCount(1);
+      await expect(page.locator(".qsrcline")).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator(".qsrclist.open .srcrow")).toHaveCount(1);
+      await expect(chat.locator(".qfb__up").first()).toHaveAttribute("aria-pressed", "true");
+      await expect(chat.locator(".qfb__down").nth(1)).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator(".vrow__txt").first()).toBeVisible();
+      await page.waitForTimeout(300);
+
       await page.addScriptTag({ path: AXE });
-      const violations = await page.evaluate(async () => {
+      const result = await page.evaluate(async () => {
         const axe = (window as unknown as { axe: AxeApi }).axe;
-        const result = await axe.run(document, { runOnly: ["color-contrast"] });
-        return result.violations
-          .filter((v) => v.impact === "serious" || v.impact === "critical")
-          .flatMap((v) =>
+        const r = await axe.run(document, { runOnly: ["color-contrast"] });
+        const list = (items: typeof r.violations) =>
+          items.flatMap((v) =>
             v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary ?? v.help}`),
           );
+        // Confidence glyphs (◆ ◈ ◇) are symbols, not text, so axe leaves them
+        // undecided; they are measured below against the 3:1 non-text bar.
+        const glyph = (n: { target: string[] }) => n.target.some((t) => t.includes("qclaim__conf"));
+        const undecided = r.incomplete.map((v) => ({
+          ...v,
+          nodes: v.nodes.filter((n) => !glyph(n)),
+        }));
+        const toLinear = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+        const rgb = (css: string): number[] => {
+          const a = /^rgba?\((\d+), (\d+), (\d+)/.exec(css);
+          if (a) return [a[1], a[2], a[3]].map((v) => Number(v) / 255);
+          const b = /^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)/.exec(css);
+          if (b) return [b[1], b[2], b[3]].map(Number);
+          throw new Error(`unparsed colour ${css}`);
+        };
+        const luminance = (css: string) => {
+          const [r0 = 0, g0 = 0, b0 = 0] = rgb(css).map(toLinear);
+          return 0.2126 * r0 + 0.7152 * g0 + 0.0722 * b0;
+        };
+        const page = luminance(getComputedStyle(document.body).backgroundColor);
+        const glyphs = [...document.querySelectorAll(".qclaim__conf")].map((node) => {
+          const l = luminance(getComputedStyle(node).color);
+          return (Math.max(l, page) + 0.05) / (Math.min(l, page) + 0.05);
+        });
+        return {
+          violations: list(r.violations),
+          incomplete: list(undecided),
+          checked: r.passes.reduce((sum, v) => sum + v.nodes.length, 0),
+          glyphs,
+        };
       });
-      expect(violations).toEqual([]);
+      expect(result.violations).toEqual([]);
+      // Nothing else axe could not decide (gradients, overlaps) slips through unmeasured.
+      expect(result.incomplete).toEqual([]);
+      // Non-text confidence glyphs on the page surface: at least 3:1 (WCAG 1.4.11).
+      expect(result.glyphs).toHaveLength(3);
+      for (const ratio of result.glyphs) expect(ratio).toBeGreaterThanOrEqual(3);
+      // Anti-vacuous: the rule really measured the page's text.
+      expect(result.checked).toBeGreaterThan(80);
     });
 
     test("hostile text and URLs stay inert (positive control fires)", async ({ page }) => {
