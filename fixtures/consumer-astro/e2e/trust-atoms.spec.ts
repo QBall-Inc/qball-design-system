@@ -376,8 +376,10 @@ test("token stylesheets land in the locked order", async ({ page, request }) => 
   const hrefs = await page
     .locator('link[rel="stylesheet"]')
     .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href") ?? ""));
-  expect(hrefs).toHaveLength(1);
-  const css = await (await request.get(hrefs[0] ?? "")).text();
+  // Astro splits the CSS shared with the launcher pages into its own chunk, so
+  // the cascade order is the link order, then the order within each file.
+  expect(hrefs.length).toBeGreaterThan(0);
+  const css = (await Promise.all(hrefs.map(async (h) => (await request.get(h)).text()))).join("\n");
   // One marker that exists in only one file each: colors_and_type.css,
   // components.css, graph.css.
   const offsets = ["--stage-bg:", ".claim__conf--high", ".graphcanvas"].map((m) => css.indexOf(m));

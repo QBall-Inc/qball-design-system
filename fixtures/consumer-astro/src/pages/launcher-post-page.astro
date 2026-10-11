@@ -1,0 +1,24 @@
+---
+import ChatLayout from "../layouts/ChatLayout.astro";
+// Hostile persona copy: must render as inert text in the overlay footer.
+const HOSTILE_DISCLAIMER =
+  'answers can be wrong. <img src="data:image/png;base64,AAAA" onerror="window.__pwned = (window.__pwned || 0) + 1"> javascript:window.__pwned=1';
+---
+
+<ChatLayout
+  title="Launcher — post page"
+  theme="dark"
+  variant="post-page"
+  persona={{
+    title: "guide",
+    hint: "ask about this post",
+    placeholder: "ask about this post…",
+    disclaimer: HOSTILE_DISCLAIMER,
+  }}
+>
+  <article>
+    <h1>a post</h1>
+    <p>a long-form post page. the compact launcher sits bottom-left.</p>
+    <textarea id="page-notes" aria-label="your notes"></textarea>
+  </article>
+</ChatLayout>

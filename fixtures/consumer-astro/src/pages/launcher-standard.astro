@@ -1,0 +1,21 @@
+---
+import ChatLayout from "../layouts/ChatLayout.astro";
+---
+
+<ChatLayout
+  title="Launcher — standard page"
+  theme="light"
+  variant="corner"
+  persona={{
+    title: "guide",
+    hint: "ask the guide",
+    placeholder: "ask about these notes…",
+    disclaimer: "answers come only from saved notes and can be wrong.",
+  }}
+>
+  <main>
+    <h1>notes</h1>
+    <p>a standard content page. press Q or use the corner button to ask.</p>
+    <label>search the notes <input id="page-search" type="search" /></label>
+  </main>
+</ChatLayout>

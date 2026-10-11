@@ -1,0 +1,41 @@
+---
+// Shared shell for chat-only pages: the pattern a real site uses to put the
+// ask launcher on every page from one layout. Only colors-and-type.css and
+// components.css are imported; graph.css stays out because these pages show
+// no graph. The launcher is mounted once, by the client script, from the
+// persona options passed in here as layout props.
+import "@qball-inc/tokens/colors-and-type.css";
+import "@qball-inc/tokens/components.css";
+// Evaluated during the static prerender (Node, no DOM): proves importing the
+// chat entry touches no browser global at module load.
+import { ENTRY as CHAT_ENTRY } from "@qball-inc/elements/chat";
+
+interface Props {
+  title: string;
+  theme: "light" | "dark";
+  variant: "corner" | "post-page";
+  persona: { title: string; hint: string; placeholder: string; disclaimer: string };
+}
+
+const { title, theme, variant, persona } = Astro.props;
+// Passed to the client script as an attribute value, which Astro escapes, so
+// markup-looking persona text arrives as plain text.
+const config = JSON.stringify({ variant, ...persona });
+---
+
+<!doctype html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="qball-ssr-entries" content={CHAT_ENTRY} />
+    <title>{title}</title>
+  </head>
+  <body style="background: var(--bg-primary); color: var(--text-primary); padding: 24px;">
+    <slot />
+    <div id="chat-config" data-config={config} hidden></div>
+    <script>
+      import "../chat-demo";
+    </script>
+  </body>
+</html>
