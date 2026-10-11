@@ -168,6 +168,22 @@ describe("new styles are token-driven and self-contained", () => {
     expect(stripped.match(/#[0-9a-f]{3,8}\b|rgba?\(/gi) ?? []).toEqual([]);
   });
 
+  it("styles canvas labels in graph.css with the owner-vetted prototype values (S125)", () => {
+    // Prototype engine L377/L405-408: 12.5px, 500 (700 + amber when selected),
+    // 85% for the always-on set, stage-colour halo; only position stays inline.
+    expect(graphCss).toContain(
+      ".graphcanvas .gc-label{position:absolute;left:0;top:0;white-space:nowrap;font-size:calc(12.5px * var(--text-scale, 1));font-weight:500;letter-spacing:.4px;color:var(--text-primary);transform:translate(-50%,-160%);transition:opacity 120ms;text-shadow:0 0 4px var(--bg-primary),0 0 8px var(--bg-primary),0 1px 2px var(--bg-primary)}",
+    );
+    expect(graphCss).toContain('.graphcanvas .gc-label[data-kind="top"]{opacity:.85}');
+    expect(graphCss).toContain(
+      '.graphcanvas .gc-label[data-kind="sel"]{color:var(--color-highlight);font-weight:700}',
+    );
+    expect(graphCss).toContain(".graphcanvas .gc-label[data-off]{opacity:0}");
+    // Hub whitening target: a named stage token (its value is pinned 1:1 to
+    // tokens.json by the stage mirror test; the engine reads it at mount).
+    cssValue("--stage-hub");
+  });
+
   it("sizes every new text via --text-scale (the chat launcher keeps its fluid clamp)", () => {
     const sizes = [...newCss.matchAll(/font-size:([^;}]+)/g)].map((m) => m[1] ?? "");
     const unscaled = sizes.filter(
@@ -195,6 +211,7 @@ describe("new styles are token-driven and self-contained", () => {
       ".vrow__txt.is-ticking .vtick",
       ".qcursor",
       ".gx__panel",
+      ".graphcanvas .gc-label",
     ]) {
       expect(reduced, `no reduced-motion rule for ${selector}`).toContain(`${selector}{`);
     }

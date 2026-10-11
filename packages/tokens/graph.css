@@ -40,6 +40,11 @@
 .graphcanvas{position:relative;overflow:hidden;background:var(--bg-primary);border:1px solid var(--border-strong);border-radius:var(--radius-md);font-family:var(--font-ui)}
 .graphcanvas .gc-canvas{position:relative;z-index:1;display:block}
 .graphcanvas .gc-labels{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2;font-family:var(--font-ui)}
+.graphcanvas .gc-label{position:absolute;left:0;top:0;white-space:nowrap;font-size:calc(12.5px * var(--text-scale, 1));font-weight:500;letter-spacing:.4px;color:var(--text-primary);transform:translate(-50%,-160%);transition:opacity 120ms;text-shadow:0 0 4px var(--bg-primary),0 0 8px var(--bg-primary),0 1px 2px var(--bg-primary)}
+/* the label halo (text-shadow in the stage colour) is DESIGN.md sanctioned exception 3 */
+.graphcanvas .gc-label[data-kind="top"]{opacity:.85}
+.graphcanvas .gc-label[data-kind="sel"]{color:var(--color-highlight);font-weight:700}
+.graphcanvas .gc-label[data-off]{opacity:0}
 .graphcanvas .gc-hud{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:12px 16px;pointer-events:none}
 .graphcanvas .gc-status{font-size:calc(11px * var(--text-scale, 1));color:var(--text-muted);letter-spacing:.4px;max-width:45%}
 .graphcanvas .gc-hint{font-size:calc(10.5px * var(--text-scale, 1));color:var(--text-muted);text-align:right;max-width:50%}
@@ -102,4 +107,4 @@
 .qlaunch--on-stage .qlaunch__cap{color:var(--stage-text-muted)}
 .qlaunch--on-stage .keycap{background:var(--stage-surface);color:var(--stage-text-secondary);border-color:var(--stage-border-strong)}
 
-@media (prefers-reduced-motion:reduce){.gx__panel{transition:none}.gx__panel.is-hidden{transform:none}}
+@media (prefers-reduced-motion:reduce){.gx__panel{transition:none}.gx__panel.is-hidden{transform:none}.graphcanvas .gc-label{transition:none}}

@@ -494,6 +494,7 @@ hr, .rule {
   --stage-panel-border-strong: rgba(255, 255, 255, 0.14);
   --stage-panel-divider:       rgba(255, 255, 255, 0.07);   /* glass strip hairline */
   --stage-mark:                #E7E2DA;   /* launcher mascot ink over the stage */
+  --stage-hub:                 #F5F2EA;   /* parchment-white the biggest graph hubs brighten toward */
 
   /* accents (shared by both tiers) */
   --stage-signal:          #5B9E87;
