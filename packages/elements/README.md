@@ -4,9 +4,9 @@ Framework-free building blocks for the QBall Design System: plain TypeScript +
 DOM components that paint the shipped `@qball-inc/tokens` CSS. No React or other
 framework runtime is required.
 
-> **Status: 0.x.** `0.1.0` ships the trust components and the input model. The
-> API can still adjust between 0.x minor versions; it moves to `1.0.0` once its
-> data contract is final.
+> **Status: 0.x.** `0.3.0` ships the input model, the trust components and the
+> chat components (ask launcher, overlay, answer turns). The API can still adjust
+> between 0.x minor versions; it moves to `1.0.0` once its data contract is final.
 
 ## Install
 
@@ -27,9 +27,9 @@ import "@qball-inc/tokens/graph.css";
 
 | Import                      | Contents                                                           | Status          |
 | --------------------------- | ------------------------------------------------------------------ | --------------- |
-| `@qball-inc/elements`       | Types, input-model validator and AnswerTurn model (no DOM)         | 0.1.0           |
-| `@qball-inc/elements/trust` | Claim card, source row, provenance footer, verdict stamp, feedback | 0.1.0           |
-| `@qball-inc/elements/chat`  | Ask launcher, overlay, answer turns                                | a later release |
+| `@qball-inc/elements`       | Types, input-model validator and AnswerTurn model (no DOM)         | since 0.1.0     |
+| `@qball-inc/elements/trust` | Claim card, source row, provenance footer, verdict stamp, feedback | since 0.1.0     |
+| `@qball-inc/elements/chat`  | Ask launcher, overlay (0.2.0); answer turns (0.3.0)                | since 0.2.0     |
 | `@qball-inc/elements/graph` | Knowledge-graph canvas and explorer (needs `three`)                | a later release |
 
 Every entry is safe to import during a server-side / static build: nothing
@@ -67,7 +67,10 @@ document.querySelector("#answer").append(
 All text is rendered as text, never as HTML, and only `http(s)` source links
 become clickable. See the
 [consumer guide](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/consumer-handback-elements.md)
-for every component, source badges and the full data model.
+for every component, source badges and the full data model, and the
+[launcher guide](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/chat-launcher.md)
+and [answer-turns guide](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/qubae-answers.md)
+for the chat entry.
 
 ## three.js
 
