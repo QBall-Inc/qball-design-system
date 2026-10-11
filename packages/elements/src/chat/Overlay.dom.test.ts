@@ -391,6 +391,19 @@ describe("composer disabled", () => {
     expect(focusableIn(handle.overlay)).toContain(input(handle));
   });
 
+  it("opening with the composer disabled focuses the close button, inside the dialog", () => {
+    const handle = mountIn();
+    handle.setComposerDisabled(true, "resting");
+    handle.open();
+    const active = document.activeElement;
+    expect(active).toBe(handle.overlay.querySelector(".qpanel__esc > button.keycap"));
+    expect(active?.closest("[inert]")).toBeNull();
+    handle.close();
+    handle.setComposerDisabled(false);
+    handle.open();
+    expect(document.activeElement).toBe(input(handle));
+  });
+
   it("rejects a non-boolean and a non-string placeholder", () => {
     const handle = mountIn();
     expect(() => {

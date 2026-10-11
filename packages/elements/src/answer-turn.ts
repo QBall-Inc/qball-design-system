@@ -70,7 +70,7 @@ export interface GroundedTurn {
    * Numbers behind `N claims · M episodes · <tier> confidence`. The tier is
    * left out only for a no-evidence answer (0 claims, 0 episodes).
    */
-  explanation: { claims: number; episodes: number; confidenceTier?: string };
+  explanation: { claims: number; episodes: number; confidenceTier?: string | undefined };
   body: AnswerBody;
   sources: ClaimSource[];
   /** The footer's numbers. Left out only for a no-evidence answer. */

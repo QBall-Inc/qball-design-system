@@ -145,7 +145,14 @@ export function mountTranscript(
             ? { feedback: { turnRef, onChange: options.onFeedback } }
             : {};
         slot.removeAttribute("aria-busy");
-        slot.replaceChildren(...renderAnswer(view.turn, { ...answerOptions, ...feedback }));
+        try {
+          slot.replaceChildren(...renderAnswer(view.turn, { ...answerOptions, ...feedback }));
+        } catch (error) {
+          // Bad turn data: never leave the cursor spinning — show the generic
+          // error turn, then let the error reach the consumer's finalize() call.
+          slot.replaceChildren(renderErrorAnswer(errorText));
+          throw error;
+        }
         return;
       }
       case "error":
@@ -164,9 +171,8 @@ export function mountTranscript(
     addUserTurn(text) {
       requireLive("addUserTurn");
       if (typeof text !== "string") throw new TypeError("text must be a string.");
-      const { row } = turnRow("qturn__you", userPrompt, "qturn__t-you");
-      const slot = row.lastElementChild;
-      if (slot !== null) slot.textContent = text;
+      const { row, text: slot } = turnRow("qturn__you", userPrompt, "qturn__t-you");
+      slot.textContent = text;
       appendTurn(row);
       return row;
     },
@@ -186,9 +192,12 @@ export function mountTranscript(
       const { row, text } = turnRow("qturn__bot", botPrompt, "qturn__t-bot");
       appendTurn(row);
       const unsubscribe = turn.subscribe((view) => {
-        renderView(text, view, turnRef);
-        scrollToEnd();
-        if (view.status === "final" || view.status === "error") detach();
+        try {
+          renderView(text, view, turnRef);
+        } finally {
+          scrollToEnd();
+          if (view.status === "final" || view.status === "error") detach();
+        }
       });
       const detach = (): void => {
         unsubscribe();

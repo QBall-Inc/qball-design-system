@@ -219,8 +219,13 @@ describe("explorer link (AD-4 internal-link policy)", () => {
     expect(link?.tagName).toBe("SPAN");
     expect(link?.textContent).toBe(ANSWER_DEFAULTS.explorerLinkLabel);
     expect(slot.querySelector(".qlink[href]")).toBeNull();
+    // The only links left are the reading list's own source links.
     const hrefs = Array.from(slot.querySelectorAll("[href]"), (n) => n.getAttribute("href"));
-    expect(hrefs.every((href) => href?.startsWith("https://example.com/") === true)).toBe(true);
+    expect(hrefs).toEqual([
+      "https://example.com/memory-in-the-age-of-agents",
+      "https://example.com/llm-powered-autonomous-agents",
+      "https://example.com/context-engineering-notes",
+    ]);
   });
 
   it("no link supplied → nothing in its place", () => {
@@ -282,7 +287,13 @@ describe("refused answer", () => {
       const slot = render(turn);
       expect(stampText(slot)).toBe(refusedExplanation(turn.reason));
       expect(text(slot, ".vstamp")).toBe("∅ refused");
-      expect(slot.querySelector(".vbox--refused p")?.textContent?.length).toBeGreaterThan(0);
+      const first = turn.body[0];
+      const expected =
+        first?.kind === "paragraph"
+          ? first.inlines.map((inline) => ("text" in inline ? inline.text : "")).join("")
+          : "";
+      expect(expected.length).toBeGreaterThan(0);
+      expect(slot.querySelector(".vbox--refused p")?.textContent).toContain(expected.slice(0, 40));
       if (turn.closingLine === undefined) {
         expect(slot.querySelector(".qclose")).toBeNull();
       } else {

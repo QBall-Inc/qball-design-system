@@ -65,7 +65,7 @@ function line(...segments: string[]): string {
 export function groundedExplanation(input: {
   claims: number;
   episodes: number;
-  confidenceTier?: string;
+  confidenceTier?: string | undefined;
 }): string {
   const claims = counted(input.claims, "claim", "claims");
   const episodes = counted(input.episodes, "episode", "episodes");

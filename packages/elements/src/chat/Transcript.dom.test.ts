@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { HOSTILE_MARKUP } from "../trust/test-fixtures";
 import { mount } from "./mount";
 import { TRANSCRIPT_DEFAULTS, mountTranscript, type TranscriptOptions } from "./Transcript";
-import { draftsOf, finalOf, loadScript, replay } from "./test-answers";
+import { draftsOf, finalOf, groundedOf, loadScript, replay } from "./test-answers";
 
 afterEach(() => {
   document.body.replaceChildren();
@@ -127,6 +127,27 @@ describe("early display (opt-in)", () => {
     expect(transcript.container.querySelector(".vbox--error")?.textContent).toBe(
       "that answer slipped. ask again?",
     );
+  });
+});
+
+describe("bad turn data", () => {
+  it("shows the generic error turn (no stuck cursor) and still throws to the finalize() caller", () => {
+    const transcript = bare();
+    const turn = transcript.addBotTurn();
+    turn.start();
+    const { provenance: _omit, ...noProvenance } = groundedOf("grounded");
+    expect(() => {
+      turn.finalize(noProvenance);
+    }).toThrow("A grounded answer needs provenance");
+    const slot = transcript.container.querySelector(".qturn__t-bot");
+    expect(slot?.querySelector(".qcursor")).toBeNull();
+    expect(slot?.hasAttribute("aria-busy")).toBe(false);
+    expect(slot?.querySelector(".vbox--error")?.textContent).toBe(TRANSCRIPT_DEFAULTS.errorText);
+    // The next turn still renders normally.
+    const next = transcript.addBotTurn();
+    next.start();
+    next.finalize(finalOf("grounded"));
+    expect(transcript.container.querySelectorAll(".vbox--grounded")).toHaveLength(1);
   });
 });
 

@@ -152,7 +152,9 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
     overlay.classList.add("open");
     launcher.setAttribute("aria-expanded", "true");
     release = lockBackground(overlay);
-    input.focus();
+    // A disabled composer cannot take focus; keep it inside the dialog.
+    if (input.disabled) parts.closeButton.focus();
+    else input.focus();
     emit("open", {});
   };
 
