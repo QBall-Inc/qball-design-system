@@ -1,0 +1,36 @@
+{
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
+  "_case": "grounded with no evidence — 0 claims · 0 episodes, no confidence tier, no sources, no provenance: the stamp reads `0 claims · 0 episodes` and there is no sources line or footer",
+  "question": "who writes the notes behind this site?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: the notes are written by "
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "grounded",
+        "explanation": {
+          "claims": 0,
+          "episodes": 0
+        },
+        "body": [
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "the notes are kept by the site's author, who reads and saves work on agents, evals and serving. nothing saved in the graph covers this question directly, so this answer comes from the site's own profile."
+              }
+            ]
+          }
+        ],
+        "sources": []
+      }
+    }
+  ]
+}

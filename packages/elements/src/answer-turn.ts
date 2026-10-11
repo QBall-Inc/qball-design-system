@@ -54,17 +54,27 @@ export interface AnswerProvenance {
   claims: number;
   episodes: number;
   confidenceTier: string;
-  snapshotDate: string;
+  /** ISO date of the graph snapshot; absent or null when unknown (left out of the footer). */
+  snapshotDate?: string | null | undefined;
   supersededExcluded: number;
 }
 
+/**
+ * A grounded answer. One with no evidence behind it (0 claims, 0 episodes,
+ * no sources) leaves out `explanation.confidenceTier` and `provenance`: its
+ * stamp reads `0 claims · 0 episodes` and it shows no sources line or footer.
+ */
 export interface GroundedTurn {
   verdict: "grounded";
-  /** Numbers behind `N claims · M episodes · <tier> confidence`. */
-  explanation: { claims: number; episodes: number; confidenceTier: string };
+  /**
+   * Numbers behind `N claims · M episodes · <tier> confidence`. The tier is
+   * left out only for a no-evidence answer (0 claims, 0 episodes).
+   */
+  explanation: { claims: number; episodes: number; confidenceTier?: string };
   body: AnswerBody;
   sources: ClaimSource[];
-  provenance: AnswerProvenance;
+  /** The footer's numbers. Left out only for a no-evidence answer. */
+  provenance?: AnswerProvenance;
   /** Optional link into the graph explorer for this answer. */
   explorerLink?: string;
 }

@@ -1,0 +1,111 @@
+{
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
+  "_case": "grounded with an explorer link and no snapshot date — the footer leaves out `snapshot <date>`; the link renders as a real <a href> because it is root-relative",
+  "question": "how do teams structure agent harnesses?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: a harness is basically the "
+    },
+    {
+      "op": "appendText",
+      "text": "prompt plus some tools."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "grounded",
+        "explanation": {
+          "claims": 7,
+          "episodes": 5,
+          "confidenceTier": "high"
+        },
+        "body": [
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "short version: the harness is the contract around the model, not the prompt. i’m drawing on "
+              },
+              {
+                "kind": "figure",
+                "text": "7 claims"
+              },
+              {
+                "kind": "text",
+                "text": " from "
+              },
+              {
+                "kind": "figure",
+                "text": "5 sources"
+              },
+              {
+                "kind": "text",
+                "text": ": keep the loop simple, give the model real tools, and evaluate the harness end to end "
+              },
+              {
+                "kind": "citation",
+                "episode_id": "ep-demo-0011"
+              },
+              {
+                "kind": "text",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "kind": "heading",
+            "level": 3,
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "what the notes don't cover"
+              }
+            ]
+          },
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "how harness cost scales past a few hundred tool calls."
+              }
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "episode_id": "ep-demo-0011",
+            "title": "Writing effective harnesses for coding agents",
+            "url": "https://example.com/effective-harnesses",
+            "source_type": "web",
+            "save_date": "2026-07-11"
+          },
+          {
+            "episode_id": "ep-demo-0012",
+            "title": "Agent harness patterns",
+            "url": "https://example.com/agent-harness-patterns",
+            "source_type": "blog",
+            "save_date": "2026-06-02"
+          },
+          {
+            "kind": "unavailable",
+            "episode_id": "ep-demo-0013"
+          }
+        ],
+        "provenance": {
+          "claims": 7,
+          "episodes": 5,
+          "confidenceTier": "high",
+          "snapshotDate": null,
+          "supersededExcluded": 1
+        },
+        "explorerLink": "/explore?e=agent-harness"
+      }
+    }
+  ]
+}

@@ -1412,6 +1412,29 @@ a.claim__src:hover{color:var(--color-signal)}
 /* answer link — "walk this in the graph →" */
 .qlink{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));display:inline-block;margin-top:7px}
 
+/* answer turns — body blocks, citations, gap markers, the withheld lead-in,
+   the refused closing line, the error box and limit-notice actions */
+.vbox p,.vbox h1,.vbox h2,.vbox h3,.vbox ul,.vbox ol,.vbox table,.vbox pre{margin:0;max-width:none}
+.vbox p,.vbox h1,.vbox h2,.vbox h3,.vbox li,.vbox th,.vbox td{font:inherit;letter-spacing:inherit;color:inherit}
+.vbox>*+*{margin-top:8px}
+.vbox h1,.vbox h2,.vbox h3{font-weight:700;color:var(--text-primary)}
+.vbox ul,.vbox ol{padding-left:18px}
+.vbox li>ul,.vbox li>ol{margin-top:2px}
+.vbox table{border-collapse:collapse;font-size:calc(11.5px * var(--text-scale, 1))}
+.vbox th,.vbox td{text-align:left;vertical-align:top;padding:3px 10px 3px 0;border-bottom:.5px solid var(--border-default)}
+.vbox th{font-weight:600;color:var(--text-primary)}
+.vbox pre{padding:8px 10px;border-left:0;border-radius:var(--radius-sm);background:var(--bg-surface);font-family:var(--font-code);font-size:calc(11.5px * var(--text-scale, 1));line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.vbox code{font-family:var(--font-code);font-size:calc(11.5px * var(--text-scale, 1))}
+.qcite{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));font-weight:600;color:var(--data-info);white-space:nowrap}
+.qcite.is-unavailable{color:var(--text-secondary);font-weight:400}
+.qgap{color:var(--color-highlight);font-style:italic}
+.qlead{margin-top:10px}
+.qclose{margin-top:8px}
+.qturn__t-bot>.provfoot{margin-top:9px}
+.vbox--error{background:var(--bg-surface);border:1px solid var(--border-strong)}
+.qnotice__act{display:inline-block;margin-top:6px}
+.qpanel__comp.is-disabled{opacity:.45}
+
 /* thinking cursor — shown while an answer is pending */
 .qcursor{display:inline-block;color:var(--color-signal);animation:qc-blink 1s steps(2) infinite}
 @keyframes qc-blink{50%{opacity:0}}

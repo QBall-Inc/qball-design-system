@@ -11,7 +11,7 @@ import {
   setLauncherHidden,
   type LauncherVariant,
 } from "./Launcher";
-import { autoGrow, lockBackground, renderOverlay, trapTab } from "./Overlay";
+import { autoGrow, lockBackground, renderOverlay, setComposerState, trapTab } from "./Overlay";
 
 export interface ChatMountOptions {
   /** Panel title and dialog name (default `assistant`). */
@@ -60,6 +60,14 @@ export interface ChatHandle {
   readonly overlay: HTMLElement;
   /** Hides or shows the launcher (the overlay and hotkey are unaffected). */
   setHidden(hidden: boolean): void;
+  /**
+   * Disables the composer (dimmed, no typing, Enter does nothing) and shows
+   * `placeholder` in it — e.g. after a usage limit. `setComposerDisabled(false)`
+   * re-enables it and restores the mount placeholder.
+   */
+  setComposerDisabled(disabled: boolean, placeholder?: string): void;
+  /** Whether the composer is currently disabled. */
+  isComposerDisabled(): boolean;
   /** Re-emits an answer-feedback change as this handle's `feedback` event. */
   relayFeedback(change: FeedbackChange): void;
   /** Typed listener on the host; returns the remover. */
@@ -120,9 +128,10 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
     variant,
     onStage: options.onStage === true,
   });
+  const placeholder = requireString("placeholder", options.placeholder, DEFAULTS.placeholder);
   const parts = renderOverlay({
     title,
-    placeholder: requireString("placeholder", options.placeholder, DEFAULTS.placeholder),
+    placeholder,
     disclaimer: requireString("disclaimer", options.disclaimer, DEFAULTS.disclaimer),
     mascot,
   });
@@ -167,6 +176,14 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
     launcher,
     overlay,
     setHidden: (hidden) => setLauncherHidden(launcher, hidden),
+    setComposerDisabled: (disabled, disabledPlaceholder) => {
+      if (typeof disabled !== "boolean") throw new TypeError("disabled must be a boolean.");
+      const text = disabled
+        ? requireString("placeholder", disabledPlaceholder, placeholder)
+        : placeholder;
+      setComposerState(parts, disabled, text);
+    },
+    isComposerDisabled: () => input.disabled,
     relayFeedback: (change) => emit("feedback", { value: change.value, turnRef: change.turnRef }),
     on: (type, listener) => {
       const wrapped = listener as EventListener;
@@ -215,6 +232,7 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
   input.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
     event.preventDefault();
+    if (input.disabled) return;
     const text = input.value.trim();
     if (text.length === 0) return;
     input.value = "";

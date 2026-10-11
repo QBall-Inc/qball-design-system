@@ -131,10 +131,10 @@ dates and enums, never free text. Nouns follow their count (`1 claim`, `2 claims
 
 | Function              | Output                                                                                                                |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `groundedExplanation` | `6 claims · 4 episodes · high confidence`                                                                             |
+| `groundedExplanation` | `6 claims · 4 episodes · high confidence` (no evidence, no tier: `0 claims · 0 episodes`)                             |
 | `withheldExplanation` | `2 figures untraceable · 12 claims shown`                                                                             |
 | `refusedExplanation`  | `out of scope` (off-topic) · `unable to answer · 0 references found` (in scope) · `insufficient evidence` (abstained) |
-| `answerFooter`        | `7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded`                               |
+| `answerFooter`        | `7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded` (no date: segment left out)   |
 | `panelFooter`         | `1 claim · 1 source · revision 2026-07-17 · 0 superseded shown`                                                       |
 | `sourcesLine`         | `[3 sources · newest jul 2026]` (needs at least one source; omit the line at zero)                                    |
 | `canvasStatus`        | `3294 entities · 2857 typed · 10003 co-mention · snapshot 2026-07-17` (narrow: `3294 entities · snapshot 2026-07-17`) |
@@ -197,6 +197,12 @@ Rules for the adapter:
   deeper nesting) to plain paragraphs of text.
 - **Strip what the turn already shows.** Leave out a trailing "Sources:" list; the sources
   line renders from `sources`.
+- **No evidence.** A grounded answer with nothing behind it (0 claims, 0 episodes, no
+  sources) leaves out `explanation.confidenceTier` and `provenance`; map a backend
+  confidence of `none` to a missing tier. Its stamp reads `0 claims · 0 episodes` and it
+  has no sources line or footer.
+- **Snapshot date is optional.** A missing or `null` `provenance.snapshotDate` drops the
+  `snapshot <date>` segment from the footer instead of failing.
 - **Refused bodies always show.** For an `abstained` refusal, the body is the agent's own
   explanation of why it declined.
 
@@ -207,8 +213,8 @@ Rules for the adapter:
 - `fixtures/qubrain/detail/*.json`: `ConnectionDetail` values in the input-model shape.
   They cover typed hops, superseded claims with and without their replacement,
   unavailable sources, and a co-mention hop.
-- `fixtures/qubrain/answers/*.json`: answer-turn event scripts for grounded (plain and
-  with every block and inline kind), withheld, refused (in scope / off-topic / abstained)
-  and error.
+- `fixtures/qubrain/answers/*.json`: answer-turn event scripts for grounded (plain, with
+  every block and inline kind, with no evidence, and with an explorer link and no snapshot
+  date), withheld, refused (in scope / off-topic / abstained) and error.
 
 All fixture content is synthetic and public-safe.

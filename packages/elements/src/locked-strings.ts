@@ -56,17 +56,28 @@ function line(...segments: string[]): string {
   return segments.join(LOCKED_SEPARATOR);
 }
 
-/** Grounded verdict explanation: `N claims · M episodes · <tier> confidence`. */
+/**
+ * Grounded verdict explanation: `N claims · M episodes · <tier> confidence`.
+ * A grounded answer with no evidence behind it (0 claims, 0 episodes) has no
+ * confidence tier; its line is `0 claims · 0 episodes`. A tier may be left out
+ * only in that case.
+ */
 export function groundedExplanation(input: {
   claims: number;
   episodes: number;
-  confidenceTier: string;
+  confidenceTier?: string;
 }): string {
-  return line(
-    counted(input.claims, "claim", "claims"),
-    counted(input.episodes, "episode", "episodes"),
-    `${confidenceMark(input.confidenceTier).word} confidence`,
-  );
+  const claims = counted(input.claims, "claim", "claims");
+  const episodes = counted(input.episodes, "episode", "episodes");
+  if (input.confidenceTier === undefined) {
+    if (input.claims !== 0 || input.episodes !== 0) {
+      throw new RangeError(
+        "confidenceTier is required unless the answer has no evidence (0 claims, 0 episodes).",
+      );
+    }
+    return line(claims, episodes);
+  }
+  return line(claims, episodes, `${confidenceMark(input.confidenceTier).word} confidence`);
 }
 
 /**
@@ -100,22 +111,27 @@ export interface AnswerFooterInput {
   claims: number;
   episodes: number;
   confidenceTier: string;
-  snapshotDate: string;
+  /** ISO date of the graph snapshot; absent or null when unknown (the segment is left out). */
+  snapshotDate?: string | null | undefined;
   supersededExcluded: number;
 }
 
 /**
  * Answer-variant provenance footer:
  * `N claims · M episodes · <tier> confidence · snapshot <date> · K superseded excluded`.
+ * Without a snapshot date the `snapshot <date>` segment is left out.
  */
 export function answerFooter(input: AnswerFooterInput): string {
-  return line(
+  const segments = [
     counted(input.claims, "claim", "claims"),
     counted(input.episodes, "episode", "episodes"),
     `${confidenceMark(input.confidenceTier).word} confidence`,
-    `snapshot ${isoDate(input.snapshotDate, "snapshotDate")}`,
-    `${count(input.supersededExcluded, "supersededExcluded")} superseded excluded`,
-  );
+  ];
+  if (input.snapshotDate !== undefined && input.snapshotDate !== null) {
+    segments.push(`snapshot ${isoDate(input.snapshotDate, "snapshotDate")}`);
+  }
+  segments.push(`${count(input.supersededExcluded, "supersededExcluded")} superseded excluded`);
+  return line(...segments);
 }
 
 export interface PanelFooterInput {

@@ -1,4 +1,5 @@
-// Hostile-payload execution gate for the trust atoms (plan AD-4, G-SEC-1/2).
+// Hostile-payload execution gate for the trust atoms and the chat answer
+// surfaces (plan AD-4, G-SEC-1/2).
 // jsdom never runs inline handlers or javascript: URLs, so "did not execute"
 // can only be proven in a real browser. This page first runs POSITIVE
 // CONTROLS — the same payloads parsed unsafely (innerHTML) and a real
@@ -23,6 +24,7 @@ const PAGE = `<!doctype html>
         renderSourceRow,
         renderProvenanceFooter,
       } from "/dist/trust/index.js";
+      import { mountTranscript } from "/dist/chat/index.js";
 
       const HOSTILE = '<img src="/missing.png" onerror="window.__pwned = (window.__pwned || 0) + 1">';
       const JS_URL = "javascript:window.__pwned=(window.__pwned||0)+1";
@@ -76,13 +78,44 @@ const PAGE = `<!doctype html>
           ]),
           renderProvenanceFooter("panel", { claims: 1, sources: 1, revisionDate: "2026-07-17", supersededShown: 1 }),
         );
-        for (const node of out.querySelectorAll(".claim__src:not([href]), .srcrow:not([href])")) node.click();
+        // Chat answer surfaces: prompts, user text, answer body, closing line,
+        // error line, explorer link and notice actions.
+        const chat = document.createElement("div");
+        out.append(chat);
+        const transcript = mountTranscript(chat, { userPrompt: HOSTILE, botPrompt: HOSTILE, onWarn: () => {} });
+        transcript.addUserTurn(HOSTILE);
+        const text = (t) => ({ kind: "paragraph", inlines: [{ kind: "text", text: t }, { kind: "marker", text: t }] });
+        const grounded = transcript.addBotTurn();
+        grounded.start();
+        grounded.appendText(HOSTILE);
+        grounded.finalize({
+          verdict: "grounded",
+          explanation: { claims: 1, episodes: 1, confidenceTier: "high" },
+          body: [text(HOSTILE), { kind: "code", text: HOSTILE }],
+          sources: [{ ...source, episode_id: "ep-9" }],
+          provenance: { claims: 1, episodes: 1, confidenceTier: "high", snapshotDate: null, supersededExcluded: 0 },
+          explorerLink: JS_URL,
+        });
+        const refused = transcript.addBotTurn();
+        refused.start();
+        refused.finalize({ verdict: "refused", reason: "off_topic", body: [text(HOSTILE)], closingLine: HOSTILE });
+        const failed = transcript.addBotTurn();
+        failed.start();
+        failed.fail(HOSTILE);
+        transcript.addNotice(HOSTILE, { action: { label: HOSTILE, href: "//evil.example/x" } });
+        transcript.addNotice(HOSTILE, { action: { label: "go", href: JS_URL } });
+
+        for (const node of out.querySelectorAll(
+          ".claim__src:not([href]), .srcrow:not([href]), .qlink:not([href]), .qnotice__act:not([href])",
+        )) node.click();
         await wait(400);
         return {
           fired: window.__pwned ?? 0,
           imgs: out.querySelectorAll("img").length,
           hrefs: [...out.querySelectorAll("[href]")].map((n) => n.getAttribute("href")),
           hostileTextShown: out.textContent.includes(HOSTILE),
+          chatTurns: chat.querySelectorAll(".qturn").length,
+          chatParts: chat.querySelectorAll(".vbox--grounded, .vbox--refused, .vbox--error, .qclose, .qlink, .qnotice__act").length,
         };
       }
 
@@ -104,6 +137,8 @@ interface HostileResult {
   imgs?: number;
   hrefs?: string[];
   hostileTextShown?: boolean;
+  chatTurns?: number;
+  chatParts?: number;
 }
 
 declare global {
@@ -112,10 +147,12 @@ declare global {
   }
 }
 
-test("trust atoms never execute hostile text or URLs (real Chromium)", async ({ page }) => {
-  if (!existsSync(join(DIST, "trust", "index.js"))) {
+test("trust atoms and chat answers never execute hostile text or URLs (real Chromium)", async ({
+  page,
+}) => {
+  if (!existsSync(join(DIST, "trust", "index.js")) || !existsSync(join(DIST, "chat", "index.js"))) {
     throw new Error(
-      `${DIST}/trust/index.js missing — build @qball-inc/elements first (pnpm test).`,
+      `${DIST}/trust or chat entry missing — build @qball-inc/elements first (pnpm test).`,
     );
   }
   const pageErrors: string[] = [];
@@ -151,4 +188,8 @@ test("trust atoms never execute hostile text or URLs (real Chromium)", async ({ 
   expect(result.imgs).toBe(0);
   expect(result.hostileTextShown).toBe(true);
   expect(result.hrefs).toEqual(["https://example-lab.com/a"]);
+  // The chat surfaces really rendered: 1 user + 3 bot turns; grounded, refused
+  // and error boxes, the closing line, the inert explorer link, 2 inert actions.
+  expect(result.chatTurns).toBe(4);
+  expect(result.chatParts).toBe(7);
 });

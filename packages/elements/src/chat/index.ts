@@ -10,3 +10,17 @@ export { isOpenHotkey, mount } from "./mount";
 
 export type { LauncherVariant } from "./Launcher";
 export { MASCOT_SVG, defaultMascot } from "./Launcher";
+
+export type {
+  BotTurnOptions,
+  TranscriptHandle,
+  TranscriptNoticeOptions,
+  TranscriptOptions,
+} from "./Transcript";
+export { TRANSCRIPT_DEFAULTS, mountTranscript } from "./Transcript";
+
+export type { AnswerFeedbackOptions, AnswerOptions } from "./AnswerBox";
+export { ANSWER_DEFAULTS, renderAnswer, renderErrorAnswer } from "./AnswerBox";
+
+export type { NoticeAction, NoticeOptions } from "./Notice";
+export { renderNotice } from "./Notice";

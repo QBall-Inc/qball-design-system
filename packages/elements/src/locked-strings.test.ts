@@ -89,6 +89,61 @@ describe("answerFooter", () => {
   });
 });
 
+describe("answerFooter without a snapshot date (owner S123: drop the segment)", () => {
+  it.each([
+    [0, 0, 0, undefined, "0 claims · 0 episodes · high confidence · 0 superseded excluded"],
+    [1, 1, 1, null, "1 claim · 1 episode · high confidence · 1 superseded excluded"],
+    [7, 5, 2, null, "7 claims · 5 episodes · high confidence · 2 superseded excluded"],
+  ])(
+    "claims=%i episodes=%i superseded=%i date=%s → %s",
+    (claims, episodes, superseded, snapshotDate, expected) => {
+      expect(
+        answerFooter({
+          claims,
+          episodes,
+          confidenceTier: "high",
+          snapshotDate,
+          supersededExcluded: superseded,
+        }),
+      ).toBe(expected);
+    },
+  );
+
+  it("still rejects a present but malformed date", () => {
+    expect(() =>
+      answerFooter({
+        claims: 1,
+        episodes: 1,
+        confidenceTier: "high",
+        snapshotDate: "",
+        supersededExcluded: 0,
+      }),
+    ).toThrow('snapshotDate must be an ISO date YYYY-MM-DD (got "").');
+  });
+});
+
+describe("groundedExplanation for a no-evidence answer (owner S123: counts, no confidence)", () => {
+  it("reads `0 claims · 0 episodes` without a tier", () => {
+    expect(groundedExplanation({ claims: 0, episodes: 0 })).toBe("0 claims · 0 episodes");
+  });
+
+  it.each([
+    [1, 0],
+    [0, 1],
+    [3, 2],
+  ])("requires a tier when there is evidence (claims=%i episodes=%i)", (claims, episodes) => {
+    expect(() => groundedExplanation({ claims, episodes })).toThrow(
+      "confidenceTier is required unless the answer has no evidence (0 claims, 0 episodes).",
+    );
+  });
+
+  it("keeps the tier when one is given at zero counts", () => {
+    expect(groundedExplanation({ claims: 0, episodes: 0, confidenceTier: "low" })).toBe(
+      "0 claims · 0 episodes · low confidence",
+    );
+  });
+});
+
 describe("panelFooter", () => {
   it.each([
     [0, 0, 0, "0 claims · 0 sources · revision 2026-07-17 · 0 superseded shown"],

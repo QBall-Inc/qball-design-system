@@ -23,6 +23,8 @@ export interface OverlayParts {
   closeButton: HTMLButtonElement;
   /** `.qpanel__body` — the scrolling message container. */
   body: HTMLElement;
+  /** `.qpanel__comp` — the composer row (prompt + textarea). */
+  composer: HTMLElement;
   /** The composer textarea. */
   input: HTMLTextAreaElement;
 }
@@ -52,16 +54,33 @@ export function renderOverlay(options: OverlayOptions): OverlayParts {
   const composer = el("div", "qpanel__comp");
   const input = el("textarea", "qpanel__input");
   input.rows = 1;
-  input.placeholder = options.placeholder;
-  input.setAttribute(
-    "aria-label",
-    options.placeholder.length > 0 ? options.placeholder : "message",
-  );
+  setComposerText(input, options.placeholder);
   composer.append(el("span", "qpanel__prompt", "you ›"), input);
 
   panel.append(head, body, composer, el("div", "qpanel__disc", options.disclaimer));
   root.append(scrim, panel);
-  return { root, scrim, closeButton, body, input };
+  return { root, scrim, closeButton, body, composer, input };
+}
+
+/** Sets the composer's placeholder and the accessible name derived from it. */
+export function setComposerText(input: HTMLTextAreaElement, placeholder: string): void {
+  input.placeholder = placeholder;
+  input.setAttribute("aria-label", placeholder.length > 0 ? placeholder : "message");
+}
+
+/**
+ * Disables or re-enables the composer. Disabled: the textarea is disabled, the
+ * row gets `is-disabled` (tokens CSS dims it) and `placeholder` replaces the
+ * usual one. Re-enabled: `restorePlaceholder` comes back.
+ */
+export function setComposerState(
+  parts: Pick<OverlayParts, "composer" | "input">,
+  disabled: boolean,
+  placeholder: string,
+): void {
+  parts.input.disabled = disabled;
+  parts.composer.classList.toggle("is-disabled", disabled);
+  setComposerText(parts.input, placeholder);
 }
 
 /** Grows the composer to fit its text (recomputed from scrollHeight). */

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mount, type ChatHandle, type ChatMountOptions } from "./mount";
+import { focusableIn } from "./Overlay";
 
 let handles: ChatHandle[] = [];
 let page: HTMLElement;
@@ -330,6 +331,74 @@ describe("composer", () => {
     Object.defineProperty(box, "scrollHeight", { configurable: true, value: 64 });
     box.dispatchEvent(new Event("input"));
     expect(box.style.height).toBe("64px");
+  });
+});
+
+describe("composer disabled", () => {
+  it("dims the row, disables typing, swaps the placeholder and its accessible name", () => {
+    const handle = mountIn({ placeholder: "ask away" });
+    handle.setComposerDisabled(true, "back tomorrow");
+    const field = input(handle);
+    expect(field.disabled).toBe(true);
+    expect(field.placeholder).toBe("back tomorrow");
+    expect(field.getAttribute("aria-label")).toBe("back tomorrow");
+    expect(handle.overlay.querySelector(".qpanel__comp")?.classList.contains("is-disabled")).toBe(
+      true,
+    );
+    expect(handle.isComposerDisabled()).toBe(true);
+  });
+
+  it("re-enabling restores the mount placeholder and drops the dimmed state", () => {
+    const handle = mountIn({ placeholder: "ask away" });
+    handle.setComposerDisabled(true, "resting");
+    handle.setComposerDisabled(false);
+    const field = input(handle);
+    expect(field.disabled).toBe(false);
+    expect(field.placeholder).toBe("ask away");
+    expect(field.getAttribute("aria-label")).toBe("ask away");
+    expect(handle.overlay.querySelector(".qpanel__comp")?.classList.contains("is-disabled")).toBe(
+      false,
+    );
+    expect(handle.isComposerDisabled()).toBe(false);
+  });
+
+  it("keeps the mount placeholder when disabled without a contextual one", () => {
+    const handle = mountIn({ placeholder: "ask away" });
+    handle.setComposerDisabled(true);
+    expect(input(handle).placeholder).toBe("ask away");
+  });
+
+  it("Enter does not submit while disabled, and does again once re-enabled", () => {
+    const asked: string[] = [];
+    const handle = mountIn({ onAsk: (text) => asked.push(text) });
+    const field = input(handle);
+    field.value = "still there?";
+    handle.setComposerDisabled(true, "conversation complete");
+    pressKey(field, { key: "Enter" });
+    expect(asked).toEqual([]);
+    expect(field.value).toBe("still there?");
+    handle.setComposerDisabled(false);
+    pressKey(field, { key: "Enter" });
+    expect(asked).toEqual(["still there?"]);
+  });
+
+  it("drops the disabled textarea from the focus trap", () => {
+    const handle = mountIn();
+    handle.open();
+    handle.setComposerDisabled(true, "resting");
+    expect(focusableIn(handle.overlay)).not.toContain(input(handle));
+    handle.setComposerDisabled(false);
+    expect(focusableIn(handle.overlay)).toContain(input(handle));
+  });
+
+  it("rejects a non-boolean and a non-string placeholder", () => {
+    const handle = mountIn();
+    expect(() => {
+      handle.setComposerDisabled("yes" as unknown as boolean);
+    }).toThrow("disabled must be a boolean.");
+    expect(() => {
+      handle.setComposerDisabled(true, 7 as unknown as string);
+    }).toThrow("placeholder must be a string.");
   });
 });
 

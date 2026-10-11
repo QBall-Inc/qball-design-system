@@ -11,7 +11,7 @@ A fixed-corner mascot button (`ask [Q]`) that opens a portrait chat panel.
 `mount()` from `@qball-inc/elements/chat` builds both, wires the Q hotkey and
 the composer, and reports what happens as events. It is data-agnostic: it never
 fetches. The site answers each question and renders the reply into
-`handle.body` (answer turns are a separate renderer).
+`handle.body`, usually with `mountTranscript` (see [qubae-answers.md](qubae-answers.md)).
 
 All DOM is built with `createElement` / `textContent` / `setAttribute`; option
 strings always land as text. Nothing touches `window` or `document` until
@@ -60,17 +60,19 @@ placeholder, disclaimer) is the site's copy and is passed at call time.
 
 ## Handle
 
-| Member                            | Purpose                                                                                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `open()` / `close()` / `toggle()` | Imperative control; repeat calls are no-ops.                                                                                                                  |
-| `isOpen()`                        | Current state.                                                                                                                                                |
-| `body`                            | The panel's scrolling message container (`.qpanel__body`), empty at mount.                                                                                    |
-| `launcher`                        | The `.qlaunch` button.                                                                                                                                        |
-| `overlay`                         | The `.qoverlay` dialog root.                                                                                                                                  |
-| `setHidden(hidden)`               | Hides or shows the launcher only (the overlay and hotkey are unaffected). Use it to yield the corner, e.g. while a graph side panel is open on small screens. |
-| `relayFeedback(change)`           | Re-emits an answer-feedback change as this handle's `feedback` event. Pass it as `renderFeedback`'s `onChange`.                                               |
-| `on(type, listener)`              | Typed listener on `host`; returns a remover.                                                                                                                  |
-| `destroy()`                       | Removes both nodes and every listener (including the document-level hotkey), and releases the page if open.                                                   |
+| Member                                        | Purpose                                                                                                                                                                                                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `open()` / `close()` / `toggle()`             | Imperative control; repeat calls are no-ops.                                                                                                                                                                                                                              |
+| `isOpen()`                                    | Current state.                                                                                                                                                                                                                                                            |
+| `body`                                        | The panel's scrolling message container (`.qpanel__body`), empty at mount.                                                                                                                                                                                                |
+| `launcher`                                    | The `.qlaunch` button.                                                                                                                                                                                                                                                    |
+| `overlay`                                     | The `.qoverlay` dialog root.                                                                                                                                                                                                                                              |
+| `setHidden(hidden)`                           | Hides or shows the launcher only (the overlay and hotkey are unaffected). Use it to yield the corner, e.g. while a graph side panel is open on small screens.                                                                                                             |
+| `setComposerDisabled(disabled, placeholder?)` | Disables the composer after a usage limit: the textarea is disabled, Enter does nothing, the row dims (`.qpanel__comp.is-disabled`, opacity .45 in the tokens CSS) and `placeholder` replaces the usual one. `setComposerDisabled(false)` restores the mount placeholder. |
+| `isComposerDisabled()`                        | Current composer state.                                                                                                                                                                                                                                                   |
+| `relayFeedback(change)`                       | Re-emits an answer-feedback change as this handle's `feedback` event. Wire it as the transcript's `onFeedback` (`(change) => handle.relayFeedback(change)`).                                                                                                              |
+| `on(type, listener)`                          | Typed listener on `host`; returns a remover.                                                                                                                                                                                                                              |
+| `destroy()`                                   | Removes both nodes and every listener (including the document-level hotkey), and releases the page if open.                                                                                                                                                               |
 
 ## Events
 
