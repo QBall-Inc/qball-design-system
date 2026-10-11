@@ -17,5 +17,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "devDependencies": {
+    "axe-core": "4.10.2"
   }
 }

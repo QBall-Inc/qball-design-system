@@ -10,6 +10,7 @@ import {
   renderSourceRow,
   renderVerdictStamp,
 } from "@qball-inc/elements/trust";
+import { mountTranscript } from "@qball-inc/elements/chat";
 
 interface HostileResult {
   controlFired: number;
@@ -203,11 +204,79 @@ async function hostile(): Promise<Omit<HostileResult, "controlFired">> {
   };
 }
 
+const para = (text: string) => [
+  { kind: "paragraph" as const, inlines: [{ kind: "text" as const, text }] },
+];
+
+/** One turn of every verdict, an error and a notice, for the contrast sweep. */
+function renderChatAnswers(): void {
+  const transcript = mountTranscript(slot("chat-answers"), {
+    onFeedback: () => undefined,
+    onWarn: () => undefined,
+  });
+  transcript.addUserTurn("what changed in the local server setup?");
+  const grounded = transcript.addBotTurn({ turnRef: "chat-1" });
+  grounded.start();
+  grounded.finalize({
+    verdict: "grounded",
+    explanation: { claims: 2, episodes: 1, confidenceTier: "high" },
+    body: [
+      {
+        kind: "paragraph",
+        inlines: [
+          { kind: "text", text: "the server now runs locally; i'm drawing on " },
+          { kind: "figure", text: "2 claims" },
+          { kind: "text", text: " " },
+          { kind: "citation", episode_id: "ep-1" },
+          { kind: "text", text: " " },
+          { kind: "marker", text: "[figure not in saved evidence]" },
+        ],
+      },
+    ],
+    sources: [source()],
+    provenance: {
+      claims: 2,
+      episodes: 1,
+      confidenceTier: "high",
+      snapshotDate: "2026-07-17",
+      supersededExcluded: 1,
+    },
+    explorerLink: "/explore?e=local-server",
+  });
+  const withheld = transcript.addBotTurn({ turnRef: "chat-2" });
+  withheld.start();
+  withheld.finalize({
+    verdict: "withheld",
+    explanation: { untraceableFigures: 1, claimsShown: 3 },
+    body: para("one of the numbers does not trace back to a saved source."),
+    traceableClaims: [
+      claim(),
+      claim({ claim_id: 2, confidence: 0.58, confidence_tier: "medium" }),
+      claim({ claim_id: 3, confidence: 0.3, confidence_tier: "low" }),
+    ],
+  });
+  const refused = transcript.addBotTurn({ turnRef: "chat-3" });
+  refused.start();
+  refused.finalize({
+    verdict: "refused",
+    reason: "off_topic",
+    body: para("that is outside what the notes cover."),
+    closingLine: "ask about the local server instead.",
+  });
+  const failed = transcript.addBotTurn({ turnRef: "chat-4" });
+  failed.start();
+  failed.fail("the answer service is unavailable.");
+  transcript.addNotice("you have used today's questions.\ncome back tomorrow.", {
+    action: { label: "explore instead →", href: "/explore" },
+  });
+}
+
 async function main(): Promise<void> {
   try {
     renderClaims();
     renderSourcesAndFooters();
     renderStampsAndFeedback();
+    renderChatAnswers();
     const controlFired = await controls();
     window.__trust = { ok: true, hostile: { controlFired, ...(await hostile()) } };
   } catch (err) {

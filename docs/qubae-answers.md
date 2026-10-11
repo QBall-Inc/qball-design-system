@@ -176,6 +176,24 @@ Recording feedback is your job.
 To stop every stamp's shimmer once any stamp is opened, pass
 `answer.onStampOpen` and call `markStampSeen` on each `.vrow` in the container.
 
+## Contrast
+
+Every text colour in the trust and chat atoms meets WCAG AA (4.5:1) in both themes, on the
+surfaces it sits on: page, card and the tinted answer boxes.
+
+- Small grey text (dates, validity, footer, struck superseded claims, tier words, panel
+  title and launcher caption) uses `--text-secondary`. `--text-muted` is below AA at these
+  sizes, so the atoms no longer use it. Its value is unchanged for other consumers.
+- Green, amber and gold text on tinted surfaces uses a component-scoped deeper ink:
+  `color-mix(in srgb, <brand> 72%, var(--text-primary))` (60% for the medium-confidence
+  gold). The mix darkens the ink in light themes and lightens it in dark themes. The brand
+  tokens themselves are unchanged.
+- Feedback marks are no longer faded. A pressed mark takes the verdict ink plus an
+  underline, so it stays distinct without relying on colour alone.
+
+The Astro consumer gate runs axe-core's `color-contrast` rule over every atom and a full
+chat transcript in both themes, and fails on any serious or critical node.
+
 ## Lower-level renderers
 
 `renderAnswer(finalTurn, options) → HTMLElement[]` returns one finished turn's

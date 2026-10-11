@@ -12,6 +12,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const FIXTURE_DIR = fileURLToPath(new URL("..", import.meta.url));
 const TOKENS_CSS = join(FIXTURE_DIR, "node_modules", "@qball-inc", "tokens", "colors_and_type.css");
+const AXE = join(FIXTURE_DIR, "node_modules", "axe-core", "axe.min.js");
 const THEMES = ["light", "dark"] as const;
 type Theme = (typeof THEMES)[number];
 
@@ -24,6 +25,45 @@ function hexToRgb(hex: string): string {
   if (m === null) throw new Error(`not a #rrggbb colour: ${hex}`);
   const [r, g, b] = [m[1], m[2], m[3]].map((h) => parseInt(h ?? "", 16));
   return `rgb(${String(r)}, ${String(g)}, ${String(b)})`;
+}
+
+/** `rgb(63, 107, 91)` → `[63, 107, 91]`. */
+function hexChannels(rgb: string): number[] {
+  const m = /^rgb\((\d+), (\d+), (\d+)\)$/.exec(rgb);
+  if (m === null) throw new Error(`not rgb(): ${rgb}`);
+  return [m[1], m[2], m[3]].map((v) => Number(v));
+}
+
+/**
+ * The colour `color-mix(in srgb, var(--a) pct%, var(--b))` resolves to, from the
+ * installed token values: the deeper component inks the trust/chat atoms use on
+ * tinted surfaces (WP-QB-1.6). Returned as 0–255 channels.
+ */
+function mixedColor(theme: Theme, a: string, pct: number, b: string): number[] {
+  const ca = hexChannels(tokenColor(theme, a));
+  const cb = hexChannels(tokenColor(theme, b));
+  return ca.map((v, i) => v * (pct / 100) + (cb[i] ?? 0) * (1 - pct / 100));
+}
+
+/**
+ * A computed colour (`rgb(...)` or `color(srgb ...)`) as 0–255 channels. Any
+ * other form (e.g. the `oklab(...)` Chromium reports mid-transition) yields
+ * `[]`, so a polled comparison retries instead of throwing.
+ */
+function channels(computed: string): number[] {
+  const rgb = /^rgba?\((\d+), (\d+), (\d+)/.exec(computed);
+  if (rgb !== null) return [rgb[1], rgb[2], rgb[3]].map((v) => Number(v));
+  const srgb = /^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)/.exec(computed);
+  if (srgb !== null) return [srgb[1], srgb[2], srgb[3]].map((v) => Number(v) * 255);
+  return [];
+}
+
+function expectNear(actual: string, expected: number[]): void {
+  const got = channels(actual);
+  expect(got, `unparsed colour ${actual}`).toHaveLength(3);
+  expected.forEach((v, i) => {
+    expect(Math.abs((got[i] ?? -999) - v), `${actual} vs ${expected.join(",")}`).toBeLessThan(1.5);
+  });
 }
 
 /** Token value in the first block opened by `selector`, from the installed CSS. */
@@ -51,6 +91,20 @@ declare global {
   interface Window {
     __trust?: TrustResult;
   }
+}
+
+/** The slice of the injected axe-core API this spec uses. */
+interface AxeApi {
+  run(
+    context: Document,
+    options: { runOnly: string[] },
+  ): Promise<{
+    violations: {
+      impact?: string | null;
+      help: string;
+      nodes: { target: string[]; failureSummary?: string }[];
+    }[];
+  }>;
 }
 
 /** Opens a themed page, records errors/dialogs, and waits for the client script. */
@@ -170,21 +224,65 @@ for (const theme of THEMES) {
           .evaluate((node, prop) => getComputedStyle(node).getPropertyValue(prop), property);
 
       expect(await color("body", "background-color")).toBe(tokenColor(theme, "bg-primary"));
-      expect(await color(".vstamp--grounded")).toBe(tokenColor(theme, "color-signal"));
-      expect(await color(".vstamp--withheld")).toBe(tokenColor(theme, "color-highlight"));
       expect(await color(".claim__conf--high")).toBe(tokenColor(theme, "color-signal"));
-      expect(await color(".claim__conf--med")).toBe(tokenColor(theme, "data-warn"));
-      expect(await color(".claim__conf--low")).toBe(tokenColor(theme, "data-flat"));
+      expect(await color(".claim__conf--low")).toBe(tokenColor(theme, "text-secondary"));
+      expect(await color(".claim__meta")).toBe(tokenColor(theme, "text-secondary"));
       expect(await color(".provfoot b")).toBe(tokenColor(theme, "text-secondary"));
       expect(await color(".srcrow__mark")).toBe(tokenColor(theme, "anno-source"));
+      // Brand inks on tinted surfaces are deepened toward the theme's text colour
+      // (WP-QB-1.6): darker in light, lighter in dark.
+      expectNear(
+        await color(".vstamp--grounded"),
+        mixedColor(theme, "color-signal", 72, "text-primary"),
+      );
+      expectNear(
+        await color(".vstamp--withheld"),
+        mixedColor(theme, "color-highlight", 72, "text-primary"),
+      );
+      expectNear(
+        await color(".claim__conf--med"),
+        mixedColor(theme, "data-warn", 60, "text-primary"),
+      );
 
       // Feedback colours apply only to the pressed toggle; the CSS fades
       // colour in, so poll until the transition settles.
       const feedback = atom(page, "feedback");
       await feedback.locator(".qfb__down").click();
-      await expect.poll(() => color(".qfb__down")).toBe(tokenColor(theme, "color-highlight"));
+      const highlight = mixedColor(theme, "color-highlight", 72, "text-primary");
+      await expect
+        .poll(async () => channels(await color(".qfb__down")).map(Math.round))
+        .toEqual(highlight.map(Math.round));
       await feedback.locator(".qfb__up").click();
-      await expect.poll(() => color(".qfb__up")).toBe(tokenColor(theme, "color-signal"));
+      const signal = mixedColor(theme, "color-signal", 72, "text-primary");
+      await expect
+        .poll(async () => channels(await color(".qfb__up")).map(Math.round))
+        .toEqual(signal.map(Math.round));
+    });
+
+    test("every atom and chat answer meets WCAG AA contrast (axe, serious/critical)", async ({
+      page,
+    }) => {
+      await openPage(page, theme);
+      // Show the hidden text too: every explanation open, every source list open,
+      // and one pressed feedback mark of each kind.
+      await page.evaluate(() => {
+        for (const node of document.querySelectorAll<HTMLElement>(".vstamp, .qsrcline"))
+          node.click();
+        document.querySelector<HTMLElement>('[data-atom="chat-answers"] .qfb__up')?.click();
+        document.querySelectorAll<HTMLElement>('[data-atom="chat-answers"] .qfb__down')[1]?.click();
+      });
+      await expect(page.locator('[data-atom="chat-answers"] .qturn')).toHaveCount(5);
+      await page.addScriptTag({ path: AXE });
+      const violations = await page.evaluate(async () => {
+        const axe = (window as unknown as { axe: AxeApi }).axe;
+        const result = await axe.run(document, { runOnly: ["color-contrast"] });
+        return result.violations
+          .filter((v) => v.impact === "serious" || v.impact === "critical")
+          .flatMap((v) =>
+            v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary ?? v.help}`),
+          );
+      });
+      expect(violations).toEqual([]);
     });
 
     test("hostile text and URLs stay inert (positive control fires)", async ({ page }) => {
