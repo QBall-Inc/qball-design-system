@@ -14,7 +14,10 @@ export default defineConfig({
   reporter: process.env["CI"] ? "github" : "list",
   use: { baseURL: `http://127.0.0.1:${PORT}` },
   webServer: {
-    command: `pnpm exec astro preview --host 127.0.0.1 --port ${PORT}`,
+    // --ignore-lock keeps preview a foreground one-off server. Astro 7 otherwise
+    // detaches it into the background when it detects an AI coding agent, which
+    // Playwright can neither wait on nor stop.
+    command: `pnpm exec astro preview --ignore-lock --host 127.0.0.1 --port ${PORT}`,
     cwd: FIXTURE_DIR,
     url: `http://127.0.0.1:${PORT}/light/`,
     reuseExistingServer: false,
