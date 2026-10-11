@@ -9,6 +9,36 @@ The versioning contract (token / type-stack / radius-scale changes = MAJOR; addi
 component / variant = MINOR) is defined in `CAVEATS.md` and enforced via Changesets
 in the release pipeline.
 
+## Release B — @qball-inc/elements 0.3.0, @qball-inc/tokens 1.1.2, @qball-inc/react 1.0.4 — 2026-10-11
+
+**`@qball-inc/elements` 0.3.0** completes the `./chat` entry with answer turns.
+`mountTranscript` renders a conversation into the ask overlay (or any element); each bot
+turn is an `AnswerTurn` whose streamed draft never reaches the page until it is finalized.
+It renders every verdict (grounded, withheld, refused), error turns and limit notices, and
+adds a disabled-composer switch for usage limits and `safeInternalUrl`, the policy for an
+answer's explorer link and notice actions. The input model now allows a grounded answer
+with no evidence (`0 claims · 0 episodes`) and an optional snapshot date. This is
+renderer-only: backend integration is a later, gated step. Guides:
+[docs/qubae-answers.md](./docs/qubae-answers.md), and the Release B section of
+[docs/consumer-handback-elements.md](./docs/consumer-handback-elements.md).
+
+**`@qball-inc/tokens` 1.1.2** (patch) adds the answer-turn styles and makes the trust and
+chat components meet WCAG AA colour contrast in both themes, by restyling the components;
+no token values change.
+
+**`@qball-inc/react` 1.0.4** has no code changes; it depends on `@qball-inc/tokens` 1.1.2.
+
+## Interim release — @qball-inc/elements 0.2.0, @qball-inc/tokens 1.1.1, @qball-inc/react 1.0.3 — 2026-10-10
+
+**`@qball-inc/elements` 0.2.0** gives the claim card one fixed two-row layout at every
+width, with status labels in their own strip above the sentence, and ships the first part
+of `./chat`: `mount()`, the ask launcher (`Q` hotkey) and the modal ask overlay
+([docs/chat-launcher.md](./docs/chat-launcher.md)).
+
+**`@qball-inc/tokens` 1.1.1** (patch) carries the claim-card layout styles and fixes the
+mascot ink on the launcher over the dark graph stage. **`@qball-inc/react` 1.0.3** has no
+code changes; it depends on `@qball-inc/tokens` 1.1.1.
+
 ## Release A — @qball-inc/elements 0.1.0, @qball-inc/tokens 1.1.0, @qball-inc/react 1.0.2 — 2026-10-10
 
 First release of **`@qball-inc/elements`**, framework-free TypeScript + DOM components that
