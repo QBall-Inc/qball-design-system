@@ -99,6 +99,14 @@ const PAGE = `<!doctype html>
         const refused = transcript.addBotTurn();
         refused.start();
         refused.finalize({ verdict: "refused", reason: "off_topic", body: [text(HOSTILE)], closingLine: HOSTILE });
+        const withheld = transcript.addBotTurn();
+        withheld.start();
+        withheld.finalize({
+          verdict: "withheld",
+          explanation: { untraceableFigures: 1, claimsShown: 1 },
+          body: [text(HOSTILE)],
+          traceableClaims: [{ ...current, claim_id: 3 }],
+        });
         const failed = transcript.addBotTurn();
         failed.start();
         failed.fail(HOSTILE);
@@ -115,7 +123,7 @@ const PAGE = `<!doctype html>
           hrefs: [...out.querySelectorAll("[href]")].map((n) => n.getAttribute("href")),
           hostileTextShown: out.textContent.includes(HOSTILE),
           chatTurns: chat.querySelectorAll(".qturn").length,
-          chatParts: chat.querySelectorAll(".vbox--grounded, .vbox--refused, .vbox--error, .qclose, .qlink, .qnotice__act").length,
+          chatParts: chat.querySelectorAll(".vbox--grounded, .vbox--withheld, .qclaim, .vbox--refused, .vbox--error, .qclose, .qlink, .qnotice__act").length,
         };
       }
 
@@ -188,8 +196,9 @@ test("trust atoms and chat answers never execute hostile text or URLs (real Chro
   expect(result.imgs).toBe(0);
   expect(result.hostileTextShown).toBe(true);
   expect(result.hrefs).toEqual(["https://example-lab.com/a"]);
-  // The chat surfaces really rendered: 1 user + 3 bot turns; grounded, refused
-  // and error boxes, the closing line, the inert explorer link, 2 inert actions.
-  expect(result.chatTurns).toBe(4);
-  expect(result.chatParts).toBe(7);
+  // The chat surfaces really rendered: 1 user + 4 bot turns; grounded, withheld
+  // (+ its claim row), refused and error boxes, the closing line, the inert
+  // explorer link, 2 inert actions.
+  expect(result.chatTurns).toBe(5);
+  expect(result.chatParts).toBe(9);
 });
