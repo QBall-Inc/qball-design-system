@@ -68,14 +68,15 @@ internal violation message is never shown. While early display is off,
 | `onFeedback`   | `(change) => void`  | —                                              | Shows `+1 / −1` in every answer box; each bot turn then needs a `turnRef`.          |
 | `answer`       | `AnswerOptions`     | —                                              | Explorer link label and allow-list, withheld lead-in, source badges, `onStampOpen`. |
 
-| Handle member                  | Purpose                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `addUserTurn(text)`            | Appends the question as plain text.                                                              |
-| `addBotTurn({ turnRef? })`     | Appends a bot turn and returns its `AnswerTurn`. Drive it with `start/appendText/finalize/fail`. |
-| `addNotice(text, { action? })` | Appends a notice; see below.                                                                     |
-| `clear()`                      | Removes everything (e.g. "start fresh"); pending turns stop rendering.                           |
-| `destroy()`                    | Clears and detaches; the handle then refuses further calls.                                      |
-| `container`                    | The element rendered into.                                                                       |
+| Handle member                     | Purpose                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `addUserTurn(text)`               | Appends the question as plain text.                                                              |
+| `addBotTurn({ turnRef? })`        | Appends a bot turn and returns its `AnswerTurn`. Drive it with `start/appendText/finalize/fail`. |
+| `addBotTurn({ initialFeedback })` | Shows an earlier `1` / `-1` vote pressed without firing `onFeedback`; a vote needs `onFeedback`. |
+| `addNotice(text, { action? })`    | Appends a notice; see below.                                                                     |
+| `clear()`                         | Removes everything (e.g. "start fresh"); pending turns stop rendering.                           |
+| `destroy()`                       | Clears and detaches; the handle then refuses further calls.                                      |
+| `container`                       | The element rendered into.                                                                       |
 
 Turns are separated by hairlines (`.qsep`); notices sit between them without
 one. The container scrolls to the end after each change.
@@ -172,6 +173,12 @@ With `onFeedback` set, every answer box (grounded, withheld and refused) shows
 every change. Inside the overlay, wire it to the handle so the change becomes
 its typed `feedback` event: `onFeedback: (change) => chat.relayFeedback(change)`.
 Recording feedback is your job.
+
+To show a visitor's earlier vote on a replayed turn, pass it back:
+`transcript.addBotTurn({ turnRef, initialFeedback: 1 })` (or `-1`, or `null` for none).
+The mark renders pressed, nothing fires at render, and the next click toggles from there.
+The backend keeps no vote state, so storing the vote (e.g. in `localStorage`) is the
+browser's job. A value other than `1`, `-1` or `null` throws when the turn is added.
 
 To stop every stamp's shimmer once any stamp is opened, pass
 `answer.onStampOpen` and call `markStampSeen` on each `.vrow` in the container.

@@ -7,7 +7,7 @@
 // Touches the DOM only when called, never at module evaluation (AD-6).
 
 import { AnswerTurn, type TurnView } from "../answer-turn";
-import type { FeedbackChange } from "../trust/Feedback";
+import type { FeedbackChange, FeedbackValue } from "../trust/Feedback";
 import { el } from "../trust/dom";
 import { renderAnswer, renderErrorAnswer, type AnswerOptions } from "./AnswerBox";
 import { renderNotice, type NoticeAction } from "./Notice";
@@ -35,6 +35,12 @@ export interface TranscriptOptions {
 export interface BotTurnOptions {
   /** The consumer's id for this turn; required when `onFeedback` is set. */
   turnRef?: string;
+  /**
+   * The visitor's earlier vote, shown pressed without firing `onFeedback`
+   * (e.g. restored from browser storage on a replayed turn). A vote needs
+   * `onFeedback`; `null` means no vote.
+   */
+  initialFeedback?: FeedbackValue;
 }
 
 export interface TranscriptNoticeOptions {
@@ -126,7 +132,12 @@ export function mountTranscript(
     return { row, text };
   };
 
-  const renderView = (slot: HTMLElement, view: TurnView, turnRef: string | undefined): void => {
+  const renderView = (
+    slot: HTMLElement,
+    view: TurnView,
+    turnRef: string | undefined,
+    initialFeedback: FeedbackValue | undefined,
+  ): void => {
     switch (view.status) {
       case "idle":
         slot.replaceChildren();
@@ -142,7 +153,13 @@ export function mountTranscript(
       case "final": {
         const feedback =
           options.onFeedback !== undefined && turnRef !== undefined
-            ? { feedback: { turnRef, onChange: options.onFeedback } }
+            ? {
+                feedback: {
+                  turnRef,
+                  onChange: options.onFeedback,
+                  ...(initialFeedback === undefined ? {} : { initial: initialFeedback }),
+                },
+              }
             : {};
         slot.removeAttribute("aria-busy");
         try {
@@ -185,6 +202,24 @@ export function mountTranscript(
       if (options.onFeedback !== undefined && turnRef === undefined) {
         throw new TypeError("addBotTurn() needs a turnRef when onFeedback is set.");
       }
+      const initialFeedback = turnOptions.initialFeedback;
+      if (
+        initialFeedback !== undefined &&
+        initialFeedback !== null &&
+        initialFeedback !== 1 &&
+        initialFeedback !== -1
+      ) {
+        throw new RangeError(
+          `initialFeedback must be 1, -1 or null (got ${String(initialFeedback)}).`,
+        );
+      }
+      if (
+        initialFeedback !== undefined &&
+        initialFeedback !== null &&
+        options.onFeedback === undefined
+      ) {
+        throw new TypeError("initialFeedback needs onFeedback (no marks render without it).");
+      }
       const turn = new AnswerTurn({
         earlyDisplay: options.earlyDisplay === true,
         ...(options.onWarn === undefined ? {} : { onWarn: options.onWarn }),
@@ -193,7 +228,7 @@ export function mountTranscript(
       appendTurn(row);
       const unsubscribe = turn.subscribe((view) => {
         try {
-          renderView(text, view, turnRef);
+          renderView(text, view, turnRef, initialFeedback);
         } finally {
           scrollToEnd();
           if (view.status === "final" || view.status === "error") detach();
