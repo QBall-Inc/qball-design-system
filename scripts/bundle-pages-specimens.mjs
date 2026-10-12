@@ -26,6 +26,7 @@ const SPECIMENS = [
   { name: "verdict-stamp", entry: "specimens/verdict-stamp.entry.mjs" },
   { name: "qubae-launcher", entry: "specimens/qubae-launcher.entry.mjs" },
   { name: "qubae-answers", entry: "specimens/qubae-answers.entry.mjs" },
+  { name: "graph-canvas", entry: "specimens/graph-canvas.entry.mjs" },
 ];
 
 if (!existsSync(ELEMENTS_DIST)) {

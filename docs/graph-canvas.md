@@ -2,7 +2,7 @@
 title: Knowledge-graph canvas — GraphCanvas
 package: "@qball-inc/elements/graph"
 tokens_source: "@qball-inc/tokens (colors_and_type.css: --stage-*; graph.css: .graphcanvas, .gc-*)"
-preview: preview/graph-canvas.html (lands with the browser test layer)
+preview: preview/graph-canvas.html
 ---
 
 # Knowledge-graph canvas
@@ -188,6 +188,15 @@ flag-off build, ships no graph code.
   seeded layout; Esc scoped to the canvas instead of `window`; colours and label
   styling from tokens instead of literals and inline styles; DOM built without
   `innerHTML`; on-demand rendering that pauses when hidden; typed failures.
-- **Visual fidelity**: the side-by-side comparison against the prototype (fixed
-  camera, the port's settled positions injected into both) and owner sign-off
-  are recorded here when the browser test layer lands.
+- **Visual fidelity** (owner signed off, 2026-10-11): the prototype (three
+  r152) and the port (three 0.186) rendered the full mock bundle side by side,
+  from the same precomputed positions and default camera at 900 × 600, with the
+  vetted product-page colour pins on the prototype. Four states (idle, a
+  selection, a hub selection, a class filter) were compared. The WebGL drawing
+  is pixel-identical in all four (perceptual diff: 0 differing pixels, SSIM
+  1.0). With the DOM overlay included, SSIM is 0.99 or higher, and every
+  differing pixel is in the status line, which uses the locked strings (no
+  thousands separators) where the prototype formatted numbers with commas.
+- **Browser tests**: `e2e/graph-canvas.spec.ts` (shader compile, edge-class
+  colours, click / hover / Esc / orbit / pan / wheel / node drag, tap, pinch)
+  and `e2e/graph-canvas-states.spec.ts` (every state and the lifecycle).
