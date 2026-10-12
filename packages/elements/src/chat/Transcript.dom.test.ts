@@ -266,6 +266,58 @@ describe("feedback", () => {
     turn.finalize(finalOf("grounded"));
     expect(plain.container.querySelector(".qfb")).toBeNull();
   });
+
+  function restoredTurn(initialFeedback: 1 | -1 | null) {
+    const changes: unknown[] = [];
+    const transcript = bare({ onFeedback: (change) => changes.push(change) });
+    const turn = transcript.addBotTurn({ turnRef: "turn-3", initialFeedback });
+    turn.start();
+    turn.finalize(finalOf("grounded"));
+    const pressed = (selector: string) =>
+      transcript.container.querySelector(selector)?.getAttribute("aria-pressed");
+    const click = (selector: string) => {
+      transcript.container.querySelector<HTMLButtonElement>(selector)?.click();
+    };
+    return { changes, pressed, click };
+  }
+
+  it("restores an earlier +1 or −1 as pressed without reporting a change", () => {
+    const up = restoredTurn(1);
+    expect([up.pressed(".qfb__up"), up.pressed(".qfb__down")]).toEqual(["true", "false"]);
+    expect(up.changes).toEqual([]);
+    const down = restoredTurn(-1);
+    expect([down.pressed(".qfb__up"), down.pressed(".qfb__down")]).toEqual(["false", "true"]);
+    expect(down.changes).toEqual([]);
+    const none = restoredTurn(null);
+    expect([none.pressed(".qfb__up"), none.pressed(".qfb__down")]).toEqual(["false", "false"]);
+    expect(none.changes).toEqual([]);
+  });
+
+  it("toggles from the restored vote exactly as from a live one", () => {
+    const turn = restoredTurn(1);
+    turn.click(".qfb__up");
+    expect(turn.changes).toEqual([{ value: null, turnRef: "turn-3" }]);
+    expect(turn.pressed(".qfb__up")).toBe("false");
+    turn.click(".qfb__down");
+    expect(turn.changes.at(-1)).toEqual({ value: -1, turnRef: "turn-3" });
+    expect(turn.pressed(".qfb__down")).toBe("true");
+  });
+
+  it("rejects a bad initialFeedback when the turn is added, not at render", () => {
+    const withFeedback = bare({ onFeedback: () => undefined });
+    const bad = 2 as unknown as 1;
+    expect(() => withFeedback.addBotTurn({ turnRef: "t", initialFeedback: bad })).toThrow(
+      new RangeError("initialFeedback must be 1, -1 or null (got 2)."),
+    );
+    expect(withFeedback.container.children).toHaveLength(0);
+    expect(() => bare().addBotTurn({ turnRef: "t", initialFeedback: 1 })).toThrow(
+      "initialFeedback needs onFeedback (no marks render without it).",
+    );
+    const noVote = bare().addBotTurn({ turnRef: "t", initialFeedback: null });
+    noVote.start();
+    noVote.finalize(finalOf("grounded"));
+    expect(document.querySelector(".qfb")).toBeNull();
+  });
 });
 
 describe("hostile payloads stay inert text", () => {
