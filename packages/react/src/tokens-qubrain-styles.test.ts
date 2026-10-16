@@ -170,8 +170,13 @@ describe("new styles are token-driven and self-contained", () => {
 
   it("sizes every new text via --text-scale (the chat launcher keeps its fluid clamp)", () => {
     const sizes = [...newCss.matchAll(/font-size:([^;}]+)/g)].map((m) => m[1] ?? "");
+    // One floored size: the phone composer stays >= 16px (iOS zooms on smaller inputs).
+    const composerFloor = "max(16px,calc(16px * var(--text-scale, 1)))";
     const unscaled = sizes.filter(
-      (s) => !/^calc\([\d.]+px \* var\(--text-scale, 1\)\)$/.test(s) && !s.startsWith("clamp("),
+      (s) =>
+        !/^calc\([\d.]+px \* var\(--text-scale, 1\)\)$/.test(s) &&
+        !s.startsWith("clamp(") &&
+        s !== composerFloor,
     );
     // Anti-vacuous guard: the port carries ~55 sized rules; a broken regex that
     // matched nothing would otherwise pass the "no unscaled sizes" check below.
@@ -181,8 +186,9 @@ describe("new styles are token-driven and self-contained", () => {
       ".claim .badge,.epanel .badge{font-size:calc(11px * var(--text-scale, 1))}",
     );
     expect(addedCss).toContain(
-      ".qlaunch__cap{display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:clamp(9.5px,.6vw,11px)",
+      ".qlaunch__cap{display:flex;align-items:center;gap:5px;padding:2px 6px;border-radius:var(--radius-sm);background:var(--bg-primary);font-family:var(--font-ui);font-size:clamp(9.5px,.6vw,11px)",
     );
+    expect(addedCss).toContain(`.qpanel .qpanel__input{font-size:${composerFloor}}`);
   });
 
   it("gives every new animation and slide a prefers-reduced-motion fallback", () => {

@@ -537,3 +537,175 @@ describe("destroy", () => {
     expect(document.body.style.overflow).toBe("");
   });
 });
+
+describe("focus return after close", () => {
+  const openWithQ = (from: HTMLElement): void => {
+    from.focus();
+    pressKey(from, { key: "q" });
+  };
+
+  it("returns focus to the element focused before a Q-hotkey open", () => {
+    const handle = mountIn();
+    openWithQ(byId("other"));
+    expect(handle.isOpen()).toBe(true);
+    pressKey(input(handle), { key: "Escape" });
+    expect(document.activeElement).toBe(byId("other"));
+  });
+
+  it.each([
+    ["removed while open", (node: HTMLButtonElement) => node.remove()],
+    ["disabled while open", (node: HTMLButtonElement) => (node.disabled = true)],
+  ])("falls back to the launcher when that element was %s", (_, change) => {
+    const handle = mountIn();
+    const other = byId<HTMLButtonElement>("other");
+    openWithQ(other);
+    change(other);
+    handle.close();
+    expect(document.activeElement).toBe(handle.launcher);
+  });
+
+  it("falls back to the launcher when nothing was focused before the Q open", () => {
+    const handle = mountIn();
+    pressKey(document.body, { key: "q" });
+    handle.close();
+    expect(document.activeElement).toBe(handle.launcher);
+  });
+
+  it("returns to the launcher after a launcher or programmatic open, even following an earlier Q open", () => {
+    const handle = mountIn();
+    openWithQ(byId("other"));
+    handle.close();
+    byId("other").focus();
+    handle.open();
+    handle.close();
+    expect(document.activeElement).toBe(handle.launcher);
+  });
+});
+
+// jsdom does not read the `focusVisible` focus option, so it takes the
+// fallback path: a temporary inline outline suppression on the focused element.
+describe("ring-free focus return (fallback path)", () => {
+  const outline = (node: HTMLElement): [string, string] => [
+    node.style.getPropertyValue("outline"),
+    node.style.getPropertyPriority("outline"),
+  ];
+
+  it("precondition: this jsdom does not read the focusVisible option (fallback path runs)", () => {
+    let read = false;
+    byId("other").focus({
+      get focusVisible(): boolean {
+        read = true;
+        return false;
+      },
+    } as FocusOptions);
+    expect(read).toBe(false);
+  });
+
+  it("suppresses the outline on the returned element until the next Tab", () => {
+    const handle = mountIn();
+    handle.open();
+    handle.close();
+    expect(document.activeElement).toBe(handle.launcher);
+    expect(outline(handle.launcher)).toEqual(["none", "important"]);
+    pressKey(document.body, { key: "Shift", shiftKey: true });
+    expect(outline(handle.launcher)).toEqual(["none", "important"]);
+    pressKey(handle.launcher, { key: "Tab" });
+    expect(outline(handle.launcher)).toEqual(["", ""]);
+  });
+
+  it("clears the suppression on blur and restores a prior inline outline", () => {
+    const other = byId("other");
+    other.style.outline = "3px dotted red";
+    const handle = mountIn();
+    other.focus();
+    pressKey(other, { key: "q" });
+    pressKey(input(handle), { key: "Escape" });
+    expect(document.activeElement).toBe(other);
+    expect(outline(other)).toEqual(["none", "important"]);
+    other.blur();
+    expect(outline(other)).toEqual(["3px dotted red", ""]);
+  });
+
+  it("destroy clears a pending suppression", () => {
+    const other = byId("other");
+    const handle = mountIn();
+    other.focus();
+    pressKey(other, { key: "q" });
+    handle.close();
+    expect(outline(other)).toEqual(["none", "important"]);
+    handle.destroy();
+    expect(outline(other)).toEqual(["", ""]);
+  });
+});
+
+describe("visual-viewport pin", () => {
+  class FakeViewport extends EventTarget {
+    offsetTop = 0;
+    offsetLeft = 0;
+    width = 390;
+    height = 800;
+    move(next: Partial<Pick<FakeViewport, "offsetTop" | "height">>, type: string): void {
+      Object.assign(this, next);
+      this.dispatchEvent(new Event(type));
+    }
+  }
+  let viewport: FakeViewport;
+
+  beforeEach(() => {
+    viewport = new FakeViewport();
+    Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
+  });
+  afterEach(() => {
+    Reflect.deleteProperty(window, "visualViewport");
+  });
+
+  const box = (h: ChatHandle) => {
+    const { top, left, right, bottom, width, height } = h.overlay.style;
+    return { top, left, right, bottom, width, height };
+  };
+
+  it("pins the open overlay to the visual viewport and follows its resize and scroll", () => {
+    const handle = mountIn();
+    expect(box(handle).height).toBe("");
+    handle.open();
+    expect(box(handle)).toEqual({
+      top: "0px",
+      left: "0px",
+      right: "auto",
+      bottom: "auto",
+      width: "390px",
+      height: "800px",
+    });
+    viewport.move({ height: 420 }, "resize");
+    expect(box(handle).height).toBe("420px");
+    viewport.move({ offsetTop: 150 }, "scroll");
+    expect(box(handle).top).toBe("150px");
+  });
+
+  it("releases on close: inline geometry restored, later viewport changes ignored", () => {
+    const handle = mountIn();
+    handle.overlay.style.zIndex = "90";
+    handle.open();
+    handle.close();
+    expect(handle.overlay.style.cssText).toBe("z-index: 90;");
+    viewport.move({ height: 300, offsetTop: 40 }, "resize");
+    viewport.move({ offsetTop: 60 }, "scroll");
+    expect(box(handle).height).toBe("");
+    expect(box(handle).top).toBe("");
+  });
+
+  it("releases on destroy while open", () => {
+    const handle = mountIn();
+    handle.open();
+    handle.destroy();
+    viewport.move({ height: 300 }, "resize");
+    expect(box(handle).height).toBe("");
+  });
+
+  it("leaves the CSS geometry alone when visualViewport is absent", () => {
+    Reflect.deleteProperty(window, "visualViewport");
+    const handle = mountIn();
+    handle.open();
+    expect(handle.overlay.style.cssText).toBe("");
+  });
+});

@@ -38,19 +38,19 @@ Load `components.css` from `@qball-inc/tokens` (and `graph.css` if you use
 `host` is the element the launcher and overlay are appended into, usually
 `document.body`. Events are dispatched on `host`.
 
-| Option           | Type                      | Default                     | Notes                                                                                                                              |
-| ---------------- | ------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `title`          | `string`                  | `assistant`                 | Panel title and the dialog's accessible name.                                                                                      |
-| `hint`           | `string`                  | `ask`                       | Launcher caption before the `Q` keycap (hidden under 720px).                                                                       |
-| `placeholder`    | `string`                  | `ask a question…`           | Composer placeholder.                                                                                                              |
-| `disclaimer`     | `string`                  | `""`                        | Line under the composer. The DS ships none; the site supplies its own.                                                             |
-| `label`          | `string`                  | `open <title> — or press Q` | Launcher accessible name.                                                                                                          |
-| `mascot`         | `() => Element`           | the built-in mascot         | Factory, called for the launcher and the panel head. Build the node yourself; markup strings are not accepted.                     |
-| `variant`        | `"corner" \| "post-page"` | `"corner"`                  | `post-page` moves the launcher bottom-left under 720px (`.qlaunch--post`), for pages whose bottom-right corner holds other chrome. |
-| `onStage`        | `boolean`                 | `false`                     | Light launcher ink over the dark graph stage (`.qlaunch--on-stage`, needs `graph.css`).                                            |
-| `hotkey`         | `boolean`                 | `true`                      | Open on Q. Turn off for extra display-only mounts (Esc still closes an open overlay).                                              |
-| `suppressHotkey` | `() => boolean`           | —                           | Return `true` to ignore Q, e.g. while one of your own dialogs is open.                                                             |
-| `onAsk`          | `(text, handle) => void`  | —                           | Called after the `ask` event for every submitted question.                                                                         |
+| Option           | Type                      | Default                     | Notes                                                                                                                                |
+| ---------------- | ------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `title`          | `string`                  | `assistant`                 | Panel title and the dialog's accessible name.                                                                                        |
+| `hint`           | `string`                  | `ask`                       | Launcher caption before the `Q` keycap (hidden under 720px).                                                                         |
+| `placeholder`    | `string`                  | `ask a question…`           | Composer placeholder.                                                                                                                |
+| `disclaimer`     | `string`                  | `""`                        | Line under the composer. The DS ships none; the site supplies its own.                                                               |
+| `label`          | `string`                  | `open <title> — or press Q` | Launcher accessible name.                                                                                                            |
+| `mascot`         | `() => Element`           | the built-in mascot         | Factory, called for the launcher and the panel head. Build the node yourself; markup strings are not accepted.                       |
+| `variant`        | `"corner" \| "post-page"` | `"corner"`                  | `post-page` puts the launcher bottom-left at every width (`.qlaunch--post`), for pages whose bottom-right corner holds other chrome. |
+| `onStage`        | `boolean`                 | `false`                     | Light launcher ink over the dark graph stage (`.qlaunch--on-stage`, needs `graph.css`).                                              |
+| `hotkey`         | `boolean`                 | `true`                      | Open on Q. Turn off for extra display-only mounts (Esc still closes an open overlay).                                                |
+| `suppressHotkey` | `() => boolean`           | —                           | Return `true` to ignore Q, e.g. while one of your own dialogs is open.                                                               |
+| `onAsk`          | `(text, handle) => void`  | —                           | Called after the `ask` event for every submitted question.                                                                           |
 
 Invalid options throw at mount: a non-string copy option, an unknown
 `variant`, a `mascot` that is not a function or does not return an `Element`.
@@ -108,8 +108,14 @@ reader cleared their mark.
   inside the panel.
 - Everything else on the page is made `inert` and body scroll is locked. This
   works wherever `host` sits in the page.
-- On close, the exact prior state is restored and focus returns to the
-  launcher (unless it is hidden).
+- On close, the exact prior state is restored. If the overlay was opened with
+  **Q**, focus returns to the element that had it before (when that element is
+  still on the page and focusable); otherwise it returns to the launcher
+  (unless the launcher is hidden).
+- The element that receives focus on close shows **no focus ring**; the ring
+  comes back when the visitor next presses Tab. Browsers that support the
+  `focusVisible: false` focus option use it; elsewhere a temporary inline
+  `outline: none` sits on that one element until its blur or the next Tab.
 
 ## Motion
 
@@ -124,12 +130,30 @@ Owned by the tokens CSS; the JS has no motion logic.
 
 ## Geometry
 
-- **Desktop.** The panel is `min(460px, 100vw − 36px)` × `min(600px, 100vh − 32px)`
-  (content box, plus its 1px frame), placed 18px from the right and 16px from
-  the bottom.
+- **Visible viewport.** While open, the overlay is pinned to
+  `window.visualViewport` (the part of the page actually on screen) and follows
+  its `resize` and `scroll`, so an on-screen keyboard shrinks the overlay
+  instead of covering it: the header stays at the top and the composer sits
+  just above the keyboard. The pin is released on close and destroy. Without
+  `visualViewport` the CSS geometry below applies to the full viewport. No
+  viewport-meta change is needed on the site.
+- **Desktop.** The panel is `min(460px, 100% − 36px)` × `min(600px, 100% − 32px)`
+  of the overlay (content box, plus its 1px frame), placed 18px from the right
+  and 16px from the bottom.
 - **720px and narrower.** The panel spans the full width with equal 12px
-  gutters and a height that accounts for `100dvh`.
-- **Launcher.** Its size and corner offsets scale with `clamp()`.
+  gutters, `min(720px, 100% − 24px)` tall.
+- **Launcher.** Its size and corner offsets scale with `clamp()`. The caption
+  sits on a small patch of the page colour (the stage colour for `onStage`), so
+  it stays legible over any page content.
+
+## Phone type
+
+At 720px and narrower the panel's type is larger: conversation and prompts
+14px, verdict row, feedback, sources and footer 11.5–12px, disclaimer 11px,
+title 13px, all still multiplied by `--text-scale`. The prompt column widens
+with them. The composer is at least 16px there and on any touch screen
+(`pointer: coarse`, e.g. a phone held sideways), because iOS Safari zooms the
+page when an input under 16px takes focus.
 
 ## DESIGN.md carve-outs
 

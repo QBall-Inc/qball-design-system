@@ -6,7 +6,20 @@
 // focus in the composer while open, and answer through a transcript inside the
 // overlay whose streamed drafts never reach the page. Hostile persona copy and
 // hostile answer data stay inert, with a positive control proving they would fire.
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
+
+const FIXTURE_DIR = fileURLToPath(new URL("..", import.meta.url));
+const AXE = join(FIXTURE_DIR, "node_modules", "axe-core", "axe.min.js");
+
+/** The slice of the injected axe-core API the caption check uses. */
+interface AxeCaptionApi {
+  run(
+    context: Element,
+    options: { runOnly: string[] },
+  ): Promise<Record<"violations" | "incomplete" | "passes", { nodes: { target: string[] }[] }[]>>;
+}
 
 interface ChatRun {
   name: string;
@@ -154,6 +167,41 @@ for (const spec of PAGES) {
       await page.locator(".qpanel__esc .keycap").click();
       await expect(overlay(page)).toBeHidden();
     });
+
+    // The caption sits on its own page-colour patch, so it passes AA whatever
+    // page content ends up behind the fixed launcher: a backdrop in the page's
+    // ink colour (dark on a light page, light on a dark one) and one in the
+    // page colour. Desktop width: the caption is hidden at <=720px.
+    for (const backdrop of ["--text-primary", "--bg-primary"] as const) {
+      test(`the launcher caption meets AA over ${backdrop} page content (axe)`, async ({
+        page,
+      }) => {
+        await openPage(page, spec.path);
+        await page.evaluate((ink) => {
+          const block = document.createElement("div");
+          block.id = "backdrop";
+          block.style.cssText = `position:fixed;left:0;right:0;bottom:0;height:240px;z-index:1;background:var(${ink})`;
+          document.body.append(block);
+        }, backdrop);
+        await expect(page.locator(".qlaunch__cap")).toBeVisible();
+        await page.addScriptTag({ path: AXE });
+        const result = await page.evaluate(async () => {
+          const axe = (window as unknown as { axe: AxeCaptionApi }).axe;
+          const caption = document.querySelector(".qlaunch__cap");
+          if (caption === null) throw new Error("caption missing");
+          const r = await axe.run(caption, { runOnly: ["color-contrast"] });
+          const count = (items: typeof r.passes) => items.reduce((n, v) => n + v.nodes.length, 0);
+          return {
+            violations: count(r.violations),
+            incomplete: count(r.incomplete),
+            passes: count(r.passes),
+          };
+        });
+        // Anti-vacuous: axe measured the caption text and decided it passes.
+        expect(result).toEqual({ violations: 0, incomplete: 0, passes: expect.any(Number) });
+        expect(result.passes).toBeGreaterThan(0);
+      });
+    }
 
     test("answers render in the overlay; streamed drafts never reach the page", async ({
       page,

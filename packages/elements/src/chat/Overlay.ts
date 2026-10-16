@@ -122,6 +122,81 @@ export function trapTab(root: HTMLElement, event: KeyboardEvent): boolean {
 }
 
 /**
+ * Pins `root` (a position:fixed layer) to the visual viewport — the part of the
+ * page actually on screen. Mobile browsers keep the layout viewport full height
+ * when the on-screen keyboard opens; tracking the visual viewport keeps the
+ * layer inside what the visitor can see. Updates on the viewport's resize and
+ * scroll. Without `visualViewport` it does nothing and the CSS geometry
+ * governs. Returns the release function, which removes the listeners and
+ * restores the prior inline style.
+ */
+export function pinToVisualViewport(root: HTMLElement): () => void {
+  const viewport = root.ownerDocument.defaultView?.visualViewport;
+  if (viewport === undefined || viewport === null) return () => {};
+  const previousStyle = root.style.cssText;
+  const place = (): void => {
+    const { style } = root;
+    style.top = `${viewport.offsetTop}px`;
+    style.left = `${viewport.offsetLeft}px`;
+    style.right = "auto";
+    style.bottom = "auto";
+    style.width = `${viewport.width}px`;
+    style.height = `${viewport.height}px`;
+  };
+  place();
+  viewport.addEventListener("resize", place);
+  viewport.addEventListener("scroll", place);
+  return () => {
+    viewport.removeEventListener("resize", place);
+    viewport.removeEventListener("scroll", place);
+    root.style.cssText = previousStyle;
+  };
+}
+
+/**
+ * Focuses `node` without a keyboard-focus ring; the ring comes back when the
+ * visitor next presses Tab. Uses the `focusVisible: false` focus option where
+ * the browser supports it (detected by whether it reads the option), else a
+ * temporary inline `outline: none` on `node` alone, cleared on its blur or the
+ * next Tab. Returns null when focus did not land on `node` (detached, hidden,
+ * not focusable), else a function that clears any pending suppression.
+ */
+export function focusWithoutRing(node: HTMLElement): (() => void) | null {
+  let native = false;
+  // `focusVisible` is newer than the TypeScript DOM lib's FocusOptions.
+  const options: FocusOptions & { readonly focusVisible: boolean } = {
+    get focusVisible(): boolean {
+      native = true;
+      return false;
+    },
+  };
+  node.focus(options);
+  const doc = node.ownerDocument;
+  if (doc.activeElement !== node) return null;
+  if (native) return () => {};
+
+  const { style } = node;
+  const previousValue = style.getPropertyValue("outline");
+  const previousPriority = style.getPropertyPriority("outline");
+  style.setProperty("outline", "none", "important");
+  let cleared = false;
+  const clear = (): void => {
+    if (cleared) return;
+    cleared = true;
+    node.removeEventListener("blur", clear);
+    doc.removeEventListener("keydown", onKey, true);
+    if (previousValue === "") style.removeProperty("outline");
+    else style.setProperty("outline", previousValue, previousPriority);
+  };
+  const onKey = (event: KeyboardEvent): void => {
+    if (event.key === "Tab") clear();
+  };
+  node.addEventListener("blur", clear);
+  doc.addEventListener("keydown", onKey, true);
+  return clear;
+}
+
+/**
  * Makes everything on the page except `keep` inert and locks body scroll.
  * Walks from `keep` up to <body>, marking each ancestor's siblings inert, so
  * it works wherever the overlay is mounted. Returns the release function,

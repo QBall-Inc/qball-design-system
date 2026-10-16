@@ -11,7 +11,15 @@ import {
   setLauncherHidden,
   type LauncherVariant,
 } from "./Launcher";
-import { autoGrow, lockBackground, renderOverlay, setComposerState, trapTab } from "./Overlay";
+import {
+  autoGrow,
+  focusWithoutRing,
+  lockBackground,
+  pinToVisualViewport,
+  renderOverlay,
+  setComposerState,
+  trapTab,
+} from "./Overlay";
 
 export interface ChatMountOptions {
   /** Panel title and dialog name (default `assistant`). */
@@ -141,22 +149,36 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
   let opened = false;
   let destroyed = false;
   let release: (() => void) | null = null;
+  let unpin: (() => void) | null = null;
+  let clearRing: (() => void) | null = null;
+  // Where focus goes back to on close: the element focused before a Q-hotkey
+  // open; null for launcher and programmatic opens (focus returns to the launcher).
+  let returnTo: HTMLElement | null = null;
 
   const emit = <K extends ChatEventType>(type: K, detail: ChatEventMap[K]["detail"]): void => {
     host.dispatchEvent(new CustomEvent(type, { detail }));
   };
 
-  const open = (): void => {
+  const openFrom = (previous: Element | null): void => {
     if (opened || destroyed) return;
     opened = true;
+    returnTo =
+      previous instanceof HTMLElement && previous !== doc.body && !overlay.contains(previous)
+        ? previous
+        : null;
+    clearRing?.();
+    clearRing = null;
     overlay.classList.add("open");
     launcher.setAttribute("aria-expanded", "true");
     release = lockBackground(overlay);
+    // Pin before focusing: on a phone the keyboard (and its viewport resize) follows the focus.
+    unpin = pinToVisualViewport(overlay);
     // A disabled composer cannot take focus; keep it inside the dialog.
     if (input.disabled) parts.closeButton.focus();
     else input.focus();
     emit("open", {});
   };
+  const open = (): void => openFrom(null);
 
   const close = (): void => {
     if (!opened || destroyed) return;
@@ -165,7 +187,15 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
     launcher.setAttribute("aria-expanded", "false");
     release?.();
     release = null;
-    if (!launcher.hidden) launcher.focus();
+    unpin?.();
+    unpin = null;
+    // The page is interactive again; return focus without a ring (it comes
+    // back on the next Tab). A restore target that is gone or unfocusable
+    // falls back to the launcher.
+    const target = returnTo;
+    returnTo = null;
+    clearRing = target !== null && target.isConnected ? focusWithoutRing(target) : null;
+    if (clearRing === null && !launcher.hidden) clearRing = focusWithoutRing(launcher);
     emit("close", {});
   };
 
@@ -197,6 +227,11 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
       doc.removeEventListener("keydown", onDocumentKey);
       release?.();
       release = null;
+      unpin?.();
+      unpin = null;
+      clearRing?.();
+      clearRing = null;
+      returnTo = null;
       opened = false;
       destroyed = true;
       launcher.remove();
@@ -223,7 +258,7 @@ export function mount(host: HTMLElement, options: ChatMountOptions = {}): ChatHa
     if (!hotkey || !isOpenHotkey(event)) return;
     if (suppress?.() === true) return;
     event.preventDefault();
-    open();
+    openFrom(doc.activeElement);
   };
   doc.addEventListener("keydown", onDocumentKey);
 
