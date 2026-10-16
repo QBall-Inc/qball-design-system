@@ -191,6 +191,11 @@ surfaces it sits on: page, card and the tinted answer boxes.
 - Small grey text (dates, validity, footer, struck superseded claims, tier words, panel
   title and launcher caption) uses `--text-secondary`. `--text-muted` is below AA at these
   sizes, so the atoms no longer use it. Its value is unchanged for other consumers.
+- The launcher caption floats over whatever page content is behind the fixed launcher, so
+  it sits on its own opaque patch (`--bg-primary`; `--stage-bg` for the on-stage variant)
+  and meets AA regardless of what is behind it.
+- At 720px and narrower the panel's chat type is larger (see `docs/chat-launcher.md`,
+  Phone type); the colours are the same.
 - Green, amber and gold text on tinted surfaces uses a component-scoped deeper ink:
   `color-mix(in srgb, <brand> 72%, var(--text-primary))` (60% for the medium-confidence
   gold). The mix darkens the ink in light themes and lightens it in dark themes. The brand

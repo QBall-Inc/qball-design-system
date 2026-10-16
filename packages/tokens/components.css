@@ -1312,19 +1312,24 @@ a.claim__src:hover{color:var(--color-signal)}
 .qlaunch:hover{color:var(--color-signal)}
 .qlaunch .qbmark{width:clamp(40px,2.6vw,56px);height:clamp(44px,2.86vw,62px);position:relative}
 .qlaunch__dot{position:absolute;right:-2px;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--color-highlight);animation:qb-pulse 2.4s var(--ease-in-out) infinite}
-.qlaunch__cap{display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:clamp(9.5px,.6vw,11px);letter-spacing:.6px;color:var(--text-secondary)}
+/* the caption sits on a small page-colour patch so it stays legible over any page content */
+.qlaunch__cap{display:flex;align-items:center;gap:5px;padding:2px 6px;border-radius:var(--radius-sm);background:var(--bg-primary);font-family:var(--font-ui);font-size:clamp(9.5px,.6vw,11px);letter-spacing:.6px;color:var(--text-secondary)}
+/* post-page variant: bottom-left at every width (the page's bottom chrome owns the right corner) */
+.qlaunch--post{left:clamp(20px,1.6vw,44px);right:auto}
 @keyframes qb-pulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.qlaunch__dot{animation:none;opacity:.8}}
 
-/* overlay — scrim + corner-lifted portrait panel */
+/* overlay — scrim + corner-lifted portrait panel. While open, the script pins
+   .qoverlay to the visible viewport (so an on-screen keyboard shrinks it); the
+   panel sizes from the overlay, never from 100vh/100dvh. */
 .qoverlay{position:fixed;inset:0;z-index:70;visibility:hidden}
 .qoverlay.open{visibility:visible}
 .qoverlay__scrim{position:absolute;inset:0;background:var(--color-scrim-light);opacity:0;transition:opacity var(--dur-base) var(--ease-out)}
 .qoverlay.open .qoverlay__scrim{opacity:1}
-.qpanel{position:absolute;right:18px;bottom:16px;width:min(460px,calc(100vw - 36px));height:min(600px,calc(100vh - 32px));display:flex;flex-direction:column;background:var(--bg-primary);border:1px solid var(--border-strong);border-radius:var(--radius-lg);box-shadow:0 18px 48px rgba(20,20,20,.18);opacity:0;transform:translateY(14px);transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out)}
+.qpanel{position:absolute;right:18px;bottom:16px;width:min(460px,calc(100% - 36px));height:min(600px,calc(100% - 32px));display:flex;flex-direction:column;background:var(--bg-primary);border:1px solid var(--border-strong);border-radius:var(--radius-lg);box-shadow:0 18px 48px rgba(20,20,20,.18);opacity:0;transform:translateY(14px);transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out)}
 .qoverlay.open .qpanel{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.qpanel{transform:none}.qoverlay__scrim{transition:none}}
-@media (max-width:720px){.qpanel{left:12px;right:12px;bottom:12px;width:auto;box-sizing:border-box;height:calc(100vh - 24px);height:min(720px,calc(100dvh - 24px))}}
+@media (max-width:720px){.qpanel{left:12px;right:12px;bottom:12px;width:auto;box-sizing:border-box;height:min(720px,calc(100% - 24px))}}
 .qpanel__head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:.5px solid var(--border-default);font-family:var(--font-ui)}
 .qpanel__head .qbmark{width:20px;height:22px}
 .qpanel__title{font-size:calc(11.5px * var(--text-scale, 1));color:var(--text-secondary);letter-spacing:.5px}
@@ -1391,6 +1396,25 @@ a.claim__src:hover{color:var(--color-signal)}
 /* launcher — compact corner variant for long-form pages whose bottom chrome owns the corner */
 @media (max-width:720px){.qlaunch__cap{display:none}.qlaunch{right:16px;bottom:16px}}
 @media (max-width:720px){.qlaunch--post{left:16px;right:auto;bottom:16px}.qlaunch--post .qbmark{width:34px;height:37px}}
+
+/* phone type scale — the panel reads at arm's length. The composer never drops
+   below 16px: iOS Safari zooms the page when an input under 16px takes focus.
+   The prompt column widens with the type so `qubae ›` stays on one line. */
+@media (max-width:720px){
+.qpanel .qpanel__title{font-size:calc(13px * var(--text-scale, 1))}
+.qpanel .qpanel__body,.qpanel .qturn,.qpanel .qpanel__prompt{font-size:calc(14px * var(--text-scale, 1))}
+.qpanel .qpanel__input{font-size:max(16px,calc(16px * var(--text-scale, 1)))}
+.qpanel .qturn,.qpanel .qpanel__comp{grid-template-columns:calc(64px * var(--text-scale, 1)) minmax(0,1fr)}
+.qpanel .vstamp,.qpanel .vrow__exp,.qpanel .qfb,.qpanel .qcite,.qpanel .qclaim__lvl{font-size:calc(11.5px * var(--text-scale, 1))}
+.qpanel .qsrcline,.qpanel .qlink,.qpanel .provfoot{font-size:calc(12px * var(--text-scale, 1))}
+.qpanel .qclaim,.qpanel .claim .badge{font-size:calc(12.5px * var(--text-scale, 1))}
+.qpanel .qnotice,.qpanel .vbox table,.qpanel .vbox pre,.qpanel .vbox code{font-size:calc(13px * var(--text-scale, 1))}
+.qpanel .vrow__close{font-size:calc(13.5px * var(--text-scale, 1))}
+.qpanel .qpanel__disc{font-size:calc(11px * var(--text-scale, 1))}
+}
+/* touch screens wider than 720px (a phone held sideways, a tablet) keep the
+   desktop type but get the composer's 16px floor for the same iOS reason */
+@media (pointer:coarse){.qpanel .qpanel__input{font-size:max(16px,calc(16px * var(--text-scale, 1)))}}
 
 /* verdict row — provenance ticker when the explanation overflows; stamp shimmer until opened */
 .vrow__txt{flex:1;min-width:0;overflow:hidden;white-space:nowrap}.vtick{display:inline-flex}
