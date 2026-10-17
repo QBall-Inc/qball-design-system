@@ -4,6 +4,7 @@
 
 export * from "./prng";
 export * from "./sim";
+export * from "./layout";
 export * from "./scales";
 export * from "./neighbors";
 export * from "./labels";

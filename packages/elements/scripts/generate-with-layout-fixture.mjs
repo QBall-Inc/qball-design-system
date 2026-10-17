@@ -1,7 +1,7 @@
 // Generates fixtures/qubrain/mock-bundle.with-layout.json: the fixture of
-// record (mock-bundle.json, never modified) plus a `layout` computed by the
-// package's own seeded simulation. Deterministic: two runs write identical
-// bytes. Also prints the simulation's wall-clock time under plain Node (the
+// record (mock-bundle.json, never modified by this script) plus a `layout`
+// from the package's exported computeLayout (the canvas's seeded simulation).
+// Deterministic: two runs write identical bytes. Also prints the simulation's wall-clock time under plain Node (the
 // baseline recorded in docs/qubrain-graph-sim-baseline.md).
 //
 // The graph logic is TypeScript inside the package, so it is bundled to a
@@ -30,7 +30,7 @@ try {
     outfile: logicFile,
     logLevel: "warning",
   });
-  const { resolvePositions } = await import(pathToFileURL(logicFile).href);
+  const { computeLayout } = await import(pathToFileURL(logicFile).href);
 
   const bundle = JSON.parse(readFileSync(source, "utf8"));
   if (bundle.layout !== null) {
@@ -40,14 +40,9 @@ try {
   }
 
   const started = performance.now();
-  const { positions, source: from } = resolvePositions(bundle);
+  const layout = computeLayout(bundle);
   const elapsedMs = performance.now() - started;
-  if (from !== "simulated") throw new Error(`expected a simulated layout, got ${from}`);
 
-  const layout = {};
-  bundle.nodes.forEach((node, i) => {
-    layout[String(node.id)] = [positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]];
-  });
   const derived = {
     ...bundle,
     _note: `DERIVED by packages/elements/scripts/generate-with-layout-fixture.mjs from mock-bundle.json (layout = the package's seeded simulation for revision ${bundle.revision}). Do not edit by hand. Original note: ${bundle._note ?? "(none)"}`,

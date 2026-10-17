@@ -11,6 +11,9 @@ export const ENTRY = "graph" as const;
 
 export { loadThree } from "./three-loader";
 
+/** Precomputed layouts: run once server-side, ship in the bundle's `layout`. */
+export { LAYOUT_VERSION, computeLayout } from "./layout";
+
 /** The 3D knowledge-graph canvas. */
 export const GraphCanvas = Object.freeze({ mount });
 

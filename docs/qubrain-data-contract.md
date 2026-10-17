@@ -209,7 +209,11 @@ Rules for the adapter:
 ## Fixtures
 
 - `fixtures/qubrain/mock-bundle.json`: the skeleton-bundle fixture of record. It is
-  never edited.
+  not edited by hand. Its edge lists are sorted by `(a, b)`, the order the
+  production builder emits.
+- `fixtures/qubrain/mock-bundle.with-layout.json`: derived from the fixture of
+  record by `just elements-layout-fixture`, which adds `computeLayout`'s layout.
+  Regenerate it whenever the fixture of record or `LAYOUT_VERSION` changes.
 - `fixtures/qubrain/detail/*.json`: `ConnectionDetail` values in the input-model shape.
   They cover typed hops, superseded claims with and without their replacement,
   unavailable sources, and a co-mention hop.

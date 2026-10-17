@@ -12,9 +12,12 @@ worker levers are needed.
 | ---------- | -------------------------------------------------------------- | ---- | ---------------------------------------- |
 | 2026-10-02 | full mock: 3,294 nodes · 2,857 typed · 10,003 co-mention edges | 3    | 1,747 · 1,760 · 1,732 (median **1,747**) |
 
-- **What is timed:** `resolvePositions(bundle)` on `fixtures/qubrain/mock-bundle.json`
+- **What is timed:** the full simulation of `fixtures/qubrain/mock-bundle.json`
   (`layout: null`): building the simulation edges, seeding from the revision, and all
-  160 iterations. Loading and parsing the JSON is excluded.
+  160 iterations. Loading and parsing the JSON is excluded. The 2026-10-02 runs timed
+  `resolvePositions` on the fixture's original edge order. Since the edges were sorted by
+  `(a, b)` (2026-10-17), the script times `computeLayout`, which also validates the
+  bundle. One run at that change measured 1,728 ms.
 - **Machine:** desktop-class x86-64 (Intel Core i9-9900K, 8 cores / 16 threads), Linux
   under WSL2, Node v22.22.3, one run at a time, no throttling.
 - **How to reproduce:** `just elements-layout-fixture` prints `sim_ms=` for one run

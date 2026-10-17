@@ -60,6 +60,39 @@ picture.
 | `suppressKeys`   | none                 | Return `true` to make Esc do nothing, e.g. while one of your overlays is open.   |
 | `errorUi`        | `true`               | Render the error figure on failure. Pass `false` to show your own message.       |
 
+## Precomputed layouts: `computeLayout(bundle)` and `LAYOUT_VERSION`
+
+A bundle without a `layout` is not fully interactive until the live settle
+ends: hover, pick and node drag wait for it. On a full-size graph that takes
+seconds on mid-range hardware. To skip it, compute the layout once on a server
+and ship it in the bundle:
+
+```js
+import { computeLayout, LAYOUT_VERSION } from "@qball-inc/elements/graph";
+
+const layout = computeLayout(bundle); // { "<node id>": [x, y, z], ... }
+```
+
+- `computeLayout` runs the canvas's own simulation to completion, so the
+  result is exactly the picture the live settle would reach. It needs no DOM
+  and no three, so it runs in Node.
+- It reads only `revision`, the node ids and their order, and the edges. The
+  same inputs and the same `LAYOUT_VERSION` give the same bytes on the same
+  JavaScript engine (Node's V8). Run it in Node and store the result. Do not
+  expect a browser on another engine to reproduce it exactly. It always
+  simulates, ignoring any `layout` the bundle already carries.
+- It takes a valid `SkeletonBundle`, the same input `GraphCanvas.mount` takes.
+  That includes a `layout` field, which may be `null`. Map your backend's
+  payload into that shape first. An invalid bundle throws
+  `BundleValidationError`.
+- `LAYOUT_VERSION` changes only when the same bundle would lay out
+  differently, not on every release. Key a stored layout by `revision` plus
+  `LAYOUT_VERSION`, and recompute when either changes.
+- Before attaching a stored layout, check that it belongs to this bundle: same
+  revision and exactly the same node ids. If any node is missing from it, the
+  canvas ignores the layout and settles live, so a stale or partial layout is
+  never drawn.
+
 ## Handle
 
 | Member                  | Behaviour                                                                                                                                         |
