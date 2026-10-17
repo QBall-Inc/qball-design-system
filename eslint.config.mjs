@@ -95,7 +95,7 @@ export default defineConfig(
   // Gallery specimens + the staged-site browser gate run (or evaluate code) in
   // the browser: add browser globals on top of the plain-JS lane.
   {
-    files: ["specimens/**/*.mjs", "e2e-pages/**/*.mjs"],
+    files: ["specimens/**/*.mjs", "e2e-pages/**/*.mjs", "packages/elements/perf/**/*.mjs"],
     languageOptions: { globals: { ...globals.browser } },
   },
   // TypeScript files: type-aware rules via projectService (resolves the owning

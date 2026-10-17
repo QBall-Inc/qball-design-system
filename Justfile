@@ -123,3 +123,18 @@ release-dry-run:
 # simulation change and commit the result). Prints the node-env sim timing.
 elements-layout-fixture:
     node packages/elements/scripts/generate-with-layout-fixture.mjs
+
+# GraphCanvas performance measurement (docs/qubrain-graph-perf-protocol.md):
+# profiles P1 + P2, both bundles, in native Windows Chrome on the real GPU
+# driven over the DevTools Protocol from WSL. Refuses software-rendered runs.
+# Raw JSON -> packages/elements/perf-results/ (gitignored). Args: --runs N, --quick, --out FILE.
+qb-perf-measure *ARGS:
+    pnpm --filter "@qball-inc/elements" run build
+    node packages/elements/scripts/measure-canvas-perf.mjs {{ARGS}}
+
+# P3 phone page for the GraphCanvas performance protocol: one self-contained
+# HTML file (graph + perf sequence inline, both mock bundles, three from jsDelivr)
+# -> packages/elements/perf-results/graph-speed-check.html (gitignored).
+qb-perf-phone-page *ARGS:
+    pnpm --filter "@qball-inc/elements" run build
+    node packages/elements/scripts/build-perf-phone-page.mjs {{ARGS}}

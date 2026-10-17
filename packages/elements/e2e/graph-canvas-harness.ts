@@ -14,6 +14,7 @@ export const ORIGIN = "http://elements.test";
 const DIST = resolve(process.cwd(), "dist");
 const TOKENS = resolve(process.cwd(), "..", "tokens");
 const FIXTURES = resolve(process.cwd(), "..", "..", "fixtures", "qubrain");
+const PERF = resolve(process.cwd(), "perf");
 const THREE_BUILD_DIR = dirname(createRequire(import.meta.url).resolve("three"));
 
 /** The full mock bundle with precomputed positions: renders without a settle. */
@@ -101,6 +102,7 @@ function serveFrom(root: string, rest: string): string | null {
 
 const TYPES: Record<string, string> = {
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".map": "application/json",
@@ -124,6 +126,7 @@ export async function openHarness(p: Page, options: HarnessOptions = {}): Promis
       ["/dist/", DIST],
       ["/tokens/", TOKENS],
       ["/fixtures/", FIXTURES],
+      ["/perf/", PERF],
     ];
     for (const [prefix, root] of roots) {
       if (!pathname.startsWith(prefix)) continue;

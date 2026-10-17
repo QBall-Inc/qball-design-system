@@ -34,11 +34,11 @@ performance number.
 
 ## Targets
 
-| Metric                   | Target                                        | Gates on                                                                                         |
-| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Time to interactive      | ≤ 2.0 s on P2; ≤ 3.0 s on P3                  | the with-layout bundle. For the no-layout bundle it is reported only.                            |
-| Drag-rotation frame time | p95 ≤ 33 ms on P2 and P3; p50 ≤ 16.7 ms on P1 | both bundles. For the no-layout bundle it is measured during the live settle and again after it. |
-| Hover/pick latency       | p95 ≤ 50 ms on P2                             | both bundles, after the settle (hover is off while the canvas settles).                          |
+| Metric                   | Target                                                                                                | Gates on                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Time to interactive      | ≤ 2.0 s on P2; ≤ 3.0 s on P3                                                                          | the with-layout bundle. For the no-layout bundle it is reported only.                            |
+| Drag-rotation frame time | p95 ≤ 33 ms on P2 and P3; p50 on P1 within 1 ms of the run's idle frame interval (amended 2026-10-17) | both bundles. For the no-layout bundle it is measured during the live settle and again after it. |
+| Hover/pick latency       | p95 ≤ 50 ms on P2                                                                                     | both bundles, after the settle (hover is off while the canvas settles).                          |
 
 Every metric is measured on every profile for both bundles. The table shows
 which cells gate. The other cells are recorded for context.
@@ -127,3 +127,29 @@ measured once on P2 and reported on its own row, never as an optimisation.
 - **KILL**: the targets are still missed on P2 or P3 after all levers. Release C
   stops and the renderer and experience go back to the owner. A 2D fallback is
   not the default answer.
+
+## Amendments
+
+**2026-10-17 (owner-approved).**
+
+- **P1 frame-time target.** The target was p50 ≤ 16.7 ms, meaning no dropped
+  frames at 60 Hz. On the P1 machine Chrome paces frames at about 17.6 to
+  18.0 ms in every mode tried (headless, headless with the frame-rate limit
+  off, and a visible window), with nothing drawing; Windows reports the display
+  at 59 Hz. No page can reach 16.7 ms there. The target is now: the drag p50
+  is within 1 ms of the same run's idle frame-interval p50, measured over 60
+  frames before `mount`. This keeps the original meaning, no dropped frames.
+- **Method clarifications** (they do not change any target):
+  - The page mounts with `draggable: false`. A pointer-down on a node would
+    otherwise drag the node instead of rotating the view, and the centre of
+    the canvas almost always has a node.
+  - The no-layout drag that starts during the settle usually outlasts it. Its
+    frames that ended before `handle.settled` are reported on their own row as
+    the settle's frame cost, next to the whole sweep.
+  - The hover moves follow a fixed timer, so they tend to land at the same
+    point within a frame. Each hit also records the handler time (the event
+    to the end of the pick and card update). Handler time plus one frame
+    interval bounds the latency wherever in the frame a real move lands.
+- **First result and lever.** The no-layout settle misses the frame-time
+  target on P1 and P2; every settle frame is slow. The owner chose lever 2,
+  the simulation in a worker, over amending the target.
