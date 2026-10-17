@@ -192,10 +192,19 @@ export function createScene(
     for (const [lines, edges] of edgeSets) {
       const attr = lines.geometry.getAttribute("position") as ThreeNS.BufferAttribute;
       const p = attr.array as Float32Array;
+      // Runs every frame while a live layout settles: plain index copies, no
+      // per-edge subarray objects for the garbage collector.
       for (let k = 0; k < edges.length; k++) {
         const e = edges[k]!;
-        p.set(positions.subarray(e.a * 3, e.a * 3 + 3), k * 6);
-        p.set(positions.subarray(e.b * 3, e.b * 3 + 3), k * 6 + 3);
+        const a = e.a * 3;
+        const b = e.b * 3;
+        const o = k * 6;
+        p[o] = positions[a]!;
+        p[o + 1] = positions[a + 1]!;
+        p[o + 2] = positions[a + 2]!;
+        p[o + 3] = positions[b]!;
+        p[o + 4] = positions[b + 1]!;
+        p[o + 5] = positions[b + 2]!;
       }
       attr.needsUpdate = true;
       lines.geometry.computeBoundingSphere();

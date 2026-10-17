@@ -54,6 +54,9 @@ importers:
       '@types/three':
         specifier: 0.186.0
         version: 0.186.0
+      esbuild:
+        specifier: 0.28.1
+        version: 0.28.1
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1

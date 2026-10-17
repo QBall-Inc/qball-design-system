@@ -3,5 +3,12 @@
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["src", "e2e", "tsup.config.ts", "vitest.config.ts", "playwright.config.ts"]
+  "include": [
+    "src",
+    "e2e",
+    "tsup.config.ts",
+    "inline-worker.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
 }

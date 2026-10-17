@@ -37,6 +37,7 @@ import {
 import { renderLabelLayer, type LabelKind, type LabelLayer } from "./render/labels";
 import { resolveByName } from "./resolveByName";
 import { createScene, type GraphScene, type RendererLike, type Three } from "./scene";
+import { startSettleWorker, type SettleWorker } from "./settle-worker";
 import {
   DEFAULT_SIM_CONFIG,
   buildSimEdges,
@@ -44,6 +45,7 @@ import {
   positionsFromLayout,
   type Simulation,
 } from "./sim";
+import type { SettleRequest, SettleUpdate } from "./sim-worker-protocol";
 
 /** Hosts narrower than this get the short status line and a collapsed legend. */
 const NARROW_WIDTH = 640;
@@ -61,7 +63,19 @@ const HOVER_OFFSET_Y = -10;
 interface Session {
   bundle: SkeletonBundle;
   model: CanvasModel;
+  /**
+   * The settling simulation, null once settled. Its `pos` is the buffer the
+   * scene and controls read. While a worker runs, the worker steps its own copy
+   * and this one only receives the worker's positions.
+   */
   sim: Simulation | null;
+  /** What a restart of the simulation needs (same seed, same edges). */
+  simRequest: SettleRequest | null;
+  worker: SettleWorker | null;
+  /** The worker's newest positions not yet applied (latest wins). */
+  update: SettleUpdate | null;
+  /** Edge styling has joined the settle (it does not change with progress, so it is applied once). */
+  edgesStyled: boolean;
   scene: GraphScene;
   labels: LabelLayer;
   baseLabels: number[];
@@ -274,7 +288,10 @@ export class CanvasController {
     const s = this.session;
     if (!s) return;
     this.pending = false;
-    if (s.sim && !this.opts.reducedMotion) this.stepLive(s, s.sim);
+    if (s.sim && !this.opts.reducedMotion) {
+      if (s.worker) this.applyUpdate(s, s.sim);
+      else this.stepLive(s, s.sim);
+    }
     s.scene.render();
     const w = this.host.clientWidth;
     const h = this.host.clientHeight;
@@ -282,12 +299,12 @@ export class CanvasController {
     if (this.pending) this.requestFrame();
   };
 
-  /** One frame of the visible settle. */
+  /** One frame of the visible settle on the main thread (no worker). */
   private stepLive(s: Session, sim: Simulation): void {
     let more = true;
     for (let k = 0; k < STEPS_PER_FRAME && more; k++) more = sim.step();
     s.scene.positionsChanged();
-    if (sim.progress > EDGE_STYLE_FROM) this.restyle(s, false);
+    this.styleEdgesOnce(s, sim.progress);
     if (more) {
       this.hud.setStatus(this.opts.labels.settling(Math.round(sim.progress * 100)));
       this.pending = true;
@@ -309,7 +326,65 @@ export class CanvasController {
     }
   }
 
+  // ---- the settle worker ----
+
+  private onWorkerUpdate(s: Session, update: SettleUpdate): void {
+    if (this.session !== s || !s.sim) return;
+    s.update = update;
+    // The final update carries the whole layout: stop the worker now, even if a
+    // hidden tab delays the frame that applies it. `s.worker` stays set until
+    // finishSettle, so frames keep taking the worker path.
+    if (update.done) s.worker?.terminate();
+    if (!this.opts.reducedMotion) this.requestFrame();
+    else if (update.done) this.applyUpdate(s, s.sim);
+    else this.hud.setStatus(this.opts.labels.settling(Math.round(update.progress * 100)));
+  }
+
+  /** Applies the worker's newest positions (one frame's worth, or the final layout). */
+  private applyUpdate(s: Session, sim: Simulation): void {
+    const update = s.update;
+    if (!update) return;
+    s.update = null;
+    sim.pos.set(update.pos);
+    s.scene.positionsChanged();
+    if (update.done) {
+      this.finishSettle(s);
+      return;
+    }
+    this.styleEdgesOnce(s, update.progress);
+    this.hud.setStatus(this.opts.labels.settling(Math.round(update.progress * 100)));
+  }
+
+  /**
+   * The worker could not run: settle on the main thread instead. The simulation
+   * restarts from its seeded start (in the same buffer) rather than continuing
+   * from the worker's last positions, so the layout is the one the worker would
+   * have reached.
+   */
+  private onWorkerFail(s: Session): void {
+    if (this.session !== s || !s.sim || !s.simRequest) return;
+    s.worker = null;
+    s.update = null;
+    const { nodeCount, edges, config, revision } = s.simRequest;
+    s.sim = makeSim(nodeCount, edges, config, rngForRevision(revision), s.sim.pos);
+    s.scene.positionsChanged();
+    if (this.opts.reducedMotion) {
+      this.batchTimer = setTimeout(() => this.settleWithoutMotion(s), 0);
+    } else this.requestFrame();
+  }
+
+  /** Brings edge styling in once the cloud has spread past EDGE_STYLE_FROM. */
+  private styleEdgesOnce(s: Session, progress: number): void {
+    if (s.edgesStyled || progress <= EDGE_STYLE_FROM) return;
+    s.edgesStyled = true;
+    this.restyle(s, false);
+  }
+
   private finishSettle(s: Session): void {
+    s.worker?.terminate();
+    s.worker = null;
+    s.update = null;
+    s.simRequest = null;
     s.sim = null;
     this.restyle(s, false);
     this.hud.setStatus(this.status(s));
@@ -380,14 +455,24 @@ export class CanvasController {
     this.snapshot = bundle.stats.snapshot_date;
     const model = buildCanvasModel(bundle);
     const fromLayout = positionsFromLayout(bundle);
-    const sim = fromLayout
+    const simRequest: SettleRequest | null = fromLayout
       ? null
-      : makeSim(
-          model.count,
-          buildSimEdges(bundle),
-          DEFAULT_SIM_CONFIG,
-          rngForRevision(bundle.revision),
-        );
+      : {
+          nodeCount: model.count,
+          edges: buildSimEdges(bundle),
+          config: { ...DEFAULT_SIM_CONFIG },
+          revision: bundle.revision,
+        };
+    // The main-thread simulation exists even when a worker runs: it seeds the
+    // first frame's positions, and the fallback restarts it in the same buffer.
+    const sim = simRequest
+      ? makeSim(
+          simRequest.nodeCount,
+          simRequest.edges,
+          simRequest.config,
+          rngForRevision(simRequest.revision),
+        )
+      : null;
     const positions = fromLayout ?? sim!.pos;
     const scene = createScene(
       three,
@@ -405,6 +490,10 @@ export class CanvasController {
       bundle,
       model,
       sim,
+      simRequest,
+      worker: null,
+      update: null,
+      edgesStyled: false,
       scene,
       labels,
       baseLabels: baseLabelIndices(model, this.opts.labelBudget),
@@ -438,10 +527,14 @@ export class CanvasController {
     nodeDims(model, s.state, s.dims, null);
     scene.applyStyle(-1, s.dims, s.typedStyle, s.comentionStyle);
     labels.set(new Map(s.baseLabels.map((i) => [i, "top" as const])));
-    if (!sim) this.finishSettle(s);
+    if (!sim || !simRequest) this.finishSettle(s);
     else {
       this.hud.setStatus(this.opts.labels.settling(0));
-      if (this.opts.reducedMotion)
+      s.worker = startSettleWorker(this.view, simRequest, {
+        update: (update) => this.onWorkerUpdate(s, update),
+        fail: () => this.onWorkerFail(s),
+      });
+      if (!s.worker && this.opts.reducedMotion)
         this.batchTimer = setTimeout(() => this.settleWithoutMotion(s), 0);
     }
     return s;
@@ -470,6 +563,8 @@ export class CanvasController {
 
   /** Releases a session's GPU objects and listeners; anyone awaiting `settled` is released too. */
   private closeSession(s: Session): void {
+    s.worker?.terminate();
+    s.worker = null;
     s.detachControls();
     s.scene.dispose();
     s.legend?.remove();

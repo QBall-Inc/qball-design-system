@@ -9,6 +9,20 @@ const RUNS = 5;
 const PAUSE_MS = 1500;
 const TARGETS = { ttiMs: 3000, dragP95: 33 };
 
+// Counts messages from any Worker the canvas starts, so the report can say
+// whether the no-layout settle really ran in the worker. A page whose host
+// blocks blob workers falls back to the main thread silently.
+let workerMessages = 0;
+const NativeWorker = globalThis.Worker;
+if (typeof NativeWorker === "function") {
+  globalThis.Worker = class extends NativeWorker {
+    constructor(...args) {
+      super(...args);
+      this.addEventListener("message", () => workerMessages++);
+    }
+  };
+}
+
 const $ = (id) => document.getElementById(id);
 const bundle = (id) => JSON.parse($(id).textContent);
 const pause = () => new Promise((done) => setTimeout(done, PAUSE_MS));
@@ -82,7 +96,9 @@ async function start() {
         $("status").textContent =
           `Run ${done + 1} of ${total}. Keep the screen on and don't touch the graph.`;
         const data = bundle(step.id);
+        const before = workerMessages;
         const result = await runCell({ GraphCanvas, host, data, live: step.live });
+        result.workerMessages = workerMessages - before;
         if (result.hiddenDuringRun) {
           throw new Error("the page went into the background, which slows it down on purpose");
         }
@@ -92,12 +108,22 @@ async function start() {
       }
     }
     const reducedMotion = results.live.some((r) => r.reducedMotion);
+    const settleInWorker = results.live.every((r) => r.workerMessages > 0);
+    const notes = [];
     if (reducedMotion) {
-      $("note").textContent =
-        "This phone has Reduce Motion turned on, so the no-layout rows used the reduced-motion path. Turn it off and run again for the standard numbers.";
+      notes.push(
+        "This phone has Reduce Motion turned on, so the no-layout rows used the reduced-motion path. Turn it off and run again for the standard numbers.",
+      );
     }
+    if (!settleInWorker) {
+      notes.push(
+        "The background worker did not run in this browser, so the no-layout rows measured the main-thread fallback.",
+      );
+    }
+    $("note").textContent = notes.join(" ");
     const report = {
       reducedMotion,
+      settleInWorker,
       protocol: "docs/qubrain-graph-perf-protocol.md (P3)",
       date: new Date().toISOString(),
       device: device(),
@@ -110,18 +136,21 @@ async function start() {
       runs: Object.fromEntries(
         Object.entries(results).map(([cell, list]) => [
           cell,
-          list.map(({ marks, dragDuringSettle, dragAfter, hover, cadence }) => ({
-            marks,
-            dragDuringSettle,
-            dragAfter: {
-              n: dragAfter.n,
-              p50: dragAfter.p50,
-              p95: dragAfter.p95,
-              max: dragAfter.max,
-            },
-            hover: { n: hover.n, p50: hover.p50, p95: hover.p95, handlerP95: hover.handler.p95 },
-            idleFrameP50: cadence.p50,
-          })),
+          list.map(
+            ({ marks, dragDuringSettle, dragAfter, hover, cadence, workerMessages: wm }) => ({
+              marks,
+              workerMessages: wm,
+              dragDuringSettle,
+              dragAfter: {
+                n: dragAfter.n,
+                p50: dragAfter.p50,
+                p95: dragAfter.p95,
+                max: dragAfter.max,
+              },
+              hover: { n: hover.n, p50: hover.p50, p95: hover.p95, handlerP95: hover.handler.p95 },
+              idleFrameP50: cadence.p50,
+            }),
+          ),
         ]),
       ),
     };

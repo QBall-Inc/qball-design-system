@@ -153,3 +153,9 @@ measured once on P2 and reported on its own row, never as an optimisation.
 - **First result and lever.** The no-layout settle misses the frame-time
   target on P1 and P2; every settle frame is slow. The owner chose lever 2,
   the simulation in a worker, over amending the target.
+- **P2 and the worker (method note, no target change).** CDP CPU throttling
+  slows the page's main thread only; a dedicated worker runs at full speed.
+  With lever 2 in place, P2 frame-time rows stay valid (drawing, input and
+  applying the worker's positions run on the slowed main thread), but the P2
+  no-layout time to interactive no longer models a slow laptop and is
+  reported with that caveat. P3 gives the real-device settle time.

@@ -7,6 +7,7 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { runInNewContext } from "node:vm";
 import * as THREE from "three";
 import type { RendererFactory, RendererLike, Three } from "./scene";
 
@@ -164,4 +165,139 @@ export async function frames(view: Window, count: number): Promise<void> {
   for (let i = 0; i < count; i++) {
     await new Promise<void>((done) => view.requestAnimationFrame(() => done()));
   }
+}
+
+/** What the worker stand-in observed. */
+export interface WorkerLedger {
+  started: number;
+  /** Updates handed to the canvas's message handler. */
+  delivered: number;
+  terminated: number;
+  urlsCreated: number;
+  urlsRevoked: number;
+  restore: () => void;
+}
+
+/**
+ * A dedicated-worker stand-in for jsdom, which has no Worker: it reads the
+ * blob the canvas created, runs that REAL worker script (sim-worker-entry.ts as
+ * the build inlines it) in its own V8 context (node:vm, standing in for the
+ * worker's global scope), and delivers each update as a
+ * message `spacingMs` apart (default: one macrotask), the way a worker thread's
+ * messages arrive. Only the thread boundary is simulated.
+ */
+export interface StandInOptions {
+  /** Fire the worker's error event instead of update k (0 = before the first message). */
+  failAfter?: number;
+  /** Called just before that error fires (e.g. to snapshot positions). */
+  onFail?: () => void;
+  /** Delay between updates; above one frame (~16 ms) the canvas applies each one. */
+  spacingMs?: number;
+  /** The constructor throws, as some browsers do for a CSP-blocked worker. */
+  throwOnConstruct?: boolean;
+  /** The worker never answers and never errors. */
+  silent?: boolean;
+}
+
+export function installWorkerStandIn(
+  view: Window & typeof globalThis,
+  {
+    failAfter,
+    onFail,
+    spacingMs = 0,
+    throwOnConstruct = false,
+    silent = false,
+  }: StandInOptions = {},
+): WorkerLedger {
+  const blobs = new Map<string, Blob>();
+  let seq = 0;
+  const urls = view.URL;
+  // jsdom defines neither Worker nor the blob-URL functions; restore exactly what was there.
+  const previous = {
+    Worker: Object.getOwnPropertyDescriptor(view, "Worker"),
+    create: Object.getOwnPropertyDescriptor(urls, "createObjectURL"),
+    revoke: Object.getOwnPropertyDescriptor(urls, "revokeObjectURL"),
+  };
+  const put = (target: object, key: string, desc: PropertyDescriptor | undefined): void => {
+    if (desc) Object.defineProperty(target, key, desc);
+    else Reflect.deleteProperty(target, key);
+  };
+  const ledger: WorkerLedger = {
+    started: 0,
+    delivered: 0,
+    terminated: 0,
+    urlsCreated: 0,
+    urlsRevoked: 0,
+    restore: () => {
+      put(view, "Worker", previous.Worker);
+      put(urls, "createObjectURL", previous.create);
+      put(urls, "revokeObjectURL", previous.revoke);
+    },
+  };
+  view.URL.createObjectURL = (blob: Blob | MediaSource) => {
+    const url = `blob:stand-in/${++seq}`;
+    blobs.set(url, blob as Blob);
+    ledger.urlsCreated++;
+    return url;
+  };
+  view.URL.revokeObjectURL = (url: string) => {
+    if (blobs.delete(url)) ledger.urlsRevoked++;
+  };
+  class StandInWorker {
+    onmessage: ((event: MessageEvent) => void) | null = null;
+    onerror: ((event: Event) => void) | null = null;
+    onmessageerror: ((event: Event) => void) | null = null;
+    private dead = false;
+    private readonly script: Promise<string>;
+
+    constructor(url: string) {
+      ledger.started++;
+      if (throwOnConstruct) throw new view.DOMException("blocked by CSP", "SecurityError");
+      const blob = blobs.get(url);
+      // jsdom's Blob has no text(); its FileReader reads one.
+      this.script = new Promise((done, fail) => {
+        if (!blob) return fail(new Error(`no blob at ${url}`));
+        const reader = new view.FileReader();
+        reader.onload = () => done(typeof reader.result === "string" ? reader.result : "");
+        reader.onerror = () => fail(new Error(`FileReader: ${reader.error?.message ?? "failed"}`));
+        reader.readAsText(blob);
+      });
+    }
+
+    postMessage(request: unknown): void {
+      if (silent) return;
+      void this.script.then((source) => {
+        const updates: unknown[] = [];
+        const scope: {
+          onmessage: ((e: { data: unknown }) => void) | null;
+          postMessage(u: unknown): void;
+        } = {
+          onmessage: null,
+          postMessage: (u) => updates.push(u),
+        };
+        runInNewContext(source, scope);
+        scope.onmessage?.({ data: structuredClone(request) });
+        const deliver = (i: number): void => {
+          if (this.dead) return;
+          if (failAfter !== undefined && i >= failAfter) {
+            onFail?.();
+            this.onerror?.(new view.Event("error", { cancelable: true }));
+            return;
+          }
+          if (i >= updates.length) return;
+          ledger.delivered++;
+          this.onmessage?.(new view.MessageEvent("message", { data: updates[i] }));
+          setTimeout(() => deliver(i + 1), spacingMs);
+        };
+        setTimeout(() => deliver(0), 0);
+      });
+    }
+
+    terminate(): void {
+      if (!this.dead) ledger.terminated++;
+      this.dead = true;
+    }
+  }
+  view.Worker = StandInWorker as unknown as typeof Worker;
+  return ledger;
 }

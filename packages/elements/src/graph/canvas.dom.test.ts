@@ -4,7 +4,7 @@
 
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { canvasStatus } from "../locked-strings";
 import type { SkeletonBundle } from "../types";
 import { BundleValidationError } from "../validator";
@@ -19,6 +19,7 @@ import {
 import {
   frames,
   installTokenStyles,
+  installWorkerStandIn,
   listenerLedger,
   recordingRendererFactory,
   recordingThree,
@@ -27,7 +28,9 @@ import {
 } from "./canvas-test-support";
 import { DEFAULT_CANVAS_LABELS } from "./canvas-copy";
 import { GraphCanvasError } from "./canvas-errors";
-import { resolvePositions } from "./sim";
+import { rngForRevision } from "./prng";
+import { FIRST_UPDATE_TIMEOUT_MS } from "./settle-worker";
+import { DEFAULT_SIM_CONFIG, buildSimEdges, makeSim, resolvePositions } from "./sim";
 import { loadWithLayoutBundle, syntheticBundle } from "./test-helpers";
 
 let removeStyles: () => void;
@@ -589,5 +592,136 @@ describe("GraphCanvas source hygiene", () => {
         /\.(?:innerHTML|outerHTML)\s*[+]?=|insertAdjacentHTML\s*\(/,
       );
     }
+  });
+});
+
+describe("settling in a worker (stand-in thread running the real inline worker script)", () => {
+  let restoreWorker: (() => void) | null = null;
+  afterEach(() => {
+    restoreWorker?.();
+    restoreWorker = null;
+  });
+  const standIn = (options: Parameters<typeof installWorkerStandIn>[1] = {}) => {
+    const ledger = installWorkerStandIn(window, options);
+    restoreWorker = ledger.restore;
+    return ledger;
+  };
+
+  it("settles in the worker to the seeded layout, then stops the worker and frees its URL", async () => {
+    const ledger = standIn();
+    const bundle = syntheticBundle("worker-r1");
+    const handle = await mountCanvas({ data: bundle });
+    await handle.settled;
+    expect(Array.from(uploadedPositions())).toEqual(Array.from(resolvePositions(bundle).positions));
+    // Every step came from the worker (a silent fallback would deliver none).
+    expect(ledger).toMatchObject({
+      started: 1,
+      delivered: DEFAULT_SIM_CONFIG.iters,
+      terminated: 1,
+      urlsCreated: 1,
+      urlsRevoked: 1,
+    });
+    expect(host.querySelector(".gc-status")!.textContent).toContain("5 entities");
+  });
+
+  it("moves the nodes during the settle from the worker's positions, not the seeded start", async () => {
+    standIn();
+    const bundle = syntheticBundle("worker-mid");
+    const handle = await mountCanvas({ data: bundle });
+    const start = Array.from(uploadedPositions());
+    let moved = false;
+    for (let i = 0; i < 400 && !moved; i++) {
+      await frames(window, 1);
+      moved = Array.from(uploadedPositions()).some((v, k) => v !== start[k]);
+    }
+    expect(moved).toBe(true);
+    await handle.settled;
+  });
+
+  it("starts no worker for a bundle with a precomputed layout", async () => {
+    const ledger = standIn();
+    const handle = await mountCanvas({ data: loadWithLayoutBundle() });
+    await handle.settled;
+    expect(ledger.started).toBe(0);
+  });
+
+  it("falls back to the main thread when the worker fails before its first update", async () => {
+    const ledger = standIn({ failAfter: 0 });
+    const bundle = syntheticBundle("worker-fail-0");
+    const handle = await mountCanvas({ data: bundle });
+    await handle.settled;
+    expect(Array.from(uploadedPositions())).toEqual(Array.from(resolvePositions(bundle).positions));
+    expect(ledger).toMatchObject({ started: 1, delivered: 0, terminated: 1 });
+    expect(ledger.urlsRevoked).toBe(ledger.urlsCreated);
+  });
+
+  it("restarts on the main thread from the seeded start when the worker fails mid-settle, reaching the same layout", async () => {
+    const bundle = syntheticBundle("worker-fail-mid");
+    const seededStart = Array.from(
+      makeSim(
+        bundle.nodes.length,
+        buildSimEdges(bundle),
+        DEFAULT_SIM_CONFIG,
+        rngForRevision(bundle.revision),
+      ).pos,
+    );
+    let atFailure: number[] = [];
+    // Updates a frame apart, so the canvas has drawn worker positions before the failure.
+    const ledger = standIn({
+      failAfter: 5,
+      spacingMs: 40,
+      onFail: () => (atFailure = Array.from(uploadedPositions())),
+    });
+    const handle = await mountCanvas({ data: bundle });
+    await handle.settled;
+    expect(atFailure).toHaveLength(seededStart.length);
+    expect(atFailure).not.toEqual(seededStart);
+    expect(Array.from(uploadedPositions())).toEqual(Array.from(resolvePositions(bundle).positions));
+    expect(ledger).toMatchObject({ started: 1, delivered: 5, terminated: 1 });
+  });
+
+  it("settles on the main thread when the browser refuses to construct the worker", async () => {
+    const ledger = standIn({ throwOnConstruct: true });
+    const bundle = syntheticBundle("worker-throw");
+    const handle = await mountCanvas({ data: bundle });
+    await handle.settled;
+    expect(Array.from(uploadedPositions())).toEqual(Array.from(resolvePositions(bundle).positions));
+    expect(ledger).toMatchObject({ started: 1, delivered: 0, urlsCreated: 1, urlsRevoked: 1 });
+  });
+
+  it("gives up on a worker that never answers and settles on the main thread", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      const ledger = standIn({ silent: true });
+      const bundle = syntheticBundle("worker-silent");
+      const handle = await mountCanvas({ data: bundle });
+      await frames(window, 3);
+      expect(host.querySelector(".gc-status")!.textContent).toMatch(/^settling… 0%$/);
+      vi.advanceTimersByTime(FIRST_UPDATE_TIMEOUT_MS);
+      await handle.settled;
+      expect(Array.from(uploadedPositions())).toEqual(
+        Array.from(resolvePositions(bundle).positions),
+      );
+      expect(ledger).toMatchObject({ started: 1, delivered: 0, terminated: 1, urlsRevoked: 1 });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("stops the worker when the canvas is destroyed mid-settle", async () => {
+    const ledger = standIn();
+    const handle = await mountCanvas({ data: syntheticBundle("worker-destroy") });
+    handle.destroy();
+    await handle.settled;
+    expect(ledger).toMatchObject({ started: 1, terminated: 1, urlsCreated: 1, urlsRevoked: 1 });
+  });
+
+  it("stops the first bundle's worker when setData swaps bundles mid-settle", async () => {
+    const ledger = standIn();
+    const handle = await mountCanvas({ data: syntheticBundle("worker-swap-a") });
+    handle.setData(syntheticBundle("worker-swap-b"));
+    await handle.settled;
+    // One worker per bundle; the first stopped at the swap, the second when it finished.
+    expect(ledger).toMatchObject({ started: 2, terminated: 2, urlsCreated: 2, urlsRevoked: 2 });
   });
 });

@@ -93,6 +93,26 @@ const layout = computeLayout(bundle); // { "<node id>": [x, y, z], ... }
   canvas ignores the layout and settles live, so a stale or partial layout is
   never drawn.
 
+## Live settle in a worker
+
+Without a precomputed layout, the simulation runs in a Web Worker, so the page
+keeps drawing at full frame rate while the layout settles: dragging to rotate
+stays smooth, and the nodes move as each step arrives. Under
+`prefers-reduced-motion` the worker settles without visible motion and the
+picture changes once, at the end. The page never freezes in between.
+
+- The worker script ships inside the `./graph` output and starts from a `blob:`
+  URL. There is no extra file for your build to copy or serve.
+- A page with a Content-Security-Policy must allow blob workers:
+  `worker-src 'self' blob:`. Without that, or in a runtime with no `Worker`,
+  the canvas settles on the main thread as before. The settled picture is the
+  same either way, and the same as `computeLayout`'s.
+- The worker keeps settling while the tab is hidden; drawing still pauses. The
+  canvas stops the worker when the layout is done, on `setData`, and on
+  `destroy`.
+- The `./graph` output carries a second, minified copy of the layout code for
+  the worker (a few KB).
+
 ## Handle
 
 | Member                  | Behaviour                                                                                                                                         |

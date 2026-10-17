@@ -8,8 +8,8 @@
 //  - randomness comes from an injected `Rng` (seeded per revision, G-CON-4);
 //  - the caller's edges are never mutated (the prototype wrote `e.k` onto them);
 //  - a precomputed bundle `layout` short-circuits the simulation (G-CON-3).
-// The step loop is unchanged, so a caller can run it in batches (main thread
-// today, a Web Worker if the WP-QB-2.2 performance gate needs one).
+// The step loop is unchanged, so a caller can run it in batches: the canvas
+// runs it in a Web Worker (sim-worker.ts), or on the main thread as a fallback.
 //
 // Hot loops index typed arrays whose bounds hold by construction (3 floats per
 // node, edge endpoints validated in buildSimEdges), hence the `!` assertions.
@@ -92,14 +92,22 @@ export function buildSimEdges(bundle: SkeletonBundle): SimEdge[] {
   return typed.concat(comention);
 }
 
-/** Creates the simulation with seeded initial positions; call `step()` to advance it. */
+/**
+ * Creates the simulation with seeded initial positions; call `step()` to advance it.
+ * `into`, when given, becomes `pos` (overwritten with the initial positions), so a
+ * caller can restart a simulation in a buffer something else already reads.
+ */
 export function makeSim(
   nodeCount: number,
   edges: readonly SimEdge[],
   simCfg: Readonly<SimConfig>,
   rng: Rng,
+  into?: Float32Array,
 ): Simulation {
   const n = nodeCount;
+  if (into && into.length !== n * 3) {
+    throw new RangeError(`makeSim: into holds ${into.length} floats, need ${n * 3} for ${n} nodes`);
+  }
   edges.forEach((e, k) => {
     if (
       !(
@@ -116,7 +124,7 @@ export function makeSim(
   });
   const R = simCfg.radius;
   const K = (simCfg.k * R) / Math.cbrt(n);
-  const pos = new Float32Array(n * 3);
+  const pos = into ?? new Float32Array(n * 3);
   const disp = new Float32Array(n * 3);
   const deg = new Float32Array(n);
   for (const e of edges) {

@@ -30,6 +30,8 @@ export interface HarnessOptions {
   breakThree?: boolean;
   /** Hold the three module response until `releaseThree()` is called. */
   holdThree?: boolean;
+  /** A Content-Security-Policy header for the page (e.g. to block workers). */
+  csp?: string;
 }
 
 export interface Harness {
@@ -111,7 +113,7 @@ const typeOf = (file: string): string => TYPES[file.slice(file.lastIndexOf("."))
 
 /** Routes the harness origin and opens the page; resolves once the driver is ready. */
 export async function openHarness(p: Page, options: HarnessOptions = {}): Promise<Harness> {
-  const { width = 900, height = 600, breakThree = false, holdThree = false } = options;
+  const { width = 900, height = 600, breakThree = false, holdThree = false, csp } = options;
   let release: () => void = () => undefined;
   const held = new Promise<void>((done) => {
     release = done;
@@ -119,7 +121,11 @@ export async function openHarness(p: Page, options: HarnessOptions = {}): Promis
   await p.route(`${ORIGIN}/**`, async (route) => {
     const { pathname } = new URL(route.request().url());
     if (pathname === "/") {
-      await route.fulfill({ contentType: "text/html", body: page(width, height, breakThree) });
+      await route.fulfill({
+        contentType: "text/html",
+        headers: csp === undefined ? {} : { "Content-Security-Policy": csp },
+        body: page(width, height, breakThree),
+      });
       return;
     }
     const roots: [string, string][] = [
