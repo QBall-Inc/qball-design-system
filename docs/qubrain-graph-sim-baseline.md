@@ -16,7 +16,7 @@ worker levers are needed.
   (`layout: null`): building the simulation edges, seeding from the revision, and all
   160 iterations. Loading and parsing the JSON is excluded. The 2026-10-02 runs timed
   `resolvePositions` on the fixture's original edge order. Since the edges were sorted by
-  `(a, b)` (2026-10-17), the script times `computeLayout`, which also validates the
+  `(a, b)` (2026-10-16), the script times `computeLayout`, which also validates the
   bundle. One run at that change measured 1,728 ms.
 - **Machine:** desktop-class x86-64 (Intel Core i9-9900K, 8 cores / 16 threads), Linux
   under WSL2, Node v22.22.3, one run at a time, no throttling.

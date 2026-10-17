@@ -6,7 +6,7 @@ targets. It was committed before the first measurement run. A later session that
 follows it should get comparable numbers. Results live in
 [`qubrain-graph-perf-results.md`](qubrain-graph-perf-results.md).
 
-The owner confirmed the targets on 2026-10-17. The owner will also do a hands-on
+The owner confirmed the targets on 2026-10-16. The owner will also do a hands-on
 feel test, and may adjust a target afterwards. Any change is recorded here with
 its date.
 
