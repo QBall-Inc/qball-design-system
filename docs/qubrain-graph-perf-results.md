@@ -8,11 +8,19 @@ written by `just qb-perf-measure` to `packages/elements/perf-results/`
 
 ## Verdict
 
-**Pending P3 after the worker.** With the settle in a Web Worker (lever 2,
-batch 2 below), every P1 and P2 gating cell passes, including the frame-time
-target while a no-layout bundle settles. The phone (P3) passed every
-with-layout cell before the worker; its no-layout cells are re-run on the
-worker build.
+**PROCEED** (owner, 2026-10-17). With the settle in a Web Worker (lever 2),
+every P1 and P2 gating cell passes, and every P3 cell for bundles with a
+precomputed layout passes, which is how production serves the graph.
+
+One known limitation, accepted by the owner: on the phone (P3), dragging
+while a no-layout bundle settles has a drag p95 of 42.8 ms against 33 ms
+(189.8 ms before the worker; p50 23.9 ms). It lasts only for the settle,
+about 5.4 s, and only for bundles without a precomputed layout, which the
+site's server precompute makes rare. The remaining per-frame cost is
+applying the worker's positions on the main thread: copying about 12,900
+edge endpoints and uploading them to the GPU. Two candidate savings, kept as
+optional follow-ups: build the edge position buffers in the worker, and stop
+recomputing the edge bounding spheres on every settle frame.
 
 ## Batch 2026-10-17, 2 (P1, P2, settle in a worker)
 
@@ -173,3 +181,24 @@ Medians of 5 runs (first visit: 1 run).
 
 The phone paces at 16.6 ms (60 Hz). The miss is the main-thread settle that
 lever 2 moves into a worker; only the no-layout rows need the re-run.
+
+### Run 2026-10-17, 2 (settle in a worker)
+
+Same phone, same settings; the page confirmed the settle ran in the worker
+(160 worker messages in every no-layout run).
+
+| Target                                  | Measured | Result   |
+| --------------------------------------- | -------- | -------- |
+| Time to interactive ≤ 3.0 s, layout     | 0.33 s   | Pass     |
+| Drag p95 ≤ 33 ms, with layout           | 18.8 ms  | Pass     |
+| Drag p95 ≤ 33 ms, no layout, after      | 18.6 ms  | Pass     |
+| Drag p95 ≤ 33 ms, no layout, during     | 42.8 ms  | **Miss** |
+| Hover p95, with layout (reported)       | 38.3 ms  | –        |
+| Time to interactive, no layout (report) | 5.44 s   | –        |
+| First visit, with layout (report)       | 0.61 s   | –        |
+
+Settle-drag p95 per run: 41.3, 43.6, 42.8, 49.5, 41.8 ms (p50 22.9 to
+27.9 ms). Hover p95 rose from 19.7 to 38.3 ms on the with-layout bundle too,
+where no worker runs and no hover code changed; it reads as the phone's own
+state on this run (handler p95 about 20 ms both times). Hover has no P3
+target.
