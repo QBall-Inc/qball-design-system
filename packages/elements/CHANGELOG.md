@@ -1,5 +1,13 @@
 # @qball-inc/elements
 
+## 0.4.0
+
+### Minor Changes
+
+- 5873fb9: GraphCanvas: the QuBrain 3D knowledge-graph canvas in `./graph` (`GraphCanvas.mount(host, { data })`). Data-only, three.js loaded lazily as an optional peer (`>=0.186.0 <0.187.0`), seeded or precomputed layout, select / expand / filter / setData / destroy, typed `select`/`clear`/`filter`/`retry`/`error` events, overridable `labels`, scoped Esc with `suppressKeys`, typed `GraphCanvasError` failures, render pausing while hidden, and the `GRAPH_CANVAS_MARKER` build marker. See docs/graph-canvas.md.
+- 98cfb60: `@qball-inc/elements/graph` exports `computeLayout(bundle)` and `LAYOUT_VERSION`: run the canvas's own seeded layout once on a server (Node-safe), ship it in the bundle's `layout`, and the canvas renders at once with no live settle. `LAYOUT_VERSION` changes only when the same bundle would lay out differently; key stored layouts by revision plus this value.
+- 91dc714: GraphCanvas: a bundle without a precomputed layout now settles in a Web Worker, so the page keeps drawing smoothly while the layout settles (the worker ships inside `./graph` and starts from a `blob:` URL; no extra file). Pages with a Content-Security-Policy need `worker-src 'self' blob:`; without it, or with no `Worker`, the canvas settles on the main thread as before. The settled layout is unchanged. See docs/graph-canvas.md, "Live settle in a worker".
+
 ## 0.3.2
 
 ### Patch Changes
