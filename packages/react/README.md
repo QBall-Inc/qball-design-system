@@ -23,10 +23,33 @@
 
 ---
 
-Every component is a **Strategy-2 className wrapper**: it applies the shipped
-`@qball-inc/tokens` classes and emits **no CSS of its own**. So the React package is
-the behavior and accessibility layer; the visual layer arrives entirely from the
-token CSS you import.
+## What it is
+
+The QBall Design System is a small, opinionated design language for data-heavy
+and AI-assisted web apps: monospace display type, a sage-and-amber palette with
+dedicated finance colours, flat surfaces with no drop shadows, and light and dark
+themes from one source.
+
+`@qball-inc/react` is its React component library: about 50 accessible
+components, from buttons and form controls to data tables, charts, app chrome, an
+AI terminal and animated backgrounds. Each component applies the classes shipped
+in [`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens) and
+emits **no CSS of its own**: this package is the behaviour and accessibility
+layer, and the look comes entirely from the token CSS you import.
+
+**See it live:** the [component gallery](https://qball-inc.github.io/qball-design-system/)
+shows every component in light and dark.
+
+## Which package do I need?
+
+| Package                                                                    | Use it for                                                                      |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)     | The design tokens and component styles as plain CSS (plus JSON). No build step. |
+| [`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)       | The React component library: buttons, forms, data display, app chrome and more. |
+| [`@qball-inc/elements`](https://www.npmjs.com/package/@qball-inc/elements) | Framework-free chat agent, AI-answer trust and knowledge-graph components.      |
+
+Not using React? Use the token CSS classes directly, or `@qball-inc/elements` for
+the chat, trust and graph components.
 
 ## Install
 
@@ -94,11 +117,12 @@ All components are token-driven (no hardcoded color, no box-shadow), pair financ
 color with a non-color cue, and honor `prefers-reduced-motion`. Browse every one in
 the [live gallery](https://qball-inc.github.io/qball-design-system/).
 
-## Part of the QBall Design System
+## More
 
-- **Tokens:** [`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens) — the locked token layer this package paints with.
-- **Gallery:** [live component contact-sheet](https://qball-inc.github.io/qball-design-system/) (light + dark).
-- **Source + docs:** [QBall-Inc/qball-design-system](https://github.com/QBall-Inc/qball-design-system).
+- **Gallery:** [live component contact sheet](https://qball-inc.github.io/qball-design-system/) (light and dark).
+- **Build map:** [COMPONENT-LIBRARY.md](https://github.com/QBall-Inc/qball-design-system/blob/main/COMPONENT-LIBRARY.md), every component with its states.
+- **Source and docs:** [QBall-Inc/qball-design-system](https://github.com/QBall-Inc/qball-design-system).
+- **Release notes:** [changelog](https://github.com/QBall-Inc/qball-design-system/blob/main/packages/react/CHANGELOG.md).
 
 ## License
 

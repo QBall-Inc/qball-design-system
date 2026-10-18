@@ -31,75 +31,76 @@
   <a href="./llms.txt">llms.txt</a>
 </p>
 
-The CSS is drop-in (color, type, spacing, radii, borders, motion); the component map
-shows how to build the same components the same way on a modern React stack.
+## What it is
 
-## Read in this order
+The QBall Design System is a small, opinionated design language for data-heavy
+and AI-assisted web apps: monospace display type, a sage-and-amber palette with
+dedicated finance colours, flat surfaces with no drop shadows, and light and dark
+themes from one set of tokens. It ships as three public npm packages, and every
+component can be seen running in the
+**[live gallery](https://qball-inc.github.io/qball-design-system/)**.
 
-1. **`DESIGN.md`** — the design source of truth: token front-matter + foundations (color,
-   type, layout, elevation, shape, motion, icons, voice), Do's/Don'ts, and a component overview.
-2. **`COMPONENT-LIBRARY.md`** — the build map: every component → how to build it on Vite + React +
-   shadcn/Radix + Tailwind (+ D3 for charts), with states, library structure, and build order.
-3. **`CAVEATS.md`** — resolved open decisions plus the versioning contract.
-4. **`FONTS.md`** — the type families and how to load them.
-5. **`gallery.html`** — open in a browser: a live contact-sheet of every component in light + dark.
+## Which package do I need?
 
-## What's in here
-
-```
-README.md                — this index
-DESIGN.md                — design source of truth (foundations)
-COMPONENT-LIBRARY.md     — component → shadcn/Radix/Tailwind build map + states + build order
-CAVEATS.md               — resolved open decisions + versioning
-FONTS.md                 — the type families + how to load them
-SKILL.md                 — agent-skill front-matter (drop-in)
-gallery.html             — live component contact-sheet (light + dark)
-
-packages/tokens/         — the canonical, published token layer (@qball-inc/tokens):
-  colors_and_type.css    — canonical tokens + @font-face seam + semantic element styles
-  components.css         — the full application component layer (layer after the tokens)
-  theme.css              — Tailwind v4 @theme export of the tokens
-  tokens.json            — DTCG / Style-Dictionary shape (cross-platform)
-packages/react/          — the @qball-inc/react component library
-packages/elements/       — @qball-inc/elements: framework-free DOM components (0.x)
-assets/                  — logos (wordmark + mark + favicon) + assets/icons/ (Lucide)
-preview/                 — one live card per component (the canonical state matrices)
-reference/               — usage guide + upstream foundations + historical audit
-```
-
-## How to consume it
-
-- **Tokens (lift verbatim, never re-eyeball):** `packages/tokens/theme.css` (Tailwind), `packages/tokens/tokens.json` (DTCG),
-  or `packages/tokens/colors_and_type.css` (raw CSS vars + the `@font-face`).
-- **Components:** `packages/tokens/components.css` is a drop-in, token-driven layer (framework-agnostic). To build the
-  React library, follow `COMPONENT-LIBRARY.md` — it maps each CSS class to a shadcn/Radix component and
-  lists the states to implement. Verify each build against the matching `preview/*.html` / `gallery.html`.
-- **Theme:** set `data-theme="light|dark"` on `<html>`; tokens swap. Light and dark are both first-class.
-
-## Packages (npm)
-
-This repo is a **pnpm workspace** that publishes the design system as versioned,
-public packages under the `@qball-inc` scope (Apache-2.0):
-
-- **[`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)** — the locked token layer as drop-in CSS + DTCG JSON (zero build step).
-- **[`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)** — the framework-agnostic component layer as a React library.
-- **[`@qball-inc/elements`](https://www.npmjs.com/package/@qball-inc/elements)** — framework-free TypeScript + DOM components (no React needed), on 0.x. `0.1.0` ships the trust components (`./trust`: claim card, source row, provenance footer, verdict stamp, feedback) and the input model (`.`); `./chat` and `./graph` come in later releases.
+| Package                                      | Use it for                                                                                                                                 |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`@qball-inc/tokens`](./packages/tokens)     | The design tokens and component styles as plain CSS, plus a DTCG JSON mirror. No build step, any framework or none. Every page needs this. |
+| [`@qball-inc/react`](./packages/react)       | The React component library: buttons, forms, data tables and charts, app chrome, an AI terminal, animated backgrounds and more.            |
+| [`@qball-inc/elements`](./packages/elements) | Framework-free components for grounded AI answers: a chat agent widget, claim and source cards, and a 3D knowledge-graph canvas.           |
 
 ```bash
-pnpm add @qball-inc/tokens @qball-inc/react
-# framework-free trust components (no React):
-pnpm add @qball-inc/tokens @qball-inc/elements
+# a React app
+npm install @qball-inc/tokens @qball-inc/react
+# any page, no React: the chat agent, trust and graph components
+npm install @qball-inc/tokens @qball-inc/elements
 ```
 
-> **Status:** `@qball-inc/tokens` and `@qball-inc/react` are published (1.x); `@qball-inc/elements` is published on 0.x
-> (see [docs/consumer-handback-elements.md](./docs/consumer-handback-elements.md)). The canonical CSS source is
-> `packages/tokens/` (`colors_and_type.css` / `components.css` / `theme.css` / `tokens.json`)
-> — what the npm package ships verbatim. See [docs/consumer-setup.md](./docs/consumer-setup.md)
-> for the full consumer wiring sequence.
+Then import the token CSS once, tokens first:
 
-Workspace layout: `packages/tokens/`, `packages/react/` and `packages/elements/`. Local development uses
-`pnpm install` at the repo root + the `Justfile` recipes (`just typecheck`, `just lint`,
-`just build`, `just test`).
+```css
+@import "@qball-inc/tokens/colors-and-type.css";
+@import "@qball-inc/tokens/components.css";
+```
+
+Set `data-theme="light"` or `data-theme="dark"` on `<html>` to pick a theme.
+Each package README has its own quick start, and
+[docs/consumer-setup.md](./docs/consumer-setup.md) walks through the full wiring
+(Tailwind, the display-font override, static and server builds).
+
+## For designers and builders
+
+The design itself is documented alongside the code. Read in this order:
+
+1. **[DESIGN.md](./DESIGN.md)**: the design source of truth. Token values and the
+   foundations (colour, type, layout, elevation, shape, motion, icons, voice),
+   with do's and don'ts.
+2. **[COMPONENT-LIBRARY.md](./COMPONENT-LIBRARY.md)**: every component, its states,
+   and how it is built.
+3. **[CAVEATS.md](./CAVEATS.md)**: resolved design decisions and the versioning
+   contract (what counts as a breaking change).
+4. **[FONTS.md](./FONTS.md)**: the type families and how to load them.
+
+Per-component guides live in [`docs/`](./docs), and each component has a live
+card in [`preview/`](./preview), collected in the gallery.
+
+## What's in the repo
+
+```
+packages/tokens/     @qball-inc/tokens: colors_and_type.css, components.css, graph.css, theme.css, tokens.json
+packages/react/      @qball-inc/react: the React component library
+packages/elements/   @qball-inc/elements: framework-free chat, trust and graph components
+docs/                per-component and consumer guides
+preview/             one live card per component (the gallery's source)
+gallery.html         the gallery page (published to GitHub Pages)
+assets/              logos and icons
+DESIGN.md, COMPONENT-LIBRARY.md, CAVEATS.md, FONTS.md, SKILL.md, llms.txt
+```
+
+## Development
+
+This is a pnpm workspace. Run `pnpm install` at the root, then use the `Justfile`
+recipes: `just typecheck`, `just lint`, `just test`, `just build`, or `just ci`
+for the full local gate. Releases use Changesets; see [RELEASING.md](./RELEASING.md).
 
 ## Display font
 
@@ -129,7 +130,12 @@ and loaded from Google Fonts by the host page.
 - Sentence case. No emoji. No drop shadows. No pill buttons. No purple/blue gradients. No glass.
 - 8px spacing (4/8/16/32/64/128). Radii 4/8/12 — never above 12. Elevation = border + tonal step + scrim.
 
-## Version
+## Versioning and license
 
-**v1.0.0** — token layer + application component layer. Treat the token + component files as a pinned
-dependency; see `CAVEATS.md` → _Versioning_ before changing any value.
+Each package follows semver; current versions are on the npm badges above, and
+release notes are in each package's `CHANGELOG.md`. `@qball-inc/elements` is on
+0.x until its data contract is final. See [CAVEATS.md](./CAVEATS.md) →
+_Versioning_ before changing any token value.
+
+Code is [Apache-2.0](./LICENSE). The Berkeley Mono display font is not covered by
+this license and is not distributed here (see above).

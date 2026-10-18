@@ -23,6 +23,31 @@
 
 ---
 
+## What it is
+
+The QBall Design System is a small, opinionated design language for data-heavy
+and AI-assisted web apps: monospace display type, a sage-and-amber palette with
+dedicated finance colours, flat surfaces with no drop shadows, and light and dark
+themes from one source.
+
+`@qball-inc/tokens` is its foundation: every colour, type, spacing, radius and
+motion value as CSS custom properties, plus ready-made component classes
+(buttons, inputs, stats, badges, modals, the chat panel and more). Drop the CSS
+into any page, with any framework or none, and the components look right.
+
+**See it live:** the [component gallery](https://qball-inc.github.io/qball-design-system/)
+shows every component in light and dark.
+
+## Which package do I need?
+
+| Package                                                                    | Use it for                                                                        |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [`@qball-inc/tokens`](https://www.npmjs.com/package/@qball-inc/tokens)     | The design tokens and component styles as plain CSS (plus JSON). No build step.  |
+| [`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react)       | The React component library: buttons, forms, data display, app chrome and more.  |
+| [`@qball-inc/elements`](https://www.npmjs.com/package/@qball-inc/elements) | Framework-free chat agent, AI-answer trust and knowledge-graph components.       |
+
+Start with this package: the other two paint with its CSS.
+
 ## Install
 
 ```bash
@@ -73,11 +98,12 @@ import tokens from "@qball-inc/tokens"; // → tokens.json
 | --- | --- | --- | --- |
 | `@qball-inc/tokens/colors-and-type.css` | `colors_and_type.css` | Every CSS custom property the components reference + semantic element styles + the `.btn` family. | **Yes** |
 | `@qball-inc/tokens/components.css` | `components.css` | The full application component layer (the rest of the class inventory). | **Yes** |
+| `@qball-inc/tokens/graph.css` | `graph.css` | The knowledge-graph stage and explorer chrome used by `@qball-inc/elements/graph`. Load it after `components.css`, only on pages that show the graph. | Optional |
 | `@qball-inc/tokens/theme.css` | `theme.css` | Tailwind v4 `@theme` export (token-named utilities + the `--font-display` seam). | Optional |
 | `@qball-inc/tokens` · `@qball-inc/tokens/tokens.json` | `tokens.json` | DTCG / Style-Dictionary JSON mirror (cross-platform). | Optional |
 
 Importing **only `colors-and-type.css` then `components.css`** (in that order) paints
-the entire component inventory. Omitting either leaves components unstyled — a silent
+every component except the knowledge-graph canvas, which also needs `graph.css`. Omitting either leaves components unstyled — a silent
 miss, not an error. Full wiring guide:
 [docs/consumer-setup.md](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/consumer-setup.md).
 
@@ -89,11 +115,12 @@ redistributed here, so nothing licensed reaches the published package. To restor
 Berkeley Mono in a private build, see the
 [repository README](https://github.com/QBall-Inc/qball-design-system#display-font).
 
-## Part of the QBall Design System
+## More
 
-- **Components:** [`@qball-inc/react`](https://www.npmjs.com/package/@qball-inc/react) — the token-driven React component library.
-- **Gallery:** [live component contact-sheet](https://qball-inc.github.io/qball-design-system/) (light + dark).
-- **Source + docs:** [QBall-Inc/qball-design-system](https://github.com/QBall-Inc/qball-design-system).
+- **Gallery:** [live component contact sheet](https://qball-inc.github.io/qball-design-system/) (light and dark).
+- **Design reference:** [DESIGN.md](https://github.com/QBall-Inc/qball-design-system/blob/main/DESIGN.md), the foundations and the do's and don'ts.
+- **Source and docs:** [QBall-Inc/qball-design-system](https://github.com/QBall-Inc/qball-design-system).
+- **Release notes:** [changelog](https://github.com/QBall-Inc/qball-design-system/blob/main/packages/tokens/CHANGELOG.md).
 
 ## License
 
