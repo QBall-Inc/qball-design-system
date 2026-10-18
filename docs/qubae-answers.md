@@ -1,7 +1,7 @@
 ---
 title: Answer turns — chat
 package: "@qball-inc/elements/chat"
-tokens_source: "@qball-inc/tokens (components.css: .qturn*, .qsep, .vrow/.vstamp*, .vbox*, .qfb, .qsrcline, .qsrclist, .qclaims/.qclaim*, .qcite, .qgap, .qlead, .qclose, .qlink, .qsitelinks*, .qnotice*, .qcursor, .qstatus, .qturn--thinking, .qpanel__comp.is-disabled)"
+tokens_source: "@qball-inc/tokens (components.css: .qturn*, .qsep, .vrow/.vstamp*, .vbox*, .qfb, .qsrcline, .qsrclist, .qclaims/.qclaim*, .qcite, .qgap, .qlead, .qclose, .qlink, .qsitelinks__line/.qsitelinks/.qsitelinks__link, .qnewtab, .qnotice*, .qcursor, .qstatus, .qturn--thinking, .qpanel__comp.is-disabled)"
 preview: preview/qubae-answers.html
 ---
 
@@ -177,10 +177,18 @@ turn.finalize({
 - Each `url` follows the internal-link policy below. Prefer root-relative paths:
   an absolute URL to your own site works only if its origin is in
   `answer.allowedOrigins`.
-- A link that fails the policy shows its title as plain text with no `href`, and
-  raises a development warning through `onWarn` naming the URL and the fix.
-- Classes: `.qsitelinks`, `.qsitelinks__heading`, `.qsitelinks__list`,
-  `.qsitelinks__link` (`.is-inert` when not navigable).
+- They look like the sources: a collapsed toggle line (shimmering like the
+  sources line) whose text is your `heading` verbatim, with no count or date
+  added. Clicking it opens one reading-list row per link (title and ↗, no badge,
+  no date). Put a count in your heading if you want one.
+- A link that fails the policy shows as an inert row (title only, no `href`, no
+  ↗), and raises a development warning through `onWarn` naming the URL and the
+  fix.
+- Markup: `button.qsrcline.ground-wave.ground-wave--sources.qsitelinks__line`
+  (`aria-expanded` mirrors the state), then `div.srclist.qsrclist.qsitelinks`
+  (`.open` when expanded) holding
+  `.srcrow.qsitelinks__link` rows (`a`, or `div.is-inert` when not navigable).
+  Rows are plain `div`/`a` like the reading list, with no list role.
 
 ## Explorer link, site links and notice actions (internal-link policy)
 
@@ -199,7 +207,7 @@ applies the same policy if you need it elsewhere.
 
 Links open in the same tab by default. Pass `openLinksInNewTab: true` to
 `mountTranscript` to open every link the chat draws in a new tab, with
-`rel="noopener noreferrer"`:
+`rel="noopener noreferrer"` (so internal links send no referrer either):
 
 - the answer's explorer link,
 - its site links,
@@ -215,7 +223,7 @@ same thing. A value set on the transcript wins over `answer.openLinksInNewTab`.
 Tell screen-reader users about the new tab with `newTabLabel`, for example
 `newTabLabel: "opens in a new tab"`. The DS ships no wording, so with no label
 nothing is added. With the switch on, the label is appended to each such link
-as visually hidden text (`.qsr` in `components.css`). A label without the
+as visually hidden text (`.qnewtab` in `components.css`). A label without the
 switch has no effect.
 
 ```js

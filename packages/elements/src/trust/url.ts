@@ -82,7 +82,7 @@ export function openInNewTab(link: HTMLAnchorElement, newTab: NewTab): void {
   link.setAttribute("rel", EXTERNAL_LINK_REL);
   if (newTab.label !== null) {
     const hidden = link.ownerDocument.createElement("span");
-    hidden.className = "qsr";
+    hidden.className = "qnewtab";
     hidden.textContent = ` ${newTab.label}`;
     link.append(hidden);
   }

@@ -298,43 +298,80 @@ test("without a label the cursor stays where the answer text starts", async ({ p
   expect(offsets.cursor).toBeCloseTo(offsets.answer ?? Number.NaN, 0);
 });
 
-test("site links render with the tokens CSS; an unlisted link is plain text", async ({ page }) => {
+test("site links: a collapsed sources-style line opening source-style rows; an unlisted link is inert", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await load(page);
   const state = await page.evaluate(() => {
     const read = (scope: string) => {
-      const block = document.querySelector(`${scope} .qsitelinks`);
-      const list = block?.querySelector(".qsitelinks__list");
-      const link = block?.querySelector("a");
-      const inert = block?.querySelector(".is-inert");
-      const qlink = block?.closest(".qturn")?.querySelector(".qlink");
-      if (!block || !list || !link || !inert || !qlink) return null;
+      const line = document.querySelector<HTMLButtonElement>(`${scope} .qsitelinks__line`);
+      const list = document.querySelector<HTMLElement>(`${scope} .qsitelinks`);
+      const turn = line?.closest(".qturn");
+      const sources = turn?.querySelector<HTMLButtonElement>(".qsrcline:not(.qsitelinks__line)");
+      const qlink = turn?.querySelector(".qlink");
+      if (!line || !list || !sources || !qlink) return null;
+      const closed = {
+        expanded: line.getAttribute("aria-expanded"),
+        display: getComputedStyle(list).display,
+        // The explorer link starts its own line below the closed toggle.
+        qlinkBelow: qlink.getBoundingClientRect().top >= line.getBoundingClientRect().bottom,
+      };
+      line.click();
+      // Open the sources too, to compare a site row with a source row.
+      if (sources.getAttribute("aria-expanded") === "false") sources.click();
+      const link = list.querySelector<HTMLElement>("a.srcrow");
+      const inert = list.querySelector<HTMLElement>(".srcrow.is-inert");
+      const source = turn?.querySelector<HTMLElement>(".qsrclist:not(.qsitelinks) a.srcrow");
+      if (!link || !inert || !source) return null;
+      const rowBox = (row: HTMLElement) => {
+        const r = row.getBoundingClientRect();
+        const t = row.querySelector(".srcrow__title")!.getBoundingClientRect();
+        return { height: Math.round(r.height), titleLeft: Math.round(t.left - r.left) };
+      };
+      const lineStyle = getComputedStyle(line);
+      const sourcesStyle = getComputedStyle(sources);
       return {
-        heading: block.querySelector(".qsitelinks__heading")?.textContent,
+        closed,
+        text: line.textContent,
+        expanded: line.getAttribute("aria-expanded"),
+        display: getComputedStyle(list).display,
         href: link.getAttribute("href"),
         inertTag: inert.tagName,
-        listStyle: getComputedStyle(list).listStyleType,
-        fontSize: getComputedStyle(block).fontSize,
-        sameFaceAsSources:
-          getComputedStyle(block).fontFamily === getComputedStyle(qlink).fontFamily,
+        inertOut: inert.querySelector(".srcrow__out") !== null,
+        lineLooksLikeSources:
+          lineStyle.fontFamily === sourcesStyle.fontFamily &&
+          lineStyle.fontSize === sourcesStyle.fontSize &&
+          lineStyle.backgroundImage === sourcesStyle.backgroundImage,
+        lineFontSize: lineStyle.fontSize,
+        siteRow: rowBox(link),
+        sourceRow: rowBox(source),
       };
     };
     return { inline: read("#inline"), panel: read("#chat .qpanel__body") };
   });
-  expect(state.inline).toMatchObject({
-    heading: "related pages",
-    href: "/notes/a",
-    inertTag: "SPAN",
-    listStyle: "none",
-    sameFaceAsSources: true,
-  });
-  // Phone panel type scale: the links read at the sources line's 12px.
-  expect(state.panel).toMatchObject({ fontSize: "12px", sameFaceAsSources: true });
+  for (const scope of [state.inline, state.panel]) {
+    expect(scope).toMatchObject({
+      closed: { expanded: "false", display: "none", qlinkBelow: true },
+      text: "related pages",
+      expanded: "true",
+      display: "flex",
+      href: "/notes/a",
+      inertTag: "DIV",
+      inertOut: false,
+      lineLooksLikeSources: true,
+    });
+    // A site row sits in the same columns, at the same height, as a source row.
+    expect(scope!.siteRow).toEqual(scope!.sourceRow);
+  }
+  // Phone panel type scale: the line reads at the sources line's 12px.
+  expect(state.panel!.lineFontSize).toBe("12px");
 });
 
-test("status text, links heading and inert links meet AA contrast in both themes", async ({
+test("status text, the site-links line and its rows meet AA contrast in both themes", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await load(page);
   for (const theme of ["light", "dark"]) {
     const pairs = await page.evaluate((t) => {
@@ -352,11 +389,13 @@ test("status text, links heading and inert links meet AA contrast in both themes
           bg: panel === null ? "" : getComputedStyle(panel).backgroundColor,
         },
       ];
+      // The site-links line is a shimmer; with reduced motion it is painted
+      // in its base colour, which is what is checked.
       const selectors = [
         ".qstatus",
-        ".qsitelinks__heading",
-        ".qsitelinks__link.is-inert",
-        ".qsitelinks a",
+        ".qsitelinks__line",
+        ".qsitelinks__link.is-inert .srcrow__title",
+        ".qsitelinks a .srcrow__title",
       ];
       return surfaces.flatMap(({ scope, bg }) =>
         selectors.map((sel) => {
@@ -389,12 +428,13 @@ test("with the new-tab switch on, links open a new tab and the hidden label leav
   // Open both reading lists so their source links are shown.
   await page.locator(`${sameTab} .qsrcline`).first().click();
   await tabbed.locator(".qsrcline").first().click();
+  await tabbed.locator(".qsitelinks__line").click();
   // Every link the chat drew is announced with the consumer's words.
   const announced = tabbed.getByRole("link", { name: /opens in a new tab$/ });
   await expect(announced).toHaveCount(await tabbed.locator("a[href]").count());
   expect(await announced.count()).toBeGreaterThanOrEqual(4);
   // The label is read out, not shown.
-  const hidden = await tabbed.locator(".qsr").first().boundingBox();
+  const hidden = await tabbed.locator(".qnewtab").first().boundingBox();
   expect(hidden!.width).toBeLessThanOrEqual(1);
   expect(hidden!.height).toBeLessThanOrEqual(1);
   // The source row keeps the same columns as a same-tab row of the same answer.

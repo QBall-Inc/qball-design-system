@@ -1407,7 +1407,7 @@ a.claim__src:hover{color:var(--color-signal)}
 .qpanel .qturn,.qpanel .qpanel__comp{grid-template-columns:calc(64px * var(--text-scale, 1)) minmax(0,1fr)}
 .qpanel .qturn.qturn--thinking{grid-template-columns:calc(64px * var(--text-scale, 1)) minmax(0,auto) minmax(0,1fr)}
 .qpanel .vstamp,.qpanel .vrow__exp,.qpanel .qfb,.qpanel .qcite,.qpanel .qclaim__lvl{font-size:calc(11.5px * var(--text-scale, 1))}
-.qpanel .qsrcline,.qpanel .qlink,.qpanel .provfoot,.qpanel .qsitelinks{font-size:calc(12px * var(--text-scale, 1))}
+.qpanel .qsrcline,.qpanel .qlink,.qpanel .provfoot{font-size:calc(12px * var(--text-scale, 1))}
 .qpanel .qclaim,.qpanel .claim .badge{font-size:calc(12.5px * var(--text-scale, 1))}
 .qpanel .qnotice,.qpanel .vbox table,.qpanel .vbox pre,.qpanel .vbox code{font-size:calc(13px * var(--text-scale, 1))}
 .qpanel .vrow__close{font-size:calc(13.5px * var(--text-scale, 1))}
@@ -1438,14 +1438,17 @@ a.claim__src:hover{color:var(--color-signal)}
 /* answer link — "walk this in the graph →" */
 .qlink{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));display:inline-block;margin-top:7px}
 
-/* site links — the consumer's titled list of links into its own pages, under a grounded answer */
-.qsitelinks{margin-top:9px;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));line-height:1.6}
-.qsitelinks__heading{color:var(--text-secondary);font-weight:600}
-.qsitelinks__list{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
-.qsitelinks__link.is-inert{color:var(--text-secondary)}
+/* site links — the consumer's links into its own pages, under a grounded answer:
+   a .qsrcline toggle (the consumer's heading) over .srcrow rows, like the sources.
+   The line is its own row (an explorer .qlink may follow a closed list), sized
+   to its text so the shimmer spans the words. A link left inert by the
+   internal-link policy keeps a muted title, no hover (the :hover selector
+   outranks .srcrow:hover, whatever the rule order). */
+.qsitelinks__line{display:flex;width:fit-content}
+.qsitelinks__link.is-inert .srcrow__title,.qsitelinks__link.is-inert:hover .srcrow__title{color:var(--text-secondary)}
 /* Text read out but not shown: the consumer's new-tab label (elements
    `newTabLabel`). Absolutely positioned, so it never takes a grid cell. */
-.qsr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.qnewtab{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 
 /* answer turns — body blocks, citations, gap markers, the withheld lead-in,
    the refused closing line, the error box and limit-notice actions */

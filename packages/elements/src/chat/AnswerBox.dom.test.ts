@@ -252,25 +252,57 @@ describe("site links (consumer-titled, internal-link policy)", () => {
       ),
       silent,
     );
-    expect(Array.from(slot.children, (node) => node.className).slice(-3)).toEqual([
+    expect(Array.from(slot.children, (node) => node.className).slice(-4)).toEqual([
       "provfoot",
-      "qsitelinks",
+      "qsrcline ground-wave ground-wave--sources qsitelinks__line",
+      "srclist qsrclist qsitelinks",
       "qlink",
     ]);
-    expect(text(slot, ".qsitelinks__heading")).toBe("related pages");
+    // The toggle line is the consumer's heading verbatim: no count, no date.
+    const line = slot.querySelector<HTMLButtonElement>(".qsitelinks__line")!;
+    expect(line.tagName).toBe("BUTTON");
+    expect(line.type).toBe("button");
+    expect(line.textContent).toBe("related pages");
     const links = Array.from(slot.querySelectorAll(".qsitelinks a"));
-    expect(links.map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
+    expect(
+      links.map((a) => [a.querySelector(".srcrow__title")?.textContent, a.getAttribute("href")]),
+    ).toEqual([
       ["second first", "/notes/b"],
       ["then this", "/notes/a?x=1#top"],
     ]);
     for (const a of links) {
       expect(a.hasAttribute("target")).toBe(false);
-      expect(a.className).toBe("qsitelinks__link");
+      expect(a.className).toBe("srcrow qsitelinks__link");
+      // A source row's cells — empty mark, title, empty date, ↗ — with no badge or date text.
+      expect(Array.from(a.children, (cell) => [cell.className, cell.textContent])).toEqual([
+        ["", ""],
+        ["srcrow__title", a.querySelector(".srcrow__title")?.textContent],
+        ["", ""],
+        ["srcrow__out", "↗"],
+      ]);
+      expect(a.querySelector(".srcrow__title")?.getAttribute("title")).toBe(
+        a.querySelector(".srcrow__title")?.textContent,
+      );
     }
-    // Unbulleted lists keep their list role, named by the consumer's heading.
-    const list = slot.querySelector(".qsitelinks__list");
-    expect(list?.getAttribute("role")).toBe("list");
-    expect(list?.getAttribute("aria-label")).toBe("related pages");
+    // Reading-list semantics: plain div rows, no list role.
+    expect(slot.querySelector(".qsitelinks ul, .qsitelinks [role]")).toBeNull();
+  });
+
+  it("is collapsed by default; the line toggles the rows and mirrors it in aria-expanded", () => {
+    const slot = render(
+      withLinks({ heading: "related pages", items: [{ title: "page", url: "/p" }] }),
+      silent,
+    );
+    const line = slot.querySelector<HTMLButtonElement>(".qsitelinks__line")!;
+    const list = slot.querySelector(".qsitelinks")!;
+    expect(line.getAttribute("aria-expanded")).toBe("false");
+    expect(list.classList.contains("open")).toBe(false);
+    line.click();
+    expect(line.getAttribute("aria-expanded")).toBe("true");
+    expect(list.classList.contains("open")).toBe(true);
+    line.click();
+    expect(line.getAttribute("aria-expanded")).toBe("false");
+    expect(list.classList.contains("open")).toBe(false);
   });
 
   it("an absolute link navigates only for an allow-listed origin", () => {
@@ -285,6 +317,8 @@ describe("site links (consumer-titled, internal-link policy)", () => {
     const closed = render(turn, silent);
     expect(closed.querySelector(".qsitelinks a")).toBeNull();
     expect(closed.querySelector(".qsitelinks__link.is-inert")?.textContent).toBe("page");
+    // An inert row never advertises a link: no ↗.
+    expect(closed.querySelector(".qsitelinks .srcrow__out")).toBeNull();
   });
 
   it.each([
@@ -300,7 +334,8 @@ describe("site links (consumer-titled, internal-link policy)", () => {
       onWarn: (message) => warnings.push(message),
     });
     const node = slot.querySelector(".qsitelinks__link");
-    expect(node?.tagName).toBe("SPAN");
+    expect(node?.tagName).toBe("DIV");
+    expect(node?.className).toBe("srcrow qsitelinks__link is-inert");
     expect(node?.hasAttribute("href")).toBe(false);
     expect(warnings).toHaveLength(1);
     expect(warnings[0]).toContain(url);
@@ -320,15 +355,17 @@ describe("site links (consumer-titled, internal-link policy)", () => {
       withLinks({ heading: HOSTILE_MARKUP, items: [{ title: HOSTILE_MARKUP, url: "/p" }] }),
       silent,
     );
-    expect(text(slot, ".qsitelinks__heading")).toBe(HOSTILE_MARKUP);
-    expect(text(slot, ".qsitelinks a")).toBe(HOSTILE_MARKUP);
+    expect(text(slot, ".qsitelinks__line")).toBe(HOSTILE_MARKUP);
+    expect(text(slot, ".qsitelinks a .srcrow__title")).toBe(HOSTILE_MARKUP);
     expect(slot.querySelector(".qsitelinks img")).toBeNull();
   });
 
   it("no siteLinks, or an empty list, renders nothing — the DS has no default heading", () => {
-    expect(render(groundedOf("grounded")).querySelector(".qsitelinks")).toBeNull();
+    expect(
+      render(groundedOf("grounded")).querySelector(".qsitelinks, .qsitelinks__line"),
+    ).toBeNull();
     const empty = render(withLinks({ heading: "", items: [] }), silent);
-    expect(empty.querySelector(".qsitelinks")).toBeNull();
+    expect(empty.querySelector(".qsitelinks, .qsitelinks__line")).toBeNull();
   });
 
   it.each([
@@ -509,7 +546,7 @@ describe("openLinksInNewTab", () => {
 
   it("is off by default: no link the answer draws has a target", () => {
     const slot = render(allLinks(), base);
-    expect(kinds(slot)).toEqual(new Set(["srcrow", "qsitelinks__link", "qlink"]));
+    expect(kinds(slot)).toEqual(new Set(["srcrow", "srcrow qsitelinks__link", "qlink"]));
     expect(anchors(slot).filter((a) => a.hasAttribute("target"))).toEqual([]);
     expect(slot.querySelector(".qlink")!.hasAttribute("rel")).toBe(false);
   });
@@ -517,14 +554,14 @@ describe("openLinksInNewTab", () => {
   it("when on, the explorer link, every site link and every source open in a new tab", () => {
     const slot = render(allLinks(), { ...base, openLinksInNewTab: true });
     const links = anchors(slot);
-    expect(kinds(slot)).toEqual(new Set(["srcrow", "qsitelinks__link", "qlink"]));
+    expect(kinds(slot)).toEqual(new Set(["srcrow", "srcrow qsitelinks__link", "qlink"]));
     for (const a of links) {
       expect(a.getAttribute("target")).toBe("_blank");
       expect(a.getAttribute("rel")).toBe("noopener noreferrer");
     }
     // The unlisted site link stays inert text, with no target.
     const inert = slot.querySelector(".qsitelinks__link.is-inert")!;
-    expect(inert.tagName).toBe("SPAN");
+    expect(inert.tagName).toBe("DIV");
     expect(inert.hasAttribute("target")).toBe(false);
   });
 

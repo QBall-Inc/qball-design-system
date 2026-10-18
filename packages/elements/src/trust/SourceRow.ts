@@ -6,7 +6,13 @@
 import { isSourceUnavailable, type ClaimSource, type SourceRef } from "../types";
 import { el } from "./dom";
 import { resolveSourceBadge, type SourceBadgeOptions } from "./source-badge";
-import { EXTERNAL_LINK_REL, openInNewTab, resolveNewTab, safeExternalUrl } from "./url";
+import {
+  EXTERNAL_LINK_REL,
+  openInNewTab,
+  resolveNewTab,
+  safeExternalUrl,
+  type NewTab,
+} from "./url";
 
 export interface SourceRowOptions {
   /** Consumer domain badges (see SourceBadgeOptions). */
@@ -20,26 +26,30 @@ export interface SourceRowOptions {
 /** Text shown for a source whose record could not be resolved. */
 export const SOURCE_UNAVAILABLE = "source unavailable";
 
-function availableRow(source: SourceRef, options: SourceRowOptions): HTMLElement {
+function availableRow(
+  source: SourceRef,
+  badges: SourceBadgeOptions | undefined,
+  newTab: NewTab | null,
+): HTMLElement {
   const url = safeExternalUrl(source.url);
-  let row: HTMLElement;
-  if (url === null) {
-    row = el("div", "srcrow");
-  } else {
-    const link = el("a", "srcrow");
+  let link: HTMLAnchorElement | null = null;
+  if (url !== null) {
+    link = el("a", "srcrow");
     link.setAttribute("href", url.href);
     link.setAttribute("rel", EXTERNAL_LINK_REL);
-    row = link;
   }
-  const badge = resolveSourceBadge(source, options.sourceBadges);
+  const row = link ?? el("div", "srcrow");
+  const badge = resolveSourceBadge(source, badges);
   // The empty cell keeps the title in the row's title column when there is no badge.
   row.append(badge === null ? el("span") : el("span", "srcrow__mark", badge.mark));
   const title = el("span", "srcrow__title", source.title);
   title.setAttribute("title", source.title);
   row.append(title, el("span", "srcrow__date", `saved ${source.save_date}`));
-  if (url !== null) row.append(el("span", "srcrow__out", "↗"));
-  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
-  if (newTab !== null && row instanceof HTMLAnchorElement) openInNewTab(row, newTab);
+  if (link !== null) {
+    link.append(el("span", "srcrow__out", "↗"));
+    // After the ↗, so a spoken new-tab label is read last.
+    if (newTab !== null) openInNewTab(link, newTab);
+  }
   return row;
 }
 
@@ -51,7 +61,19 @@ function unavailableRow(): HTMLElement {
 
 /** One source as a row. An unavailable source renders as an inert "source unavailable" row. */
 export function renderSourceRow(source: ClaimSource, options: SourceRowOptions = {}): HTMLElement {
-  return isSourceUnavailable(source) ? unavailableRow() : availableRow(source, options);
+  return rowFor(
+    source,
+    options.sourceBadges,
+    resolveNewTab(options.openLinksInNewTab, options.newTabLabel),
+  );
+}
+
+function rowFor(
+  source: ClaimSource,
+  badges: SourceBadgeOptions | undefined,
+  newTab: NewTab | null,
+): HTMLElement {
+  return isSourceUnavailable(source) ? unavailableRow() : availableRow(source, badges, newTab);
 }
 
 /**
@@ -62,6 +84,8 @@ export function renderReadingList(
   sources: readonly ClaimSource[],
   options: SourceRowOptions = {},
 ): HTMLElement {
+  // Resolved once, so a bad switch fails fast even when every source is unavailable.
+  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
   const list = el("div", "srclist");
   const seen = new Set<string>();
   for (const source of sources) {
@@ -70,7 +94,7 @@ export function renderReadingList(
       if (seen.has(id)) continue;
       seen.add(id);
     }
-    list.append(renderSourceRow(source, options));
+    list.append(rowFor(source, options.sourceBadges, newTab));
   }
   return list;
 }

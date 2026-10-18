@@ -34,7 +34,8 @@ export interface TranscriptOptions {
   /**
    * Open every link the chat draws (answer explorer links, site links,
    * reading-list sources and notice actions) in a new tab (default false).
-   * Overrides `answer.openLinksInNewTab` when set.
+   * Overrides `answer.openLinksInNewTab` when set. Each such link gets
+   * `rel="noopener noreferrer"`, so internal links send no referrer either.
    */
   openLinksInNewTab?: boolean;
   /**

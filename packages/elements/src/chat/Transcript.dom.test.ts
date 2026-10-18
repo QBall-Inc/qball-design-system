@@ -188,8 +188,9 @@ describe("site links pass through the transcript", () => {
         ],
       },
     });
+    const line = transcript.container.querySelector(".qsitelinks__line");
+    expect(line?.textContent).toBe("related pages");
     const block = transcript.container.querySelector(".qsitelinks");
-    expect(block?.querySelector(".qsitelinks__heading")?.textContent).toBe("related pages");
     expect(block?.querySelector("a")?.getAttribute("href")).toBe("/notes/one");
     expect(warnings).toHaveLength(1);
     expect(warnings[0]).toContain("https://elsewhere.example/two");
@@ -512,7 +513,7 @@ describe("openLinksInNewTab (one switch for the whole chat)", () => {
   const targets = (transcript: ReturnType<typeof bare>) => {
     const links = [...transcript.container.querySelectorAll("a[href]")];
     expect(new Set(links.map((a) => a.className))).toEqual(
-      new Set(["srcrow", "qsitelinks__link", "qlink", "qnotice__act"]),
+      new Set(["srcrow", "srcrow qsitelinks__link", "qlink", "qnotice__act"]),
     );
     return new Set(links.map((a) => a.getAttribute("target")));
   };
@@ -562,10 +563,10 @@ describe("newTabLabel (spoken suffix, consumer words only)", () => {
     transcript.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
     const links = [...transcript.container.querySelectorAll("a[href]")];
     expect(new Set(links.map((a) => a.className))).toEqual(
-      new Set(["srcrow", "qsitelinks__link", "qlink", "qnotice__act"]),
+      new Set(["srcrow", "srcrow qsitelinks__link", "qlink", "qnotice__act"]),
     );
     for (const a of links) {
-      expect(a.lastElementChild?.className).toBe("qsr");
+      expect(a.lastElementChild?.className).toBe("qnewtab");
       expect(a.lastElementChild?.textContent).toBe(" opens in a new tab");
     }
   });
@@ -573,7 +574,7 @@ describe("newTabLabel (spoken suffix, consumer words only)", () => {
   it("is absent without a label", () => {
     const transcript = bare({ openLinksInNewTab: true });
     transcript.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
-    expect(transcript.container.querySelector(".qsr")).toBeNull();
+    expect(transcript.container.querySelector(".qnewtab")).toBeNull();
   });
 
   it("rejects a bad label at mount", () => {

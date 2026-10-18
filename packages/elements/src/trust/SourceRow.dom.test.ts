@@ -153,6 +153,19 @@ describe("openLinksInNewTab", () => {
       "openLinksInNewTab must be a boolean.",
     );
   });
+
+  it("rejects a bad switch or label even when every source is unavailable", () => {
+    const sources = [unavailableSource(), unavailableSource(null)];
+    expect(() => renderReadingList(sources, { openLinksInNewTab: "yes" as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+    expect(() => renderReadingList(sources, { newTabLabel: " " })).toThrow(
+      "newTabLabel must be a non-empty string.",
+    );
+    expect(() => renderSourceRow(unavailableSource(), { openLinksInNewTab: 1 as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+  });
 });
 
 describe("newTabLabel", () => {
@@ -162,15 +175,15 @@ describe("newTabLabel", () => {
       newTabLabel: "opens in a new tab",
     });
     const hidden = row.lastElementChild!;
-    expect(hidden.className).toBe("qsr");
+    expect(hidden.className).toBe("qnewtab");
     expect(hidden.textContent).toBe(" opens in a new tab");
     expect(row.textContent).toMatch(/↗ opens in a new tab$/);
   });
 
   it("adds nothing without the switch, or without a label (the DS has no default words)", () => {
-    expect(renderSourceRow(sourceRef(), { newTabLabel: "x" }).querySelector(".qsr")).toBeNull();
+    expect(renderSourceRow(sourceRef(), { newTabLabel: "x" }).querySelector(".qnewtab")).toBeNull();
     expect(
-      renderSourceRow(sourceRef(), { openLinksInNewTab: true }).querySelector(".qsr"),
+      renderSourceRow(sourceRef(), { openLinksInNewTab: true }).querySelector(".qnewtab"),
     ).toBeNull();
   });
 

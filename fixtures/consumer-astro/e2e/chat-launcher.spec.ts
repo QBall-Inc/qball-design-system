@@ -281,15 +281,24 @@ for (const spec of PAGES) {
 
       await page.evaluate(() => window.__finishStatus?.());
       await expect(status).toHaveCount(0);
+      // Site links: a collapsed sources-style line; open it to measure the rows.
+      const line = page.locator(".qpanel__body .qsitelinks__line");
       const links = page.locator(".qpanel__body .qsitelinks");
+      await expect(line).toHaveAttribute("aria-expanded", "false");
+      await expect(links).toBeHidden();
+      await line.click();
+      await expect(line).toHaveAttribute("aria-expanded", "true");
       await expect(links).toBeVisible();
       await expect(links.locator("a")).toHaveCount(2);
-      const linksAudit = await audit(".qpanel__body .qsitelinks", [
+      // Reduced motion paints the line's shimmer in its solid ink, which axe can measure.
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const lineAudit = await audit(".qpanel__body .qsitelinks__line", [
         "color-contrast",
-        "list",
-        "listitem",
-        "link-name",
+        "button-name",
       ]);
+      expect(lineAudit.violations).toBe(0);
+      expect(lineAudit.passes).toBeGreaterThan(0);
+      const linksAudit = await audit(".qpanel__body .qsitelinks", ["color-contrast", "link-name"]);
       expect(linksAudit.violations).toBe(0);
       expect(linksAudit.passes).toBeGreaterThan(0);
       expect(errors).toEqual([]);

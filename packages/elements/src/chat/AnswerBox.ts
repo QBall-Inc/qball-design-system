@@ -25,7 +25,7 @@ import { renderFeedback, type FeedbackChange, type FeedbackValue } from "../trus
 import { renderProvenanceFooter } from "../trust/ProvenanceFooter";
 import { SOURCE_UNAVAILABLE, renderReadingList } from "../trust/SourceRow";
 import type { SourceBadgeOptions } from "../trust/source-badge";
-import { openInNewTab, resolveNewTab, safeInternalUrl } from "../trust/url";
+import { openInNewTab, resolveNewTab, safeInternalUrl, type NewTab } from "../trust/url";
 import { renderVerdictStamp } from "../trust/VerdictStamp";
 
 export interface AnswerFeedbackOptions {
@@ -53,7 +53,8 @@ export interface AnswerOptions {
   onWarn?: (message: string) => void;
   /**
    * Open every link the answer draws (explorer link, site links, reading-list
-   * sources) in a new tab (default false).
+   * sources) in a new tab (default false). Each such link gets
+   * `rel="noopener noreferrer"`, so internal links send no referrer either.
    */
   openLinksInNewTab?: boolean;
   /** With the switch on: words read out (visually hidden) after each such link, e.g. your "opens in a new tab". No default. */
@@ -248,14 +249,17 @@ function renderSources(sources: readonly ClaimSource[], options: AnswerOptions):
   return [toggle, list];
 }
 
-function renderExplorerLink(raw: string, options: AnswerOptions): HTMLElement {
+function renderExplorerLink(
+  raw: string,
+  options: AnswerOptions,
+  newTab: NewTab | null,
+): HTMLElement {
   const label = options.explorerLinkLabel ?? ANSWER_DEFAULTS.explorerLinkLabel;
   const href = safeInternalUrl(raw, options.allowedOrigins ?? []);
   // A link that fails the internal-link policy stays visible as inert text.
   if (href === null) return el("span", "qlink", label);
   const link = el("a", "qlink", label);
   link.setAttribute("href", href);
-  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
   if (newTab !== null) openInNewTab(link, newTab);
   return link;
 }
@@ -265,11 +269,16 @@ function nonEmptyString(value: unknown): value is string {
 }
 
 /**
- * The consumer's heading and its links into its own pages, in the given order.
- * A link failing the internal-link policy stays visible as inert text and
- * raises a development warning naming the fix.
+ * The consumer's site links, drawn like the sources: a toggle line reading the
+ * consumer's heading verbatim, then (when opened) one reading-list row per
+ * link, in the given order. A link failing the internal-link policy stays
+ * visible as an inert row and raises a development warning naming the fix.
  */
-function renderSiteLinks(siteLinks: SiteLinks, options: AnswerOptions): HTMLElement[] {
+function renderSiteLinks(
+  siteLinks: SiteLinks,
+  options: AnswerOptions,
+  newTab: NewTab | null,
+): HTMLElement[] {
   const value: unknown = siteLinks;
   if (typeof value !== "object" || value === null) {
     throw new RangeError("siteLinks must be an object with a heading and items.");
@@ -282,42 +291,67 @@ function renderSiteLinks(siteLinks: SiteLinks, options: AnswerOptions): HTMLElem
   }
   const allowedOrigins = options.allowedOrigins ?? [];
   const warn = options.onWarn ?? defaultWarn;
-  const block = el("div", "qsitelinks");
-  const list = el("ul", "qsitelinks__list");
-  // list-style:none drops the list role in some screen readers; restore it,
-  // named by the consumer's heading.
-  list.setAttribute("role", "list");
-  list.setAttribute("aria-label", siteLinks.heading);
+  const list = el("div", "srclist qsrclist qsitelinks");
   (items as unknown[]).forEach((item, at) => {
     const { title, url } = (item ?? {}) as { title?: unknown; url?: unknown };
     if (!nonEmptyString(title) || typeof url !== "string") {
       throw new RangeError(`siteLinks.items[${String(at)}] needs a non-empty title and a url.`);
     }
-    const href = safeInternalUrl(url, allowedOrigins);
-    const li = el("li");
-    if (href === null) {
-      warn(
-        `siteLinks: "${url}" is shown as plain text because it fails the internal-link policy. Use a root-relative path ("/…"), or add its origin to answer.allowedOrigins.`,
-      );
-      li.append(el("span", "qsitelinks__link is-inert", title));
-    } else {
-      const link = el("a", "qsitelinks__link", title);
-      link.setAttribute("href", href);
-      const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
-      if (newTab !== null) openInNewTab(link, newTab);
-      li.append(link);
-    }
-    list.append(li);
+    list.append(renderSiteLinkRow(title, url, allowedOrigins, warn, newTab));
   });
-  block.append(el("div", "qsitelinks__heading", siteLinks.heading), list);
-  return [block];
+  const toggle = el(
+    "button",
+    "qsrcline ground-wave ground-wave--sources qsitelinks__line",
+    siteLinks.heading,
+  );
+  toggle.type = "button";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.addEventListener("click", () => {
+    const open = list.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+  return [toggle, list];
+}
+
+/** One site link as a reading-list row: no badge, no date; the ↗ only when navigable. */
+function renderSiteLinkRow(
+  title: string,
+  url: string,
+  allowedOrigins: readonly string[],
+  warn: (message: string) => void,
+  newTab: NewTab | null,
+): HTMLElement {
+  const href = safeInternalUrl(url, allowedOrigins);
+  let link: HTMLAnchorElement | null = null;
+  if (href === null) {
+    warn(
+      `siteLinks: "${url}" is shown as plain text because it fails the internal-link policy. Use a root-relative path ("/…"), or add its origin to answer.allowedOrigins.`,
+    );
+  } else {
+    link = el("a", "srcrow qsitelinks__link");
+    link.setAttribute("href", href);
+  }
+  const row = link ?? el("div", "srcrow qsitelinks__link is-inert");
+  // The empty cells keep the title in the row's title column, like a source row.
+  const titleCell = el("span", "srcrow__title", title);
+  titleCell.setAttribute("title", title);
+  row.append(el("span"), titleCell, el("span"));
+  if (link !== null) {
+    link.append(el("span", "srcrow__out", "↗"));
+    if (newTab !== null) openInNewTab(link, newTab);
+  }
+  return row;
 }
 
 function isNoEvidence(turn: GroundedTurn): boolean {
   return turn.explanation.claims === 0 && turn.explanation.episodes === 0;
 }
 
-function groundedParts(turn: GroundedTurn, options: AnswerOptions): HTMLElement[] {
+function groundedParts(
+  turn: GroundedTurn,
+  options: AnswerOptions,
+  newTab: NewTab | null,
+): HTMLElement[] {
   if (turn.provenance === undefined && !isNoEvidence(turn)) {
     throw new RangeError(
       "A grounded answer needs provenance unless it has no evidence (0 claims, 0 episodes).",
@@ -328,8 +362,9 @@ function groundedParts(turn: GroundedTurn, options: AnswerOptions): HTMLElement[
     ...renderSources(turn.sources, options),
   ];
   if (turn.provenance !== undefined) parts.push(renderProvenanceFooter("answer", turn.provenance));
-  if (turn.siteLinks !== undefined) parts.push(...renderSiteLinks(turn.siteLinks, options));
-  if (turn.explorerLink !== undefined) parts.push(renderExplorerLink(turn.explorerLink, options));
+  if (turn.siteLinks !== undefined) parts.push(...renderSiteLinks(turn.siteLinks, options, newTab));
+  if (turn.explorerLink !== undefined)
+    parts.push(renderExplorerLink(turn.explorerLink, options, newTab));
   return parts;
 }
 
@@ -365,15 +400,16 @@ function refusedParts(turn: RefusedTurn, options: AnswerOptions): HTMLElement[] 
 
 /** The nodes of one finished turn, in order: stamp row, box, then per-verdict extras. */
 export function renderAnswer(turn: FinalTurn, options: AnswerOptions = {}): HTMLElement[] {
-  // Fail fast on a bad switch or label, even on an answer with no links to draw.
-  resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
+  // Resolved once per answer: fails fast on a bad switch or label, even on an
+  // answer with no links to draw.
+  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
   const stamp = renderVerdictStamp(
     turn,
     options.onStampOpen === undefined ? {} : { onOpen: options.onStampOpen },
   );
   switch (turn.verdict) {
     case "grounded":
-      return [stamp, ...groundedParts(turn, options)];
+      return [stamp, ...groundedParts(turn, options, newTab)];
     case "withheld":
       return [stamp, ...withheldParts(turn, options)];
     case "refused":
