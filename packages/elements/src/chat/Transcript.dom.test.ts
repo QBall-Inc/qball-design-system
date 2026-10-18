@@ -497,3 +497,86 @@ describe("clear / destroy", () => {
     );
   });
 });
+
+describe("openLinksInNewTab (one switch for the whole chat)", () => {
+  const finalizeWithLinks = (transcript: ReturnType<typeof bare>): void => {
+    const turn = transcript.addBotTurn();
+    turn.start();
+    turn.finalize({
+      ...groundedOf("grounded"),
+      explorerLink: "/explore?e=x",
+      siteLinks: { heading: "related pages", items: [{ title: "one", url: "/notes/one" }] },
+    });
+    transcript.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
+  };
+  const targets = (transcript: ReturnType<typeof bare>) => {
+    const links = [...transcript.container.querySelectorAll("a[href]")];
+    expect(new Set(links.map((a) => a.className))).toEqual(
+      new Set(["srcrow", "qsitelinks__link", "qlink", "qnotice__act"]),
+    );
+    return new Set(links.map((a) => a.getAttribute("target")));
+  };
+
+  it("is off by default", () => {
+    const transcript = bare();
+    finalizeWithLinks(transcript);
+    expect(targets(transcript)).toEqual(new Set([null]));
+  });
+
+  it("when on, answer links and notice links all open in a new tab", () => {
+    const transcript = bare({ openLinksInNewTab: true });
+    finalizeWithLinks(transcript);
+    expect(targets(transcript)).toEqual(new Set(["_blank"]));
+  });
+
+  it("answer.openLinksInNewTab also covers notices; the transcript switch overrides it", () => {
+    const viaAnswer = bare({ answer: { openLinksInNewTab: true } });
+    finalizeWithLinks(viaAnswer);
+    expect(targets(viaAnswer)).toEqual(new Set(["_blank"]));
+
+    const overridden = bare({ openLinksInNewTab: false, answer: { openLinksInNewTab: true } });
+    finalizeWithLinks(overridden);
+    expect(targets(overridden)).toEqual(new Set([null]));
+  });
+
+  it("rejects a non-boolean at mount", () => {
+    expect(() => bare({ openLinksInNewTab: "on" as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+    expect(() => bare({ answer: { openLinksInNewTab: 0 as never } })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+  });
+});
+
+describe("newTabLabel (spoken suffix, consumer words only)", () => {
+  it("rides every new-tab link the chat draws, answers and notices alike", () => {
+    const transcript = bare({ openLinksInNewTab: true, newTabLabel: "opens in a new tab" });
+    const turn = transcript.addBotTurn();
+    turn.start();
+    turn.finalize({
+      ...groundedOf("grounded"),
+      explorerLink: "/explore?e=x",
+      siteLinks: { heading: "related pages", items: [{ title: "one", url: "/notes/one" }] },
+    });
+    transcript.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
+    const links = [...transcript.container.querySelectorAll("a[href]")];
+    expect(new Set(links.map((a) => a.className))).toEqual(
+      new Set(["srcrow", "qsitelinks__link", "qlink", "qnotice__act"]),
+    );
+    for (const a of links) {
+      expect(a.lastElementChild?.className).toBe("qsr");
+      expect(a.lastElementChild?.textContent).toBe(" opens in a new tab");
+    }
+  });
+
+  it("is absent without a label", () => {
+    const transcript = bare({ openLinksInNewTab: true });
+    transcript.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
+    expect(transcript.container.querySelector(".qsr")).toBeNull();
+  });
+
+  it("rejects a bad label at mount", () => {
+    expect(() => bare({ newTabLabel: "" })).toThrow("newTabLabel must be a non-empty string.");
+  });
+});

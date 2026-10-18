@@ -27,6 +27,7 @@ const PAGE = `<!doctype html>
     <div id="inline"></div>
     <div id="thinking"></div>
     <div id="chat"></div>
+    <div id="newtab"></div>
     <script type="module">
       import { mount, mountTranscript } from "/dist/chat/index.js";
       const scripts = await Promise.all(
@@ -84,6 +85,20 @@ const PAGE = `<!doctype html>
         host.append(box);
         extras(box);
       }
+      // The new-tab switch with a consumer label, on a bare page element.
+      const tabbed = mountTranscript(document.getElementById("newtab"), {
+        onWarn: () => {},
+        openLinksInNewTab: true,
+        newTabLabel: "opens in a new tab",
+      });
+      const tabbedTurn = tabbed.addBotTurn();
+      tabbedTurn.start();
+      tabbedTurn.finalize({
+        ...grounded,
+        explorerLink: "/explore?e=x",
+        siteLinks: { heading: "related pages", items: [{ title: "a page", url: "/notes/a" }] },
+      });
+      tabbed.addNotice("resting.", { action: { label: "explore →", href: "/explore" } });
       window.__drafts = scripts.flatMap((s) => s.events.filter((e) => e.op === "appendText").map((e) => e.text));
       window.__ready = true;
     </script>
@@ -361,4 +376,53 @@ test("status text, links heading and inert links meet AA contrast in both themes
       expect(contrast(fg, bg), `${theme} ${sel} ${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
     }
   }
+});
+
+test("with the new-tab switch on, links open a new tab and the hidden label leaves the layout alone", async ({
+  page,
+}) => {
+  await load(page);
+  const tabbed = page.locator("#newtab");
+  const sameTab = "#inline > div:last-child";
+  // The harness opens the overlay over the page; close it to click the page copies.
+  await page.evaluate(() => document.querySelector(".qoverlay")!.classList.remove("open"));
+  // Open both reading lists so their source links are shown.
+  await page.locator(`${sameTab} .qsrcline`).first().click();
+  await tabbed.locator(".qsrcline").first().click();
+  // Every link the chat drew is announced with the consumer's words.
+  const announced = tabbed.getByRole("link", { name: /opens in a new tab$/ });
+  await expect(announced).toHaveCount(await tabbed.locator("a[href]").count());
+  expect(await announced.count()).toBeGreaterThanOrEqual(4);
+  // The label is read out, not shown.
+  const hidden = await tabbed.locator(".qsr").first().boundingBox();
+  expect(hidden!.width).toBeLessThanOrEqual(1);
+  expect(hidden!.height).toBeLessThanOrEqual(1);
+  // The source row keeps the same columns as a same-tab row of the same answer.
+  const geometry = (root: string) =>
+    page
+      .locator(`${root} .qsrclist .srcrow`)
+      .first()
+      .evaluate((row) => {
+        const box = (sel: string) => row.querySelector(sel)!.getBoundingClientRect();
+        return {
+          height: row.getBoundingClientRect().height,
+          title: box(".srcrow__title").width,
+          date: box(".srcrow__date").right - row.getBoundingClientRect().left,
+        };
+      });
+  expect(await geometry("#newtab")).toEqual(await geometry(sameTab));
+  // A click opens a new page and leaves this one where it was. The page's own
+  // route does not cover a new tab, so serve the target at the context level.
+  await page
+    .context()
+    .route(`${ORIGIN}/explore*`, (route) =>
+      route.fulfill({ contentType: "text/html", body: "explorer" }),
+    );
+  const [popup] = await Promise.all([
+    page.context().waitForEvent("page"),
+    tabbed.locator(".qlink").click(),
+  ]);
+  await popup.waitForURL(`${ORIGIN}/explore?e=x`);
+  expect(await popup.evaluate(() => window.opener === null)).toBe(true);
+  expect(new URL(page.url()).pathname).toBe("/");
 });

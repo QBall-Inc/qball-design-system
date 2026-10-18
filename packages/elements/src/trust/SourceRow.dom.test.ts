@@ -124,3 +124,61 @@ describe("renderReadingList", () => {
     expect(renderReadingList([]).children).toHaveLength(0);
   });
 });
+
+describe("openLinksInNewTab", () => {
+  it("is off by default: a linked row has no target", () => {
+    const row = renderSourceRow(sourceRef());
+    expect(row.tagName).toBe("A");
+    expect(row.hasAttribute("target")).toBe(false);
+    expect(row.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("when on, every linked row opens in a new tab; inert rows stay inert", () => {
+    const list = renderReadingList(
+      [
+        sourceRef(),
+        sourceRef({ episode_id: "ep-2", url: "javascript:alert(1)" }),
+        unavailableSource(),
+      ],
+      { openLinksInNewTab: true },
+    );
+    const rows = [...list.querySelectorAll<HTMLElement>(".srcrow")];
+    expect(rows.map((row) => row.tagName)).toEqual(["A", "DIV", "DIV"]);
+    expect(rows.map((row) => row.getAttribute("target"))).toEqual(["_blank", null, null]);
+    expect(rows[0]!.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("rejects a non-boolean", () => {
+    expect(() => renderSourceRow(sourceRef(), { openLinksInNewTab: "yes" as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+  });
+});
+
+describe("newTabLabel", () => {
+  it("with the switch on, appends the consumer's words as hidden text after the link", () => {
+    const row = renderSourceRow(sourceRef(), {
+      openLinksInNewTab: true,
+      newTabLabel: "opens in a new tab",
+    });
+    const hidden = row.lastElementChild!;
+    expect(hidden.className).toBe("qsr");
+    expect(hidden.textContent).toBe(" opens in a new tab");
+    expect(row.textContent).toMatch(/↗ opens in a new tab$/);
+  });
+
+  it("adds nothing without the switch, or without a label (the DS has no default words)", () => {
+    expect(renderSourceRow(sourceRef(), { newTabLabel: "x" }).querySelector(".qsr")).toBeNull();
+    expect(
+      renderSourceRow(sourceRef(), { openLinksInNewTab: true }).querySelector(".qsr"),
+    ).toBeNull();
+  });
+
+  it("rejects an empty or non-string label", () => {
+    for (const newTabLabel of ["  ", 3]) {
+      expect(() => renderSourceRow(sourceRef(), { newTabLabel: newTabLabel as never })).toThrow(
+        "newTabLabel must be a non-empty string.",
+      );
+    }
+  });
+});

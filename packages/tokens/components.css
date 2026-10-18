@@ -1443,6 +1443,9 @@ a.claim__src:hover{color:var(--color-signal)}
 .qsitelinks__heading{color:var(--text-secondary);font-weight:600}
 .qsitelinks__list{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
 .qsitelinks__link.is-inert{color:var(--text-secondary)}
+/* Text read out but not shown: the consumer's new-tab label (elements
+   `newTabLabel`). Absolutely positioned, so it never takes a grid cell. */
+.qsr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 
 /* answer turns — body blocks, citations, gap markers, the withheld lead-in,
    the refused closing line, the error box and limit-notice actions */

@@ -489,3 +489,49 @@ describe("hostile payloads stay inert text", () => {
     expect(box.querySelectorAll("img")).toHaveLength(0);
   });
 });
+
+describe("openLinksInNewTab", () => {
+  const allLinks = (): GroundedTurn => ({
+    ...groundedOf("grounded"),
+    explorerLink: "/explore?e=x",
+    siteLinks: {
+      heading: "related pages",
+      items: [
+        { title: "inside", url: "/notes/a" },
+        { title: "listed", url: "https://repo.example/x" },
+        { title: "unlisted", url: "https://elsewhere.example/y" },
+      ],
+    },
+  });
+  const base: AnswerOptions = { onWarn: () => undefined, allowedOrigins: ["https://repo.example"] };
+  const anchors = (slot: HTMLElement) => [...slot.querySelectorAll<HTMLAnchorElement>("a[href]")];
+  const kinds = (slot: HTMLElement) => new Set(anchors(slot).map((a) => a.className));
+
+  it("is off by default: no link the answer draws has a target", () => {
+    const slot = render(allLinks(), base);
+    expect(kinds(slot)).toEqual(new Set(["srcrow", "qsitelinks__link", "qlink"]));
+    expect(anchors(slot).filter((a) => a.hasAttribute("target"))).toEqual([]);
+    expect(slot.querySelector(".qlink")!.hasAttribute("rel")).toBe(false);
+  });
+
+  it("when on, the explorer link, every site link and every source open in a new tab", () => {
+    const slot = render(allLinks(), { ...base, openLinksInNewTab: true });
+    const links = anchors(slot);
+    expect(kinds(slot)).toEqual(new Set(["srcrow", "qsitelinks__link", "qlink"]));
+    for (const a of links) {
+      expect(a.getAttribute("target")).toBe("_blank");
+      expect(a.getAttribute("rel")).toBe("noopener noreferrer");
+    }
+    // The unlisted site link stays inert text, with no target.
+    const inert = slot.querySelector(".qsitelinks__link.is-inert")!;
+    expect(inert.tagName).toBe("SPAN");
+    expect(inert.hasAttribute("target")).toBe(false);
+  });
+
+  it("rejects a non-boolean, even on an answer with no links", () => {
+    const refused = finalOf("refused-off-topic");
+    expect(() => render(refused, { openLinksInNewTab: "true" as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+  });
+});

@@ -25,7 +25,7 @@ import { renderFeedback, type FeedbackChange, type FeedbackValue } from "../trus
 import { renderProvenanceFooter } from "../trust/ProvenanceFooter";
 import { SOURCE_UNAVAILABLE, renderReadingList } from "../trust/SourceRow";
 import type { SourceBadgeOptions } from "../trust/source-badge";
-import { safeInternalUrl } from "../trust/url";
+import { openInNewTab, resolveNewTab, safeInternalUrl } from "../trust/url";
 import { renderVerdictStamp } from "../trust/VerdictStamp";
 
 export interface AnswerFeedbackOptions {
@@ -51,6 +51,13 @@ export interface AnswerOptions {
   withheldLead?: string;
   /** Receives development warnings, e.g. a site link left inert (default: console.warn outside production). */
   onWarn?: (message: string) => void;
+  /**
+   * Open every link the answer draws (explorer link, site links, reading-list
+   * sources) in a new tab (default false).
+   */
+  openLinksInNewTab?: boolean;
+  /** With the switch on: words read out (visually hidden) after each such link, e.g. your "opens in a new tab". No default. */
+  newTabLabel?: string;
 }
 
 export const ANSWER_DEFAULTS = {
@@ -214,10 +221,13 @@ function newestDate(sources: readonly ClaimSource[]): string | null {
  */
 function renderSources(sources: readonly ClaimSource[], options: AnswerOptions): HTMLElement[] {
   if (sources.length === 0) return [];
-  const list = renderReadingList(
-    sources,
-    options.sourceBadges === undefined ? {} : { sourceBadges: options.sourceBadges },
-  );
+  const list = renderReadingList(sources, {
+    ...(options.sourceBadges === undefined ? {} : { sourceBadges: options.sourceBadges }),
+    ...(options.openLinksInNewTab === undefined
+      ? {}
+      : { openLinksInNewTab: options.openLinksInNewTab }),
+    ...(options.newTabLabel === undefined ? {} : { newTabLabel: options.newTabLabel }),
+  });
   list.classList.add("qsrclist");
   const newest = newestDate(sources);
   if (newest === null) {
@@ -245,6 +255,8 @@ function renderExplorerLink(raw: string, options: AnswerOptions): HTMLElement {
   if (href === null) return el("span", "qlink", label);
   const link = el("a", "qlink", label);
   link.setAttribute("href", href);
+  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
+  if (newTab !== null) openInNewTab(link, newTab);
   return link;
 }
 
@@ -291,6 +303,8 @@ function renderSiteLinks(siteLinks: SiteLinks, options: AnswerOptions): HTMLElem
     } else {
       const link = el("a", "qsitelinks__link", title);
       link.setAttribute("href", href);
+      const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
+      if (newTab !== null) openInNewTab(link, newTab);
       li.append(link);
     }
     list.append(li);
@@ -351,6 +365,8 @@ function refusedParts(turn: RefusedTurn, options: AnswerOptions): HTMLElement[] 
 
 /** The nodes of one finished turn, in order: stamp row, box, then per-verdict extras. */
 export function renderAnswer(turn: FinalTurn, options: AnswerOptions = {}): HTMLElement[] {
+  // Fail fast on a bad switch or label, even on an answer with no links to draw.
+  resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
   const stamp = renderVerdictStamp(
     turn,
     options.onStampOpen === undefined ? {} : { onOpen: options.onStampOpen },

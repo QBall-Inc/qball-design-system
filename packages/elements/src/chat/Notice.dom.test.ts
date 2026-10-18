@@ -84,3 +84,41 @@ describe("renderNotice", () => {
     ).toThrow(message);
   });
 });
+
+describe("renderNotice openLinksInNewTab", () => {
+  const linkAction = { label: "go", href: "/explore" };
+
+  it("is off by default", () => {
+    const action = renderNotice("note", { action: linkAction }).querySelector(".qnotice__act");
+    expect(action?.tagName).toBe("A");
+    expect(action?.hasAttribute("target")).toBe(false);
+    expect(action?.hasAttribute("rel")).toBe(false);
+  });
+
+  it("when on, an href action opens in a new tab; a button action and an inert link are untouched", () => {
+    const link = renderNotice("note", { action: linkAction, openLinksInNewTab: true });
+    const a = link.querySelector(".qnotice__act");
+    expect(a?.getAttribute("target")).toBe("_blank");
+    expect(a?.getAttribute("rel")).toBe("noopener noreferrer");
+
+    const button = renderNotice("note", {
+      action: { label: "retry", onClick: () => undefined },
+      openLinksInNewTab: true,
+    }).querySelector(".qnotice__act");
+    expect(button?.tagName).toBe("BUTTON");
+    expect(button?.hasAttribute("target")).toBe(false);
+
+    const inert = renderNotice("note", {
+      action: { label: "go", href: "https://elsewhere.example/" },
+      openLinksInNewTab: true,
+    }).querySelector(".qnotice__act");
+    expect(inert?.tagName).toBe("SPAN");
+    expect(inert?.hasAttribute("target")).toBe(false);
+  });
+
+  it("rejects a non-boolean even without an action", () => {
+    expect(() => renderNotice("note", { openLinksInNewTab: 1 as never })).toThrow(
+      "openLinksInNewTab must be a boolean.",
+    );
+  });
+});

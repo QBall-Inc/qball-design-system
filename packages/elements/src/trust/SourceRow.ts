@@ -6,11 +6,15 @@
 import { isSourceUnavailable, type ClaimSource, type SourceRef } from "../types";
 import { el } from "./dom";
 import { resolveSourceBadge, type SourceBadgeOptions } from "./source-badge";
-import { EXTERNAL_LINK_REL, safeExternalUrl } from "./url";
+import { EXTERNAL_LINK_REL, openInNewTab, resolveNewTab, safeExternalUrl } from "./url";
 
 export interface SourceRowOptions {
   /** Consumer domain badges (see SourceBadgeOptions). */
   sourceBadges?: SourceBadgeOptions;
+  /** Open each source link in a new tab (default false). */
+  openLinksInNewTab?: boolean;
+  /** With the switch on: words read out (visually hidden) after each such link, e.g. your "opens in a new tab". No default. */
+  newTabLabel?: string;
 }
 
 /** Text shown for a source whose record could not be resolved. */
@@ -34,6 +38,8 @@ function availableRow(source: SourceRef, options: SourceRowOptions): HTMLElement
   title.setAttribute("title", source.title);
   row.append(title, el("span", "srcrow__date", `saved ${source.save_date}`));
   if (url !== null) row.append(el("span", "srcrow__out", "↗"));
+  const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
+  if (newTab !== null && row instanceof HTMLAnchorElement) openInNewTab(row, newTab);
   return row;
 }
 

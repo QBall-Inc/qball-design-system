@@ -9,6 +9,7 @@
 import { AnswerTurn, type TurnView } from "../answer-turn";
 import type { FeedbackChange, FeedbackValue } from "../trust/Feedback";
 import { el } from "../trust/dom";
+import { resolveNewTab } from "../trust/url";
 import { renderAnswer, renderErrorAnswer, type AnswerOptions } from "./AnswerBox";
 import { renderNotice, type NoticeAction } from "./Notice";
 
@@ -30,6 +31,17 @@ export interface TranscriptOptions {
   onFeedback?: (change: FeedbackChange) => void;
   /** Passed to every answer (see AnswerOptions); `feedback` is set per turn. */
   answer?: Omit<AnswerOptions, "feedback">;
+  /**
+   * Open every link the chat draws (answer explorer links, site links,
+   * reading-list sources and notice actions) in a new tab (default false).
+   * Overrides `answer.openLinksInNewTab` when set.
+   */
+  openLinksInNewTab?: boolean;
+  /**
+   * With the switch on: words read out (visually hidden) after each such link,
+   * e.g. your "opens in a new tab". No default. Overrides `answer.newTabLabel`.
+   */
+  newTabLabel?: string;
 }
 
 export interface BotTurnOptions {
@@ -137,6 +149,12 @@ export function mountTranscript(
     ...(options.onWarn === undefined ? {} : { onWarn: options.onWarn }),
     ...options.answer,
   };
+  if (options.openLinksInNewTab !== undefined) {
+    answerOptions.openLinksInNewTab = options.openLinksInNewTab;
+  }
+  if (options.newTabLabel !== undefined) answerOptions.newTabLabel = options.newTabLabel;
+  // Validates the switch and label at mount, not at the first answer.
+  resolveNewTab(answerOptions.openLinksInNewTab, answerOptions.newTabLabel);
   const detachers = new Set<() => void>();
   let destroyed = false;
 
@@ -283,6 +301,12 @@ export function mountTranscript(
         ...(answerOptions.allowedOrigins === undefined
           ? {}
           : { allowedOrigins: answerOptions.allowedOrigins }),
+        ...(answerOptions.openLinksInNewTab === undefined
+          ? {}
+          : { openLinksInNewTab: answerOptions.openLinksInNewTab }),
+        ...(answerOptions.newTabLabel === undefined
+          ? {}
+          : { newTabLabel: answerOptions.newTabLabel }),
       });
       container.append(notice);
       scrollToEnd();

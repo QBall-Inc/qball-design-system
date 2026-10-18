@@ -82,15 +82,17 @@ turn.setStatus(null); // clears it
 
 ## `mountTranscript(container, options?) → TranscriptHandle`
 
-| Option         | Type                | Default                                        | Notes                                                                               |
-| -------------- | ------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `userPrompt`   | `string`            | `you ›`                                        | Prompt beside user turns.                                                           |
-| `botPrompt`    | `string`            | `bot ›`                                        | Prompt beside bot turns. The persona name is your copy.                             |
-| `earlyDisplay` | `boolean`           | `false`                                        | Passed to every `AnswerTurn` (see the trust rule).                                  |
-| `onWarn`       | `(message) => void` | `console.warn` outside production              | Development warnings from turns and answers (e.g. an inert site link).              |
-| `errorText`    | `string`            | `something went wrong. try again in a moment.` | Shown for a contract violation.                                                     |
-| `onFeedback`   | `(change) => void`  | —                                              | Shows `+1 / −1` in every answer box; each bot turn then needs a `turnRef`.          |
-| `answer`       | `AnswerOptions`     | —                                              | Explorer link label and allow-list, withheld lead-in, source badges, `onStampOpen`. |
+| Option              | Type                | Default                                        | Notes                                                                               |
+| ------------------- | ------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `userPrompt`        | `string`            | `you ›`                                        | Prompt beside user turns.                                                           |
+| `botPrompt`         | `string`            | `bot ›`                                        | Prompt beside bot turns. The persona name is your copy.                             |
+| `earlyDisplay`      | `boolean`           | `false`                                        | Passed to every `AnswerTurn` (see the trust rule).                                  |
+| `onWarn`            | `(message) => void` | `console.warn` outside production              | Development warnings from turns and answers (e.g. an inert site link).              |
+| `errorText`         | `string`            | `something went wrong. try again in a moment.` | Shown for a contract violation.                                                     |
+| `onFeedback`        | `(change) => void`  | —                                              | Shows `+1 / −1` in every answer box; each bot turn then needs a `turnRef`.          |
+| `answer`            | `AnswerOptions`     | —                                              | Explorer link label and allow-list, withheld lead-in, source badges, `onStampOpen`. |
+| `openLinksInNewTab` | `boolean`           | `false`                                        | Open every link the chat draws in a new tab; see below.                             |
+| `newTabLabel`       | `string`            | —                                              | With the switch on: your words, read out after each such link; see below.           |
 
 | Handle member                     | Purpose                                                                                          |
 | --------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -192,6 +194,33 @@ Anything else (`javascript:`, `data:`, `vbscript:`, protocol-relative `//…`,
 backslash tricks, relative paths, other origins) renders as the same label in
 inert text with no `href`. `safeInternalUrl` from `@qball-inc/elements/trust`
 applies the same policy if you need it elsewhere.
+
+## Opening links in a new tab
+
+Links open in the same tab by default. Pass `openLinksInNewTab: true` to
+`mountTranscript` to open every link the chat draws in a new tab, with
+`rel="noopener noreferrer"`:
+
+- the answer's explorer link,
+- its site links,
+- the reading-list source links,
+- a notice's `action.href`.
+
+It is one switch for the whole chat. It covers internal and external links
+alike. Inert links stay inert, and button actions (`onClick`) are untouched.
+The same field on `answer` (and on `renderAnswer`, `renderNotice`,
+`renderSourceRow` and `renderReadingList` if you use them directly) does the
+same thing. A value set on the transcript wins over `answer.openLinksInNewTab`.
+
+Tell screen-reader users about the new tab with `newTabLabel`, for example
+`newTabLabel: "opens in a new tab"`. The DS ships no wording, so with no label
+nothing is added. With the switch on, the label is appended to each such link
+as visually hidden text (`.qsr` in `components.css`). A label without the
+switch has no effect.
+
+```js
+mountTranscript(el, { openLinksInNewTab: true, newTabLabel: "opens in a new tab" });
+```
 
 ## Notices and the disabled composer
 
