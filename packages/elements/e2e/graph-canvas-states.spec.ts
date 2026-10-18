@@ -12,7 +12,6 @@ import {
   LAYOUT_BUNDLE,
   LIVE_BUNDLE,
   events,
-  labelMap,
   mountCanvas,
   openHarness,
   settle,
@@ -61,14 +60,37 @@ test.describe("states", () => {
     await openHarness(page);
     expect(await mountCanvas(page, LIVE_BUNDLE)).toEqual({ ok: true });
     await expect(status(page)).toHaveText(/^settling… \d+%$/);
-    const early = await labelMap(page);
-    await expect(status(page)).toHaveText(/^settling… ([3-9]\d)%$/, { timeout: 120_000 });
-    const later = await labelMap(page);
+    // Status and label positions are read in one page turn, sampled until the
+    // settle ends. The worker settle can finish fast, so no particular
+    // percentage is awaited — only that progress climbs and the cloud moves.
+    const sample = () =>
+      page.evaluate(() => ({
+        status: document.querySelector("#host .gc-status")?.textContent ?? "",
+        labels: [...document.querySelectorAll<HTMLElement>("#host .gc-label:not([data-off])")].map(
+          (l) => ({
+            name: l.textContent ?? "",
+            x: parseFloat(l.style.left),
+            y: parseFloat(l.style.top),
+          }),
+        ),
+      }));
+    const settling: Awaited<ReturnType<typeof sample>>[] = [];
+    for (let now = await sample(); now.status.startsWith("settling"); now = await sample()) {
+      settling.push(now);
+    }
+    const percents = settling.map((s) => Number(/(\d+)%$/.exec(s.status)?.[1]));
+    // The live percentage was seen at least twice, and it only ever climbs.
+    expect(percents.every((p) => Number.isInteger(p))).toBe(true);
+    expect(new Set(percents).size).toBeGreaterThan(1);
+    expect(percents).toEqual([...percents].sort((a, b) => a - b));
     // The cloud is visibly moving while it settles.
-    const moved = [...early.values()].some((a) => {
-      const b = later.get(a.name);
-      return b !== undefined && Math.hypot(b.x - a.x, b.y - a.y) > 3;
-    });
+    const early = new Map(settling[0]!.labels.map((l) => [l.name, l]));
+    const moved = settling.slice(1).some((s) =>
+      s.labels.some((b) => {
+        const a = early.get(b.name);
+        return a !== undefined && Math.hypot(b.x - a.x, b.y - a.y) > 3;
+      }),
+    );
     expect(moved).toBe(true);
     expect(await settle(page)).toBe(true);
     await expect(status(page)).toHaveText(WIDE_STATUS);
