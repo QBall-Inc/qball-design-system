@@ -1,5 +1,12 @@
 # @qball-inc/react
 
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies [d12eba8]
+  - @qball-inc/tokens@1.1.4
+
 ## 1.0.5
 
 ### Patch Changes

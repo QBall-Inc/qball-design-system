@@ -34,6 +34,7 @@ declare global {
   interface Window {
     __pwned?: number;
     __chat?: ChatResult;
+    __finishStatus?: () => void;
   }
 }
 
@@ -244,6 +245,53 @@ for (const spec of PAGES) {
       expect(panelBg).not.toBe("rgba(0, 0, 0, 0)");
       const position = await overlay(page).evaluate((n) => getComputedStyle(n).position);
       expect(position).toBe("fixed");
+      expect(errors).toEqual([]);
+    });
+
+    test("status text and site links render accessibly; the status goes on finalize (axe)", async ({
+      page,
+    }) => {
+      const { errors } = await openPage(page, spec.path);
+      await page.keyboard.press("q");
+      await expectOpen(page);
+      await page.addScriptTag({ path: AXE });
+      const audit = (selector: string, rules: string[]) =>
+        page.evaluate(
+          async ([sel, only]) => {
+            const axe = (window as unknown as { axe: AxeCaptionApi }).axe;
+            const node = document.querySelector(sel as string);
+            if (node === null) throw new Error(`${String(sel)} missing`);
+            const r = await axe.run(node, { runOnly: only as string[] });
+            const count = (items: typeof r.passes) => items.reduce((n, v) => n + v.nodes.length, 0);
+            return { violations: count(r.violations), passes: count(r.passes) };
+          },
+          [selector, rules] as const,
+        );
+
+      const run = await ask(page, "status please");
+      expect(run.name).toBe("status");
+      const status = page.locator(".qpanel__body .qstatus");
+      await expect(status).toHaveText("searching the notes");
+      await expect(status).toHaveAttribute("role", "status");
+      const box = await status.boundingBox();
+      expect(box?.width ?? 0).toBeGreaterThan(0);
+      const statusAudit = await audit(".qpanel__body .qstatus", ["color-contrast"]);
+      expect(statusAudit.violations).toBe(0);
+      expect(statusAudit.passes).toBeGreaterThan(0);
+
+      await page.evaluate(() => window.__finishStatus?.());
+      await expect(status).toHaveCount(0);
+      const links = page.locator(".qpanel__body .qsitelinks");
+      await expect(links).toBeVisible();
+      await expect(links.locator("a")).toHaveCount(2);
+      const linksAudit = await audit(".qpanel__body .qsitelinks", [
+        "color-contrast",
+        "list",
+        "listitem",
+        "link-name",
+      ]);
+      expect(linksAudit.violations).toBe(0);
+      expect(linksAudit.passes).toBeGreaterThan(0);
       expect(errors).toEqual([]);
     });
 

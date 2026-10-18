@@ -11,6 +11,7 @@
 // off, authorize() is a no-op that warns in development. With it on, a later
 // non-grounded finalize is a contract violation: the shown text is withdrawn
 // and the turn becomes an error.
+import { defaultWarn } from "./dev-warn";
 import type { Claim, ClaimSource } from "./types";
 import type { RefusalKind } from "./locked-strings";
 
@@ -59,6 +60,21 @@ export interface AnswerProvenance {
   supersededExcluded: number;
 }
 
+/** One link into the consumer's own pages. */
+export interface SiteLink {
+  title: string;
+  /** Root-relative path, or an absolute http(s) URL on an allow-listed origin. */
+  url: string;
+}
+
+/** A consumer-titled list of links shown under a grounded answer. */
+export interface SiteLinks {
+  /** The consumer's heading for the list; required when there are items. */
+  heading: string;
+  /** Shown in the given order. */
+  items: SiteLink[];
+}
+
 /**
  * A grounded answer. One with no evidence behind it (0 claims, 0 episodes,
  * no sources) leaves out `explanation.confidenceTier` and `provenance`: its
@@ -77,6 +93,8 @@ export interface GroundedTurn {
   provenance?: AnswerProvenance;
   /** Optional link into the graph explorer for this answer. */
   explorerLink?: string;
+  /** Optional links into the consumer's own pages, under the answer. */
+  siteLinks?: SiteLinks;
 }
 
 export interface WithheldTurn {
@@ -110,7 +128,7 @@ export type TurnError =
 /** Everything a renderer may show. Draft text appears only in `streaming`. */
 export type TurnView =
   | { status: "idle" }
-  | { status: "pending" }
+  | { status: "pending"; label?: string }
   | { status: "streaming"; text: string }
   | { status: "final"; turn: FinalTurn }
   | { status: "error"; error: TurnError };
@@ -128,22 +146,6 @@ export interface AnswerTurnOptions {
 
 type Listener = (view: TurnView) => void;
 
-/**
- * Bundlers replace the literal `process.env.NODE_ENV` at build time, so it is
- * read with dot access; a bare browser without `process` counts as development.
- */
-function isProduction(): boolean {
-  try {
-    return (process.env as { NODE_ENV?: string }).NODE_ENV === "production";
-  } catch {
-    return false;
-  }
-}
-
-function defaultWarn(message: string): void {
-  if (!isProduction()) console.warn(message);
-}
-
 export class AnswerTurn {
   readonly #earlyDisplay: boolean;
   readonly #warn: (message: string) => void;
@@ -152,6 +154,7 @@ export class AnswerTurn {
   #draft = "";
   #authorized = false;
   #view: TurnView = { status: "idle" };
+  #label: string | null = null;
 
   constructor(options: AnswerTurnOptions = {}) {
     this.#earlyDisplay = options.earlyDisplay === true;
@@ -175,6 +178,25 @@ export class AnswerTurn {
       throw new Error("AnswerTurn.start(): the turn has already started.");
     this.#phase = "pending";
     this.#set({ status: "pending" });
+  }
+
+  /**
+   * Sets the consumer's status text on the thinking state (`null` clears it).
+   * Only a changed value updates the view. Ignored once streamed text shows;
+   * dropped when the turn streams, finalizes or fails.
+   */
+  setStatus(label: string | null): void {
+    this.#requirePending("setStatus");
+    const value: unknown = label;
+    if (value !== null) {
+      if (typeof value !== "string") throw new TypeError("label must be a string or null.");
+      if (value.trim().length === 0) {
+        throw new RangeError("label must not be empty; pass null to clear it.");
+      }
+    }
+    if (this.#authorized || label === this.#label) return;
+    this.#label = label;
+    this.#set(label === null ? { status: "pending" } : { status: "pending", label });
   }
 
   /** Buffers a streamed chunk. Visible only if early display was authorized. */
@@ -235,6 +257,7 @@ export class AnswerTurn {
     this.#phase = "done";
     this.#draft = "";
     this.#authorized = false;
+    this.#label = null;
   }
 
   #set(view: TurnView): void {

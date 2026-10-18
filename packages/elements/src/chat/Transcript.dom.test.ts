@@ -83,6 +83,119 @@ describe("thinking cursor", () => {
   });
 });
 
+describe("status label (AnswerTurn.setStatus)", () => {
+  const thinking = (options: TranscriptOptions = {}) => {
+    const transcript = bare(options);
+    const turn = transcript.addBotTurn();
+    turn.start();
+    const row = transcript.container.querySelector<HTMLElement>(".qturn");
+    if (row === null) throw new Error("no turn row");
+    return { transcript, turn, row };
+  };
+
+  it("one polite status node, outside the busy slot, before it, from the first pending view", () => {
+    const { turn, row } = thinking();
+    const status = row.querySelector(".qstatus");
+    const slot = row.querySelector(".qturn__t-bot");
+    expect(status?.getAttribute("role")).toBe("status");
+    expect(status?.textContent).toBe("");
+    expect(status?.closest("[aria-busy]")).toBeNull();
+    expect(slot?.getAttribute("aria-busy")).toBe("true");
+    expect(status?.nextElementSibling).toBe(slot);
+    expect(row.classList.contains("qturn--thinking")).toBe(true);
+    turn.setStatus("searching the notes");
+    expect(row.querySelectorAll(".qstatus")).toHaveLength(1);
+    expect(row.querySelector(".qstatus")).toBe(status);
+    expect(status?.textContent).toBe("searching the notes");
+    expect(slot?.querySelector(".qcursor")).not.toBeNull();
+  });
+
+  it("keeps the same cursor element across label changes, so its blink is not restarted", () => {
+    const { turn, row } = thinking();
+    const cursor = row.querySelector(".qcursor");
+    expect(cursor).not.toBeNull();
+    turn.setStatus("searching the notes");
+    turn.setStatus("reading two pages");
+    turn.setStatus(null);
+    expect(row.querySelector(".qcursor")).toBe(cursor);
+    expect(row.querySelectorAll(".qcursor")).toHaveLength(1);
+  });
+
+  it("changes the text in place and leaves it untouched when the label is unchanged", async () => {
+    const { transcript, turn, row } = thinking();
+    const status = row.querySelector(".qstatus");
+    if (status === null) throw new Error("no status node");
+    turn.setStatus("searching the notes");
+    const changes: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => changes.push(...records));
+    observer.observe(status, { childList: true, characterData: true, subtree: true });
+    // Neither a repeated label nor hidden draft text may touch the announced text.
+    turn.setStatus("searching the notes");
+    turn.appendText("hidden draft");
+    await Promise.resolve();
+    expect(changes).toHaveLength(0);
+    turn.setStatus("reading two pages");
+    await Promise.resolve();
+    expect(changes.length).toBeGreaterThan(0);
+    expect(status.textContent).toBe("reading two pages");
+    turn.setStatus(null);
+    expect(status.textContent).toBe("");
+    observer.disconnect();
+    expect(transcript.container.textContent).not.toContain("hidden draft");
+  });
+
+  it.each([
+    ["finalize", (turn: ReturnType<typeof thinking>["turn"]) => turn.finalize(finalOf("grounded"))],
+    ["fail", (turn: ReturnType<typeof thinking>["turn"]) => turn.fail("try again later")],
+  ])("goes away on %s", (_name, end) => {
+    const { turn, row } = thinking();
+    turn.setStatus("searching the notes");
+    end(turn);
+    expect(row.querySelector(".qstatus")).toBeNull();
+    expect(row.classList.contains("qturn--thinking")).toBe(false);
+    expect(row.textContent).not.toContain("searching the notes");
+  });
+
+  it("goes away when early-displayed text starts streaming", () => {
+    const { turn, row } = thinking({ earlyDisplay: true });
+    turn.setStatus("searching the notes");
+    turn.authorize("grounded");
+    expect(row.querySelector(".qstatus")).toBeNull();
+    expect(row.classList.contains("qturn--thinking")).toBe(false);
+  });
+
+  it("a replayed (non-pending) turn never gets a status node", () => {
+    const transcript = bare();
+    const turn = transcript.addBotTurn();
+    replay(turn, loadScript("grounded").events);
+    expect(transcript.container.querySelector(".qstatus")).toBeNull();
+  });
+});
+
+describe("site links pass through the transcript", () => {
+  it("renders the consumer's list and routes inert-link warnings to onWarn", () => {
+    const warnings: string[] = [];
+    const transcript = bare({ onWarn: (message) => warnings.push(message) });
+    const turn = transcript.addBotTurn();
+    turn.start();
+    turn.finalize({
+      ...groundedOf("grounded"),
+      siteLinks: {
+        heading: "related pages",
+        items: [
+          { title: "one", url: "/notes/one" },
+          { title: "two", url: "https://elsewhere.example/two" },
+        ],
+      },
+    });
+    const block = transcript.container.querySelector(".qsitelinks");
+    expect(block?.querySelector(".qsitelinks__heading")?.textContent).toBe("related pages");
+    expect(block?.querySelector("a")?.getAttribute("href")).toBe("/notes/one");
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain("https://elsewhere.example/two");
+  });
+});
+
 describe("early display (opt-in)", () => {
   it("authorize reveals the buffered draft with the cursor; a grounded finalize replaces it", () => {
     const transcript = bare({ earlyDisplay: true });
