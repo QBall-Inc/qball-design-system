@@ -1,5 +1,17 @@
 # @qball-inc/tokens
 
+## 1.2.0
+
+### Minor Changes
+
+- 515d01f: Site links now look like the sources: a collapsed toggle line (`button.qsrcline.ground-wave.ground-wave--sources.qsitelinks__line`, the consumer's `siteLinks.heading` verbatim, `aria-expanded`) opening reading-list rows (`div.srclist.qsrclist.qsitelinks` of `.srcrow.qsitelinks__link`: title and ↗, no badge or date; an inert link is a `div.is-inert` row with no ↗). Replaces the `.qsitelinks__heading` / `ul.qsitelinks__list` markup. The `siteLinks` input is unchanged. tokens (minor — removes classes): the old `.qsitelinks`, `.qsitelinks__heading` and `.qsitelinks__list` rules are removed (use with elements 0.4.0+); adds `.qsitelinks__line` and the inert-row title colour.
+- 5873fb9: graph.css: canvas label rules (`.graphcanvas .gc-label`, with `data-kind` top/selected variants and the stage-colour halo) and a new `--stage-hub` token (the parchment-white the biggest graph hubs brighten toward). Required by `@qball-inc/elements` GraphCanvas.
+
+### Patch Changes
+
+- 4c2a7dc: Chat links can open in a new tab: `mountTranscript({ openLinksInNewTab: true })` (off by default) opens every link the chat draws — explorer link, site links, reading-list sources, notice `action.href` — with `target="_blank"` and `rel="noopener noreferrer"`. The same field works on `answer`, `renderAnswer`, `renderNotice`, `renderSourceRow` and `renderReadingList`. Optional `newTabLabel` is your own wording, read out (visually hidden) after each such link; the DS ships none. tokens: `.qnewtab` visually hidden text rule.
+- 93be9ea: graph.css: every GraphCanvas button (legend toggle, selection chip "show more" / clear, retry) now shows the library's sage keyboard-focus ring (`:focus-visible` only; pointer clicks stay clean).
+
 ## 1.1.4
 
 ### Patch Changes
