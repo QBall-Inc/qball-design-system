@@ -305,3 +305,87 @@ describe("AnswerTurn — lifecycle", () => {
     expect(seen).toEqual([{ status: "pending" }]);
   });
 });
+
+describe("AnswerTurn — setStatus()", () => {
+  const started = (options: { earlyDisplay?: boolean } = {}) => {
+    const turn = new AnswerTurn({ onWarn: () => undefined, ...options });
+    const seen: TurnView[] = [];
+    turn.subscribe((view) => seen.push(view));
+    turn.start();
+    return { turn, seen };
+  };
+
+  it("needs a started, unfinished turn", () => {
+    const idle = new AnswerTurn();
+    expect(() => idle.setStatus("searching the notes")).toThrow(/call start\(\) first/);
+    const { turn } = started();
+    turn.finalize(finalTurn("grounded"));
+    expect(() => turn.setStatus("searching the notes")).toThrow(/already ended/);
+    const failed = started().turn;
+    failed.fail("try again later");
+    expect(() => failed.setStatus("searching the notes")).toThrow(/already ended/);
+  });
+
+  it("rides the pending view as `label`; a change replaces it, the same value emits nothing", () => {
+    const { turn, seen } = started();
+    turn.setStatus("searching the notes");
+    turn.setStatus("searching the notes");
+    turn.setStatus("reading two pages");
+    expect(seen).toEqual([
+      { status: "pending" },
+      { status: "pending", label: "searching the notes" },
+      { status: "pending", label: "reading two pages" },
+    ]);
+    expect(turn.view()).toEqual({ status: "pending", label: "reading two pages" });
+  });
+
+  it("null clears it, and clearing twice emits once", () => {
+    const { turn, seen } = started();
+    turn.setStatus("searching the notes");
+    turn.setStatus(null);
+    turn.setStatus(null);
+    expect(seen.slice(1)).toEqual([
+      { status: "pending", label: "searching the notes" },
+      { status: "pending" },
+    ]);
+  });
+
+  it("hidden streamed text keeps the label; finalize and fail drop it", () => {
+    const grounded = started();
+    grounded.turn.setStatus("searching the notes");
+    grounded.turn.appendText("draft");
+    expect(grounded.turn.view()).toEqual({ status: "pending", label: "searching the notes" });
+    grounded.turn.finalize(finalTurn("grounded"));
+    expect(grounded.turn.view().status).toBe("final");
+    expect(JSON.stringify(grounded.turn.view())).not.toContain("searching the notes");
+
+    const failed = started();
+    failed.turn.setStatus("searching the notes");
+    failed.turn.fail("the answer service is down");
+    expect(failed.turn.view()).toEqual({
+      status: "error",
+      error: { kind: "failed", message: "the answer service is down" },
+    });
+  });
+
+  it("is dropped once early-displayed text shows, and later calls are silent no-ops", () => {
+    const { turn, seen } = started({ earlyDisplay: true });
+    turn.setStatus("searching the notes");
+    turn.authorize("grounded");
+    turn.appendText("The answer");
+    const before = seen.length;
+    turn.setStatus("reading two pages");
+    turn.setStatus(null);
+    expect(seen.length).toBe(before);
+    expect(turn.view()).toEqual({ status: "streaming", text: "The answer" });
+  });
+
+  it("rejects a non-string and an empty or blank label", () => {
+    const { turn, seen } = started();
+    expect(() => turn.setStatus(42 as unknown as string)).toThrow(TypeError);
+    expect(() => turn.setStatus(undefined as unknown as string)).toThrow(TypeError);
+    expect(() => turn.setStatus("")).toThrow(RangeError);
+    expect(() => turn.setStatus("   ")).toThrow(/pass null to clear/);
+    expect(seen).toEqual([{ status: "pending" }]);
+  });
+});

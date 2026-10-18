@@ -1,7 +1,7 @@
 ---
 title: Answer turns — chat
 package: "@qball-inc/elements/chat"
-tokens_source: "@qball-inc/tokens (components.css: .qturn*, .qsep, .vrow/.vstamp*, .vbox*, .qfb, .qsrcline, .qsrclist, .qclaims/.qclaim*, .qcite, .qgap, .qlead, .qclose, .qlink, .qnotice*, .qcursor, .qpanel__comp.is-disabled)"
+tokens_source: "@qball-inc/tokens (components.css: .qturn*, .qsep, .vrow/.vstamp*, .vbox*, .qfb, .qsrcline, .qsrclist, .qclaims/.qclaim*, .qcite, .qgap, .qlead, .qclose, .qlink, .qsitelinks*, .qnotice*, .qcursor, .qstatus, .qturn--thinking, .qpanel__comp.is-disabled)"
 preview: preview/qubae-answers.html
 ---
 
@@ -56,6 +56,30 @@ text is withdrawn and the turn becomes an error showing `errorText`. The
 internal violation message is never shown. While early display is off,
 `authorize()` changes nothing and logs a development warning.
 
+## Status text while thinking
+
+`turn.setStatus(label)` shows your own short text beside the thinking cursor,
+for example while your backend runs a search. The DS ships no status wording.
+
+```ts
+turn.start();
+// later, e.g. when the first tool frame arrives:
+turn.setStatus("searching the notes");
+turn.setStatus(null); // clears it
+```
+
+- It works only while the turn is pending: it throws before `start()` and after
+  `finalize()` / `fail()`. Once early-displayed text is showing, calls are
+  ignored.
+- `null` clears the text. An empty or whitespace-only string throws; pass `null`.
+- Calling it again replaces the text. Repeating the same value changes nothing.
+- The text goes away when streamed text starts showing, and on `finalize()` or
+  `fail()`.
+- The text sits in one `role="status"` element (`.qstatus`) between the prompt
+  and the cursor, outside the turn's `aria-busy` slot. Screen readers announce it
+  politely, and only when it changes.
+- The view carries it as `{ status: "pending", label }`.
+
 ## `mountTranscript(container, options?) → TranscriptHandle`
 
 | Option         | Type                | Default                                        | Notes                                                                               |
@@ -63,7 +87,7 @@ internal violation message is never shown. While early display is off,
 | `userPrompt`   | `string`            | `you ›`                                        | Prompt beside user turns.                                                           |
 | `botPrompt`    | `string`            | `bot ›`                                        | Prompt beside bot turns. The persona name is your copy.                             |
 | `earlyDisplay` | `boolean`           | `false`                                        | Passed to every `AnswerTurn` (see the trust rule).                                  |
-| `onWarn`       | `(message) => void` | `console.warn` outside production              | AnswerTurn development warnings.                                                    |
+| `onWarn`       | `(message) => void` | `console.warn` outside production              | Development warnings from turns and answers (e.g. an inert site link).              |
 | `errorText`    | `string`            | `something went wrong. try again in a moment.` | Shown for a contract violation.                                                     |
 | `onFeedback`   | `(change) => void`  | —                                              | Shows `+1 / −1` in every answer box; each bot turn then needs a `turnRef`.          |
 | `answer`       | `AnswerOptions`     | —                                              | Explorer link label and allow-list, withheld lead-in, source badges, `onStampOpen`. |
@@ -91,11 +115,11 @@ Every finished turn starts with the verdict stamp row (`renderVerdictStamp`),
 then a verdict-tinted box holding the answer body and, when feedback is on, the
 `+1 / −1` marks.
 
-| Verdict  | After the box                                                                                                                                        |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| grounded | The sources line `[N sources · newest <mon yyyy>]`, which toggles the reading list; the provenance footer; the explorer link if one is supplied.     |
-| withheld | The lead-in (default `here’s the part i can stand behind:`), then one `.qclaim` row per traceable claim: confidence glyph, sentence, tier word.      |
-| refused  | The `closingLine`, verbatim, when one is supplied (`off_topic`, `in_scope_empty` and `abstained` all render the same way; the stamp explains which). |
+| Verdict  | After the box                                                                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| grounded | The sources line `[N sources · newest <mon yyyy>]`, which toggles the reading list; the provenance footer; your site links and the explorer link if supplied. |
+| withheld | The lead-in (default `here’s the part i can stand behind:`), then one `.qclaim` row per traceable claim: confidence glyph, sentence, tier word.               |
+| refused  | The `closingLine`, verbatim, when one is supplied (`off_topic`, `in_scope_empty` and `abstained` all render the same way; the stamp explains which).          |
 
 The stamp explanation, the footer and the sources line come only from the
 locked formatters (`groundedExplanation`, `withheldExplanation`,
@@ -130,10 +154,36 @@ citation whose episode is not among the turn's sources (for a withheld turn,
 its claims' sources; a refused turn has none) renders as `[source unavailable]`.
 A known but unavailable source keeps its number, styled as unavailable.
 
-## Explorer link and notice actions (internal-link policy)
+## Site links
 
-The answer's `explorerLink` and a notice's `action.href` point into your own
-site. Either becomes a real link only when it is:
+A grounded turn can carry a short list of links into your own pages, shown
+after the provenance footer and before the explorer link:
+
+```ts
+turn.finalize({
+  ...groundedTurn,
+  siteLinks: {
+    heading: "related pages", // your wording; the DS has no default
+    items: [{ title: "a page", url: "/notes/a-page" }],
+  },
+});
+```
+
+- The heading is required whenever there are items. An empty `items` list
+  renders nothing.
+- Items render in the order given. The DS does not sort or dedupe them.
+- Each `url` follows the internal-link policy below. Prefer root-relative paths:
+  an absolute URL to your own site works only if its origin is in
+  `answer.allowedOrigins`.
+- A link that fails the policy shows its title as plain text with no `href`, and
+  raises a development warning through `onWarn` naming the URL and the fix.
+- Classes: `.qsitelinks`, `.qsitelinks__heading`, `.qsitelinks__list`,
+  `.qsitelinks__link` (`.is-inert` when not navigable).
+
+## Explorer link, site links and notice actions (internal-link policy)
+
+The answer's `explorerLink`, its `siteLinks` and a notice's `action.href` point
+into your own site. Either becomes a real link only when it is:
 
 - a root-relative path (`/explore?e=agent-memory`), or
 - an absolute http(s) URL whose origin is in `answer.allowedOrigins`.

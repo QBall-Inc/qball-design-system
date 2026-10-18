@@ -53,6 +53,8 @@ export type {
   FinalTurn,
   GroundedTurn,
   RefusedTurn,
+  SiteLink,
+  SiteLinks,
   TurnError,
   TurnView,
   Verdict,

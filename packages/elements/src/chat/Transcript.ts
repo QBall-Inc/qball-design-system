@@ -22,7 +22,7 @@ export interface TranscriptOptions {
    * irreversible grounded verdict before any tokens.
    */
   earlyDisplay?: boolean;
-  /** Receives AnswerTurn development warnings. */
+  /** Receives development warnings from every AnswerTurn and answer (unless `answer.onWarn` is set). */
   onWarn?: (message: string) => void;
   /** Shown for a contract-violation error (default `something went wrong. try again in a moment.`). */
   errorText?: string;
@@ -79,6 +79,33 @@ function optionalString(name: string, value: unknown, fallback: string): string 
   return value;
 }
 
+/**
+ * The consumer's status text while a turn thinks (AnswerTurn.setStatus). It
+ * sits outside the aria-busy slot, whose changes screen readers hold back, and
+ * persists for the whole thinking phase so only changed text is announced.
+ */
+function syncStatus(
+  row: HTMLElement,
+  current: HTMLElement | null,
+  view: TurnView,
+): HTMLElement | null {
+  if (view.status !== "pending") {
+    current?.remove();
+    row.classList.remove("qturn--thinking");
+    return null;
+  }
+  let node = current;
+  if (node === null) {
+    node = el("span", "qstatus");
+    node.setAttribute("role", "status");
+    row.insertBefore(node, row.lastElementChild);
+    row.classList.add("qturn--thinking");
+  }
+  // The model emits only a changed label, so each write here is a real change.
+  node.textContent = view.label ?? "";
+  return node;
+}
+
 /** The thinking cursor: decorative; the turn's aria-busy carries the state. */
 function cursor(): HTMLElement {
   const node = el("span", "qcursor", CURSOR);
@@ -106,7 +133,10 @@ export function mountTranscript(
       throw new TypeError(`${name} must be a function.`);
     }
   }
-  const answerOptions = options.answer ?? {};
+  const answerOptions: Omit<AnswerOptions, "feedback"> = {
+    ...(options.onWarn === undefined ? {} : { onWarn: options.onWarn }),
+    ...options.answer,
+  };
   const detachers = new Set<() => void>();
   let destroyed = false;
 
@@ -144,7 +174,10 @@ export function mountTranscript(
         return;
       case "pending":
         slot.setAttribute("aria-busy", "true");
-        slot.replaceChildren(cursor());
+        // A status change re-emits pending; keep the cursor so its blink runs on.
+        if (slot.querySelector(".qcursor") === null || slot.childNodes.length !== 1) {
+          slot.replaceChildren(cursor());
+        }
         return;
       case "streaming":
         slot.setAttribute("aria-busy", "true");
@@ -226,8 +259,10 @@ export function mountTranscript(
       });
       const { row, text } = turnRow("qturn__bot", botPrompt, "qturn__t-bot");
       appendTurn(row);
+      let status: HTMLElement | null = null;
       const unsubscribe = turn.subscribe((view) => {
         try {
+          status = syncStatus(row, status, view);
           renderView(text, view, turnRef, initialFeedback);
         } finally {
           scrollToEnd();

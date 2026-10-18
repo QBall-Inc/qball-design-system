@@ -1405,8 +1405,9 @@ a.claim__src:hover{color:var(--color-signal)}
 .qpanel .qpanel__body,.qpanel .qturn,.qpanel .qpanel__prompt{font-size:calc(14px * var(--text-scale, 1))}
 .qpanel .qpanel__input{font-size:max(16px,calc(16px * var(--text-scale, 1)))}
 .qpanel .qturn,.qpanel .qpanel__comp{grid-template-columns:calc(64px * var(--text-scale, 1)) minmax(0,1fr)}
+.qpanel .qturn.qturn--thinking{grid-template-columns:calc(64px * var(--text-scale, 1)) minmax(0,auto) minmax(0,1fr)}
 .qpanel .vstamp,.qpanel .vrow__exp,.qpanel .qfb,.qpanel .qcite,.qpanel .qclaim__lvl{font-size:calc(11.5px * var(--text-scale, 1))}
-.qpanel .qsrcline,.qpanel .qlink,.qpanel .provfoot{font-size:calc(12px * var(--text-scale, 1))}
+.qpanel .qsrcline,.qpanel .qlink,.qpanel .provfoot,.qpanel .qsitelinks{font-size:calc(12px * var(--text-scale, 1))}
 .qpanel .qclaim,.qpanel .claim .badge{font-size:calc(12.5px * var(--text-scale, 1))}
 .qpanel .qnotice,.qpanel .vbox table,.qpanel .vbox pre,.qpanel .vbox code{font-size:calc(13px * var(--text-scale, 1))}
 .qpanel .vrow__close{font-size:calc(13.5px * var(--text-scale, 1))}
@@ -1437,6 +1438,12 @@ a.claim__src:hover{color:var(--color-signal)}
 /* answer link — "walk this in the graph →" */
 .qlink{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));display:inline-block;margin-top:7px}
 
+/* site links — the consumer's titled list of links into its own pages, under a grounded answer */
+.qsitelinks{margin-top:9px;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));line-height:1.6}
+.qsitelinks__heading{color:var(--text-secondary);font-weight:600}
+.qsitelinks__list{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.qsitelinks__link.is-inert{color:var(--text-secondary)}
+
 /* answer turns — body blocks, citations, gap markers, the withheld lead-in,
    the refused closing line, the error box and limit-notice actions */
 .vbox p,.vbox h1,.vbox h2,.vbox h3,.vbox ul,.vbox ol,.vbox table,.vbox pre{margin:0;max-width:none}
@@ -1460,8 +1467,12 @@ a.claim__src:hover{color:var(--color-signal)}
 .qnotice__act{display:inline-block;margin-top:6px}
 .qpanel__comp.is-disabled{opacity:.45}
 
-/* thinking cursor — shown while an answer is pending */
+/* thinking cursor — shown while an answer is pending; the consumer's status
+   text (if any) sits in its own column between the prompt and the cursor */
 .qcursor{display:inline-block;color:var(--color-signal);animation:qc-blink 1s steps(2) infinite}
+.qturn.qturn--thinking{grid-template-columns:56px minmax(0,auto) minmax(0,1fr);column-gap:0}
+.qstatus{padding-left:8px;color:var(--text-secondary);font-style:italic}
+.qstatus:not(:empty){padding-right:8px}
 @keyframes qc-blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.qcursor{animation:none}}
 

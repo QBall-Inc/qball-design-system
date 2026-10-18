@@ -233,6 +233,121 @@ describe("explorer link (AD-4 internal-link policy)", () => {
   });
 });
 
+describe("site links (consumer-titled, internal-link policy)", () => {
+  const withLinks = (siteLinks: GroundedTurn["siteLinks"], extra: Partial<GroundedTurn> = {}) =>
+    ({ ...groundedOf("grounded"), ...extra, siteLinks }) as GroundedTurn;
+  const silent: AnswerOptions = { onWarn: () => undefined };
+
+  it("sits after the footer and before the explorer link, keeping the consumer's heading and order", () => {
+    const slot = render(
+      withLinks(
+        {
+          heading: "related pages",
+          items: [
+            { title: "second first", url: "/notes/b" },
+            { title: "then this", url: "/notes/a?x=1#top" },
+          ],
+        },
+        { explorerLink: "/explore?e=x" },
+      ),
+      silent,
+    );
+    expect(Array.from(slot.children, (node) => node.className).slice(-3)).toEqual([
+      "provfoot",
+      "qsitelinks",
+      "qlink",
+    ]);
+    expect(text(slot, ".qsitelinks__heading")).toBe("related pages");
+    const links = Array.from(slot.querySelectorAll(".qsitelinks a"));
+    expect(links.map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
+      ["second first", "/notes/b"],
+      ["then this", "/notes/a?x=1#top"],
+    ]);
+    for (const a of links) {
+      expect(a.hasAttribute("target")).toBe(false);
+      expect(a.className).toBe("qsitelinks__link");
+    }
+    // Unbulleted lists keep their list role, named by the consumer's heading.
+    const list = slot.querySelector(".qsitelinks__list");
+    expect(list?.getAttribute("role")).toBe("list");
+    expect(list?.getAttribute("aria-label")).toBe("related pages");
+  });
+
+  it("an absolute link navigates only for an allow-listed origin", () => {
+    const turn = withLinks({
+      heading: "related pages",
+      items: [{ title: "page", url: "https://site.example/page" }],
+    });
+    const open = render(turn, { ...silent, allowedOrigins: ["https://site.example"] });
+    expect(open.querySelector(".qsitelinks a")?.getAttribute("href")).toBe(
+      "https://site.example/page",
+    );
+    const closed = render(turn, silent);
+    expect(closed.querySelector(".qsitelinks a")).toBeNull();
+    expect(closed.querySelector(".qsitelinks__link.is-inert")?.textContent).toBe("page");
+  });
+
+  it.each([
+    "javascript:globalThis.__trustPwned=1",
+    "data:text/html,<script>globalThis.__trustPwned=1</script>",
+    "//evil.example/page",
+    "https://evil.example/page",
+    "notes/relative",
+    "/\\evil.example",
+  ])("%j stays inert text and warns with the fix", (url) => {
+    const warnings: string[] = [];
+    const slot = render(withLinks({ heading: "related pages", items: [{ title: "page", url }] }), {
+      onWarn: (message) => warnings.push(message),
+    });
+    const node = slot.querySelector(".qsitelinks__link");
+    expect(node?.tagName).toBe("SPAN");
+    expect(node?.hasAttribute("href")).toBe(false);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain(url);
+    expect(warnings[0]).toContain("allowedOrigins");
+  });
+
+  it("a navigable link raises no warning", () => {
+    const warnings: string[] = [];
+    render(withLinks({ heading: "related pages", items: [{ title: "page", url: "/p" }] }), {
+      onWarn: (message) => warnings.push(message),
+    });
+    expect(warnings).toEqual([]);
+  });
+
+  it("titles and the heading stay inert text", () => {
+    const slot = render(
+      withLinks({ heading: HOSTILE_MARKUP, items: [{ title: HOSTILE_MARKUP, url: "/p" }] }),
+      silent,
+    );
+    expect(text(slot, ".qsitelinks__heading")).toBe(HOSTILE_MARKUP);
+    expect(text(slot, ".qsitelinks a")).toBe(HOSTILE_MARKUP);
+    expect(slot.querySelector(".qsitelinks img")).toBeNull();
+  });
+
+  it("no siteLinks, or an empty list, renders nothing — the DS has no default heading", () => {
+    expect(render(groundedOf("grounded")).querySelector(".qsitelinks")).toBeNull();
+    const empty = render(withLinks({ heading: "", items: [] }), silent);
+    expect(empty.querySelector(".qsitelinks")).toBeNull();
+  });
+
+  it.each([
+    [{ heading: "", items: [{ title: "page", url: "/p" }] }, /non-empty heading/],
+    [{ heading: "   ", items: [{ title: "page", url: "/p" }] }, /non-empty heading/],
+    [{ items: [{ title: "page", url: "/p" }] }, /non-empty heading/],
+    [{ heading: "related pages", items: [{ title: "", url: "/p" }] }, /items\[0\]/],
+    [{ heading: "related pages", items: [{ title: "page" }] }, /items\[0\]/],
+    [{ heading: "related pages", items: [null] }, /items\[0\]/],
+    [{ heading: "related pages", items: "nope" }, /must be an array/],
+    [null, /must be an object/],
+    ["related pages", /must be an object/],
+  ])("rejects malformed siteLinks %j", (siteLinks, message) => {
+    expect(() =>
+      render(withLinks(siteLinks as unknown as GroundedTurn["siteLinks"]), silent),
+    ).toThrow(message);
+  });
+});
+
 describe("withheld answer", () => {
   it("renders the explanation, the held-draft note, the lead-in and the traceable claim rows", () => {
     const turn = finalOf("withheld") as WithheldTurn;

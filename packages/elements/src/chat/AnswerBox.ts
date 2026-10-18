@@ -1,9 +1,10 @@
 // AnswerBox: the content of one finished bot turn, per verdict — the verdict
 // stamp row, the verdict-tinted box (structured body + feedback marks), then
-// grounded: the sources line + reading list, the provenance footer and an
-// optional explorer link; withheld: the traceable claims; refused: the
-// consumer's closing line. Composes the shipped trust atoms; every data string
-// lands through textContent / setAttribute, never innerHTML (plan AD-4).
+// grounded: the sources line + reading list, the provenance footer, the
+// consumer's optional site links and an optional explorer link; withheld: the
+// traceable claims; refused: the consumer's closing line. Composes the shipped
+// trust atoms; every data string lands through textContent / setAttribute,
+// never innerHTML (plan AD-4).
 
 import type {
   AnswerBlock,
@@ -12,9 +13,11 @@ import type {
   FinalTurn,
   GroundedTurn,
   RefusedTurn,
+  SiteLinks,
   WithheldTurn,
 } from "../answer-turn";
 import { confidenceMark } from "../confidence";
+import { defaultWarn } from "../dev-warn";
 import { sourcesLine } from "../locked-strings";
 import { isSourceUnavailable, type Claim, type ClaimSource } from "../types";
 import { el } from "../trust/dom";
@@ -46,6 +49,8 @@ export interface AnswerOptions {
   explorerLinkLabel?: string;
   /** Line before a withheld answer's traceable claims (default `here's the part i can stand behind:`). */
   withheldLead?: string;
+  /** Receives development warnings, e.g. a site link left inert (default: console.warn outside production). */
+  onWarn?: (message: string) => void;
 }
 
 export const ANSWER_DEFAULTS = {
@@ -243,6 +248,57 @@ function renderExplorerLink(raw: string, options: AnswerOptions): HTMLElement {
   return link;
 }
 
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+/**
+ * The consumer's heading and its links into its own pages, in the given order.
+ * A link failing the internal-link policy stays visible as inert text and
+ * raises a development warning naming the fix.
+ */
+function renderSiteLinks(siteLinks: SiteLinks, options: AnswerOptions): HTMLElement[] {
+  const value: unknown = siteLinks;
+  if (typeof value !== "object" || value === null) {
+    throw new RangeError("siteLinks must be an object with a heading and items.");
+  }
+  const items: unknown = siteLinks.items;
+  if (!Array.isArray(items)) throw new RangeError("siteLinks.items must be an array.");
+  if (items.length === 0) return [];
+  if (!nonEmptyString(siteLinks.heading)) {
+    throw new RangeError("siteLinks needs a non-empty heading when it has items.");
+  }
+  const allowedOrigins = options.allowedOrigins ?? [];
+  const warn = options.onWarn ?? defaultWarn;
+  const block = el("div", "qsitelinks");
+  const list = el("ul", "qsitelinks__list");
+  // list-style:none drops the list role in some screen readers; restore it,
+  // named by the consumer's heading.
+  list.setAttribute("role", "list");
+  list.setAttribute("aria-label", siteLinks.heading);
+  (items as unknown[]).forEach((item, at) => {
+    const { title, url } = (item ?? {}) as { title?: unknown; url?: unknown };
+    if (!nonEmptyString(title) || typeof url !== "string") {
+      throw new RangeError(`siteLinks.items[${String(at)}] needs a non-empty title and a url.`);
+    }
+    const href = safeInternalUrl(url, allowedOrigins);
+    const li = el("li");
+    if (href === null) {
+      warn(
+        `siteLinks: "${url}" is shown as plain text because it fails the internal-link policy. Use a root-relative path ("/…"), or add its origin to answer.allowedOrigins.`,
+      );
+      li.append(el("span", "qsitelinks__link is-inert", title));
+    } else {
+      const link = el("a", "qsitelinks__link", title);
+      link.setAttribute("href", href);
+      li.append(link);
+    }
+    list.append(li);
+  });
+  block.append(el("div", "qsitelinks__heading", siteLinks.heading), list);
+  return [block];
+}
+
 function isNoEvidence(turn: GroundedTurn): boolean {
   return turn.explanation.claims === 0 && turn.explanation.episodes === 0;
 }
@@ -258,6 +314,7 @@ function groundedParts(turn: GroundedTurn, options: AnswerOptions): HTMLElement[
     ...renderSources(turn.sources, options),
   ];
   if (turn.provenance !== undefined) parts.push(renderProvenanceFooter("answer", turn.provenance));
+  if (turn.siteLinks !== undefined) parts.push(...renderSiteLinks(turn.siteLinks, options));
   if (turn.explorerLink !== undefined) parts.push(renderExplorerLink(turn.explorerLink, options));
   return parts;
 }

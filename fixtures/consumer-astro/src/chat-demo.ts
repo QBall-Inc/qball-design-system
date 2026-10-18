@@ -33,6 +33,8 @@ declare global {
   interface Window {
     __pwned?: number;
     __chat?: { ok: true; runs: ChatRun[]; controlFired: number } | { ok: false; error: string };
+    /** Finishes the open status turn (the "status" question) with site links. */
+    __finishStatus?: () => void;
   }
 }
 
@@ -115,6 +117,33 @@ async function main(): Promise<void> {
     const handle = mount(document.body, {
       ...readConfig(),
       onAsk(text) {
+        if (text.includes("status")) {
+          // Leaves the turn thinking with the consumer's status text until the
+          // spec finishes it as a grounded answer carrying site links.
+          transcript.addUserTurn(text);
+          const turn = transcript.addBotTurn({ turnRef: `status-${String(runs.length)}` });
+          turn.start();
+          turn.setStatus("searching the notes");
+          const base = asScript(grounded, "grounded").events.find((e) => e.op === "finalize");
+          if (base?.op !== "finalize" || base.turn.verdict !== "grounded") {
+            throw new Error("grounded fixture has no grounded finalize");
+          }
+          const answer = base.turn;
+          window.__finishStatus = () => {
+            turn.finalize({
+              ...answer,
+              siteLinks: {
+                heading: "related pages",
+                items: [
+                  { title: "a page", url: "/notes/a" },
+                  { title: "another page", url: "/notes/b" },
+                ],
+              },
+            });
+          };
+          runs.push({ name: "status", drafts: [], leakedDraft: false });
+          return;
+        }
         const name = Object.keys(SCRIPTS).find((key) => text.includes(key));
         const script = name === undefined ? undefined : SCRIPTS[name]?.();
         if (name === undefined || script === undefined) throw new Error(`no fixture for "${text}"`);
