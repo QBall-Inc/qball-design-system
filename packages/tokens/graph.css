@@ -59,6 +59,9 @@
 .graphcanvas .gc-legend.is-collapsed{display:none}
 .graphcanvas .gc-lgbtn{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:color-mix(in srgb, var(--bg-primary) 72%, transparent);color:var(--text-secondary);padding:4px 8px;cursor:pointer}
 .graphcanvas .gc-lgbtn:hover{color:var(--color-signal);border-color:var(--color-signal)}
+/* The library's sage keyboard-focus ring on every canvas button (legend
+   toggle, chip "show more" / clear, retry); pointer clicks stay clean. */
+.graphcanvas button:focus-visible{outline:2px solid var(--color-signal);outline-offset:2px}
 @media (max-width:640px){.graphcanvas .gc-lgwrap{bottom:72px}}
 .graphcanvas .gc-li{display:flex;align-items:center;gap:8px;font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.5px;color:var(--text-secondary)}
 .graphcanvas .gc-sw{width:9px;height:9px;border-radius:50%}

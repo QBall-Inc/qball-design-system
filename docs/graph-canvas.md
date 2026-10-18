@@ -173,7 +173,9 @@ or when nothing is focused and the pointer is over it. It does nothing when:
 
 The canvas never binds Q (that is the chat hotkey). Clicking the canvas focuses
 it (`tabindex="-1"`, so it is not a tab stop); `destroy()` does not move focus.
-Keyboard traversal of the chrome arrives with the explorer.
+The canvas's buttons are ordinary Tab stops with the sage focus ring. The
+full interaction map and the keyboard trade-off are in
+[graph-canvas-interactions.md](graph-canvas-interactions.md).
 
 ## Rendering
 

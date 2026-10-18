@@ -525,6 +525,25 @@ describe("GraphCanvas options and copy", () => {
     expect(host.querySelector(".gc-chip")).toBeNull();
   });
 
+  it("shows the touch hint, not the mouse hint, on a coarse pointer", async () => {
+    const original = window.matchMedia;
+    window.matchMedia = (query: string) =>
+      ({ matches: query === "(pointer: coarse)" }) as MediaQueryList;
+    try {
+      await mountCanvas({ data: syntheticBundle() });
+    } finally {
+      window.matchMedia = original;
+    }
+    expect(host.querySelector(".gc-hint")!.textContent).toBe(DEFAULT_CANVAS_LABELS.hintCoarse);
+    // The default wording matches the consumer site's how-to line exactly.
+    expect(DEFAULT_CANVAS_LABELS.hintCoarse).toBe(
+      "drag to orbit · pinch to zoom · two-finger drag to pan · tap to select",
+    );
+    expect(DEFAULT_CANVAS_LABELS.hintFine).toBe(
+      "drag to orbit · alt/⌘+drag to pan · scroll to zoom · click to select · esc clears",
+    );
+  });
+
   it("fails fast on an unknown label key or a wrongly typed option", async () => {
     await expect(
       mountWith(host, { data: syntheticBundle(), labels: { nope: "x" } as never }, deps),

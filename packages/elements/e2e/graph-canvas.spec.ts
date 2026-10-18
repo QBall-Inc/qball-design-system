@@ -160,6 +160,115 @@ test.describe("mouse and keyboard", () => {
     expect((await lastEvent(page))?.type).toBe("clear");
   });
 
+  test("Esc does nothing to the graph while a dialog is open", async ({ page }) => {
+    await mounted(page);
+    const target = await topLabel(page);
+    const chip = page.locator("#host .gc-chip");
+    await page.mouse.click(target.x, target.y);
+    await expect(chip).toBeVisible();
+    await page.evaluate(() => (window.__gc.events.length = 0));
+
+    // A native modal dialog holds focus; its own Esc closes it, the graph keeps its selection.
+    await page.evaluate(() => {
+      const dialog = document.createElement("dialog");
+      dialog.append(Object.assign(document.createElement("button"), { textContent: "ok" }));
+      document.body.append(dialog);
+      dialog.showModal();
+    });
+    await page.keyboard.press("Escape");
+    await expect(page.locator("dialog")).not.toHaveAttribute("open");
+    await expect(chip).toBeVisible();
+
+    // An aria-modal overlay (the chat overlay's shape) while focus is still on the canvas.
+    await page.locator("#host canvas").focus();
+    await expect(page.locator("#host canvas")).toBeFocused();
+    await page.evaluate(() => {
+      const overlay = document.createElement("div");
+      overlay.id = "overlay";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.textContent = "overlay";
+      document.body.append(overlay);
+    });
+    await page.keyboard.press("Escape");
+    await expect(chip).toBeVisible();
+    expect(await events(page)).toEqual([]);
+
+    // Once the overlay closes, the same Esc clears the selection.
+    await page.evaluate(() => document.getElementById("overlay")!.remove());
+    await page.keyboard.press("Escape");
+    await expect(chip).toBeHidden();
+    expect((await lastEvent(page))?.type).toBe("clear");
+  });
+
+  test("with nothing selected, Esc recentres a panned view", async ({ page }) => {
+    await mounted(page, { draggable: false });
+    const before = await labelMap(page);
+    await page.keyboard.down("Alt");
+    await page.mouse.move(450, 300);
+    await page.mouse.down();
+    await page.mouse.move(540, 360, { steps: 10 });
+    await page.mouse.up();
+    await page.keyboard.up("Alt");
+    const offset = (now: Map<string, PlacedLabel>): number => {
+      const pairs = shared(before, now);
+      expect(pairs.length).toBeGreaterThan(3);
+      return Math.max(...pairs.map(([a, b]) => Math.hypot(b.x - a.x, b.y - a.y)));
+    };
+    // Precondition: the pan really moved the view.
+    expect(offset(await labelMap(page))).toBeGreaterThan(20);
+    await page.keyboard.press("Escape");
+    await expect.poll(async () => offset(await labelMap(page))).toBeLessThan(2);
+    expect(await events(page)).toEqual([]);
+  });
+
+  test("Tab walks the selection chip's buttons with the sage ring and then leaves the canvas", async ({
+    page,
+  }) => {
+    await mounted(page);
+    const target = await topLabel(page);
+    await page.mouse.click(target.x, target.y);
+    await expect(page.locator("#host .gc-chip")).toBeVisible();
+    // A mouse click on the canvas gives no focus ring.
+    expect(await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle)).toBe(
+      "none",
+    );
+    const [r, g, b] = await tokenRgb(page, "--color-signal");
+
+    const visited: string[] = [];
+    let left = false;
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press("Tab");
+      const focused = await page.evaluate(() => {
+        const node = document.activeElement as HTMLElement | null;
+        if (!node || !document.getElementById("host")!.contains(node)) return null;
+        const style = getComputedStyle(node);
+        return {
+          name: node.getAttribute("aria-label") ?? node.textContent ?? "",
+          outline: `${style.outlineStyle} ${style.outlineWidth} ${style.outlineColor}`,
+        };
+      });
+      if (focused === null) {
+        left = true;
+        break;
+      }
+      visited.push(focused.name);
+      expect(focused.outline).toBe(`solid 2px rgb(${r}, ${g}, ${b})`);
+    }
+    // The top entity has more neighbours than the first budget, so "show more" shows.
+    expect(visited).toEqual(["show more", "clear selection"]);
+    expect(left).toBe(true);
+
+    // Pressing a chip button with the mouse focuses it without the ring (focus-visible only).
+    const more = page.locator("#host .gc-chip button", { hasText: "show more" });
+    const box = (await more.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect(more).toBeFocused();
+    await expect(more).toHaveCSS("outline-style", "none");
+    await page.mouse.up();
+  });
+
   test("dragging empty stage orbits: labels move unevenly and nothing is selected", async ({
     page,
   }) => {
@@ -258,6 +367,19 @@ test.describe("touch", () => {
     const event = await lastEvent(page);
     expect(event?.type).toBe("select");
     expect(event?.detail.node?.name).toBe(target.name);
+  });
+
+  test("the legend toggle is the first Tab stop and shows the sage ring", async ({ page }) => {
+    await mounted(page, {}, { width: 380, height: 600 });
+    await page.keyboard.press("Tab");
+    const toggle = page.locator("#host .gc-lgbtn");
+    await expect(toggle).toBeFocused();
+    const [r, g, b] = await tokenRgb(page, "--color-signal");
+    await expect(toggle).toHaveCSS("outline-style", "solid");
+    await expect(toggle).toHaveCSS("outline-width", "2px");
+    await expect(toggle).toHaveCSS("outline-color", `rgb(${r}, ${g}, ${b})`);
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
   });
 
   test("a two-finger pinch zooms the cloud", async ({ page }) => {
