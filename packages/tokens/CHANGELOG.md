@@ -1,5 +1,11 @@
 # @qball-inc/tokens
 
+## 1.1.4
+
+### Patch Changes
+
+- d12eba8: Chat styles for the answer-turn status text (`.qstatus`, `.qturn--thinking`) and the site-links list (`.qsitelinks*`), including the phone type scale.
+
 ## 1.1.3
 
 ### Patch Changes
