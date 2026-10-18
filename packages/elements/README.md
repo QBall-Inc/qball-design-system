@@ -37,8 +37,8 @@ components:
 - **Trust components:** claim cards, source rows, provenance footers and verdict
   stamps, for showing what an answer rests on anywhere on a page.
 - **Knowledge-graph canvas:** an interactive 3D view of entities and the
-  relationships between them, with filtering, selection and labels. It is in
-  the repo and the gallery now, and reaches npm with `0.4.0`.
+  relationships between them, with filtering, selection and labels. On npm
+  since `0.4.0`.
 
 Each component is a plain function or `mount()` call that takes data and builds
 DOM. Components never fetch: your site calls its own backend and maps the reply
@@ -100,7 +100,7 @@ no product copy.
 | `@qball-inc/elements/chat`  | The launcher and chat panel (`mount`) and the answer turns (`mountTranscript`)               | [Launcher and overlay](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/chat-launcher.md) · [Answer turns](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/qubae-answers.md) |
 | `@qball-inc/elements/trust` | Claim card, source row and reading list, provenance footer, verdict stamp, feedback marks    | [Claim card](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/claim-card.md) · [Verdict stamp](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/verdict-stamp.md)             |
 | `@qball-inc/elements`       | The input model: types, a validator, the answer-turn model and the shared wording formatters | [Data contract](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/qubrain-data-contract.md)                                                                                                   |
-| `@qball-inc/elements/graph` | The 3D knowledge-graph canvas (`GraphCanvas.mount`); needs the optional peer `three`         | [Graph canvas](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/graph-canvas.md) — in the gallery and the repo now; published to npm with `0.4.0`                                            |
+| `@qball-inc/elements/graph` | The 3D knowledge-graph canvas (`GraphCanvas.mount`); needs the optional peer `three`         | [Graph canvas](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/graph-canvas.md) — on npm since `0.4.0`, and in the gallery                                                                  |
 
 The full adoption guide, with every component, the data model and source badges, is the
 [consumer guide](https://github.com/QBall-Inc/qball-design-system/blob/main/docs/consumer-handback-elements.md).
