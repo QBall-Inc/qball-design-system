@@ -567,3 +567,78 @@ describe("EntityPanel — stats, wording, destroy, fail fast, inert text", () =>
     expect(pwned()).toBe(false);
   });
 });
+
+describe("EntityPanel — head action", () => {
+  const action = () => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "hide";
+    return button;
+  };
+  const top = () => host.querySelector(".epanel__head > .epanel__top");
+
+  it("without one, the header has no top row (the shipped layout is unchanged)", () => {
+    const panel = mount(host, base());
+    panel.show({ path: [A, B] });
+    expect(top()).toBeNull();
+    expect(host.querySelector(".epanel__head > .epanel__crumbs")).not.toBeNull();
+  });
+
+  it("shares the top row with the idle title, or stands alone when there is none", () => {
+    const hide = action();
+    mount(host, base({ headAction: hide, labels: { idleTitle: "the graph" } }));
+    expect([...top()!.children].map((n) => n.className)).toEqual([
+      "epanel__name",
+      "epanel__action",
+    ]);
+    expect(top()!.lastElementChild).toBe(hide);
+    host.replaceChildren();
+    const alone = action();
+    mount(host, base({ headAction: alone }));
+    expect([...top()!.children]).toEqual([alone]);
+    expect(text(".epanel__head .epanel__meta")).toBe("42 episodes");
+  });
+
+  it("shares the top row with the click path; the name and meta follow below", () => {
+    const hide = action();
+    const panel = mount(host, base({ headAction: hide }));
+    panel.show({ path: [A, B] });
+    const row = top()!;
+    expect(row.firstElementChild!.className).toBe("epanel__crumbs");
+    expect(row.lastElementChild).toBe(hide);
+    expect(row.nextElementSibling!.className).toBe("epanel__name");
+  });
+
+  it("keeps the same element and its focus across redraws, and its clicks are not panel actions", () => {
+    const hide = action();
+    let hides = 0;
+    hide.addEventListener("click", () => (hides += 1));
+    const crumbs: number[] = [];
+    const selected: BundleNode[] = [];
+    const panel = mount(
+      host,
+      base({
+        headAction: hide,
+        onCrumb: (i) => crumbs.push(i),
+        onSelect: (n) => selected.push(n),
+      }),
+    );
+    panel.show({ path: [A] });
+    hide.focus();
+    panel.show({ path: [A, B], neighbors: [{ node: C, typed: true, weight: 2 }] });
+    expect(top()!.lastElementChild).toBe(hide);
+    expect(document.activeElement).toBe(hide);
+    panel.idle();
+    expect(document.activeElement).toBe(hide);
+    hide.click();
+    expect(hides).toBe(1);
+    expect(crumbs).toEqual([]);
+    expect(selected).toEqual([]);
+  });
+
+  it("fails fast when it is not an element", () => {
+    expect(() => mount(host, base({ headAction: "hide" as never }))).toThrow(
+      "headAction must be an HTMLElement.",
+    );
+  });
+});

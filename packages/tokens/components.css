@@ -1255,7 +1255,7 @@ a.claim__src:hover{color:var(--color-signal)}
 .facetbar__dom{font-size:calc(9.5px * var(--text-scale, 1));letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-right:3px}
 .fchip{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.3px;padding:3px 9px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);cursor:pointer}
 .fchip:hover{border-color:var(--color-signal);color:var(--color-signal)}
-.fchip[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal);border-color:var(--color-signal)}
+.fchip[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong);border-color:var(--color-signal)}
 /* incomplete facet data: the chip still filters; the mark says its count may miss entities */
 .fchip__inc{margin-left:4px;color:var(--color-highlight)}
 .fchip[aria-pressed="true"] .fchip__inc{color:inherit}
@@ -1265,6 +1265,8 @@ a.claim__src:hover{color:var(--color-signal)}
 /* ---- EntityPanel: the reading surface beside the canvas ---- */
 .epanel{display:flex;flex-direction:column;background:var(--bg-primary);min-height:0}
 .epanel__head{padding:14px 16px 12px;border-bottom:1px solid var(--border-default);display:flex;flex-direction:column;gap:6px}
+.epanel__top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.epanel__action{margin-left:auto;flex:none}
 .epanel__crumbs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));color:var(--text-secondary)}
 .epanel__crumbs button{border:0;background:none;padding:0;font:inherit;color:var(--anno-source);cursor:pointer}
 .epanel__crumbs button:hover{color:var(--color-signal)}

@@ -305,6 +305,27 @@ describe("site links (consumer-titled, internal-link policy)", () => {
     expect(list.classList.contains("open")).toBe(false);
   });
 
+  it("each toggle line names its own list in aria-controls (sources and site links, ids unique per answer)", () => {
+    const pairs = [0, 1].flatMap(() => {
+      const slot = render(
+        withLinks({ heading: "related pages", items: [{ title: "page", url: "/p" }] }),
+        silent,
+      );
+      return [...slot.querySelectorAll<HTMLButtonElement>(".qsrcline")].map((line) => {
+        const id = line.getAttribute("aria-controls") ?? "";
+        return { id, list: slot.querySelector(`[id="${id}"]`), next: line.nextElementSibling };
+      });
+    });
+    // both lines in each of the two answers
+    expect(pairs).toHaveLength(4);
+    for (const { id, list, next } of pairs) {
+      expect(id).not.toBe("");
+      expect(list).not.toBeNull();
+      expect(list).toBe(next);
+    }
+    expect(new Set(pairs.map((p) => p.id)).size).toBe(4);
+  });
+
   it("an absolute link navigates only for an allow-listed origin", () => {
     const turn = withLinks({
       heading: "related pages",

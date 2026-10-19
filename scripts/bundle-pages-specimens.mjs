@@ -29,6 +29,7 @@ const SPECIMENS = [
   { name: "graph-canvas", entry: "specimens/graph-canvas.entry.mjs" },
   { name: "facet-filter-bar", entry: "specimens/facet-filter-bar.entry.mjs" },
   { name: "entity-panel", entry: "specimens/entity-panel.entry.mjs" },
+  { name: "graph-explorer", entry: "specimens/graph-explorer.entry.mjs" },
 ];
 
 if (!existsSync(ELEMENTS_DIST)) {

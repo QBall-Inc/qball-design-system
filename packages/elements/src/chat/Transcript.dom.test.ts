@@ -333,7 +333,8 @@ describe("container-agnostic", () => {
     transcript.addNotice("the chat is resting this month.", {
       action: { label: "the explorer is awake →", href: "/explore" },
     });
-    return container.innerHTML;
+    // Toggle-to-list ids are unique per page by design; compare everything else.
+    return container.innerHTML.replace(/qb-srclist-\d+/g, "qb-srclist-N");
   }
 
   it("renders identically in a bare page div and inside the overlay body", () => {

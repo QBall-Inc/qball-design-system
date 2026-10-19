@@ -201,7 +201,10 @@ test("the same conversation renders identically in the overlay and inline, with 
       const para = box?.querySelector("p");
       const turn = inline.querySelector(".qturn");
       return {
-        same: overlay.innerHTML === inline.innerHTML,
+        // toggle-to-list ids are unique per page by design; compare everything else
+        same:
+          overlay.innerHTML.replace(/qb-srclist-\d+/g, "N") ===
+          inline.innerHTML.replace(/qb-srclist-\d+/g, "N"),
         turns: inline.querySelectorAll(".qturn").length,
         boxes: [...inline.querySelectorAll(".vbox")].map((node) => node.className),
         draftShown: (window.__drafts ?? []).some((draft) => inline.textContent.includes(draft)),

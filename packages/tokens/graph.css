@@ -15,7 +15,7 @@
   --bg-primary:var(--stage-panel-bg);--bg-surface:var(--stage-panel-surface);
   --text-primary:var(--stage-panel-text-primary);--text-secondary:var(--stage-panel-text-secondary);--text-muted:var(--stage-panel-text-muted);
   --border-default:var(--stage-panel-border);--border-strong:var(--stage-panel-border-strong);
-  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--highlight-bg:var(--stage-highlight-bg);
+  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--signal-strong:var(--stage-signal-strong);--highlight-bg:var(--stage-highlight-bg);
   --data-up:var(--stage-data-up);--data-down:var(--stage-data-down);--data-warn:var(--stage-data-warn);--data-info:var(--stage-data-info);--data-flat:var(--stage-data-flat);
   --data-up-bg:var(--stage-data-up-bg);--data-down-bg:var(--stage-data-down-bg);--data-warn-bg:var(--stage-data-warn-bg);--data-info-bg:var(--stage-data-info-bg);
   --anno-source:var(--stage-anno-source);--anno-source-bg:var(--stage-anno-source-bg);
@@ -25,7 +25,7 @@
   --bg-primary:var(--stage-bg);--bg-surface:var(--stage-surface);
   --text-primary:var(--stage-text-primary);--text-secondary:var(--stage-text-secondary);--text-muted:var(--stage-text-muted);
   --border-default:var(--stage-border);--border-strong:var(--stage-border-strong);
-  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--highlight-bg:var(--stage-highlight-bg);
+  --color-signal:var(--stage-signal);--color-highlight:var(--stage-highlight);--signal-bg:var(--stage-signal-bg);--signal-strong:var(--stage-signal-strong);--highlight-bg:var(--stage-highlight-bg);
   --data-up:var(--stage-data-up);--data-down:var(--stage-data-down);--data-warn:var(--stage-data-warn);--data-info:var(--stage-data-info);--data-flat:var(--stage-data-flat);
   --anno-source:var(--stage-anno-source);--anno-source-bg:var(--stage-anno-source-bg);
   color-scheme:dark;
@@ -78,7 +78,8 @@
 .gx__panel{position:absolute;top:44px;right:12px;bottom:42px;width:400px;max-width:calc(100% - 24px);z-index:8;display:flex;background:color-mix(in srgb,var(--stage-bg) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--stage-panel-border-strong);border-radius:var(--radius-md);overflow:hidden;transition:transform var(--dur-base) var(--ease-out),opacity var(--dur-base) var(--ease-out)}
 .gx__panel .epanel{flex:1;min-width:0;background:transparent}
 .gx__panel.is-hidden{transform:translateX(calc(100% + 24px));opacity:0;pointer-events:none}
-.gx__pshow{position:absolute;top:44px;right:12px;z-index:8;font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;padding:6px 10px;border:1px solid var(--stage-panel-border-strong);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--stage-bg) 88%,transparent);backdrop-filter:blur(8px);color:var(--stage-text-muted);cursor:pointer}
+/* --gx-top: set by the explorer so the pill and the ≤900px sheet sit below an expanded filters strip */
+.gx__pshow{position:absolute;top:var(--gx-top,44px);right:12px;z-index:8;font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;padding:6px 10px;border:1px solid var(--stage-panel-border-strong);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--stage-bg) 88%,transparent);backdrop-filter:blur(8px);color:var(--stage-text-muted);cursor:pointer}
 .gx__pshow:hover{color:var(--stage-signal);border-color:var(--stage-signal)}
 .gx__pshow b{color:var(--stage-signal);font-weight:600;margin-left:6px;text-transform:none;letter-spacing:0;display:inline-block;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
 .gx__phide{border:0;background:none;font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted);cursor:pointer;padding:2px 0;align-self:flex-start;white-space:nowrap}
@@ -95,7 +96,7 @@
 .gx__facets .facetbar__dom{font-size:calc(9px * var(--text-scale, 1))}
 .gx .epanel{min-width:0}
 @media (max-width:900px){
-  .gx__panel{left:12px;right:12px;width:auto;top:44px;bottom:12px;max-height:none}
+  .gx__panel{left:12px;right:12px;width:auto;top:var(--gx-top,44px);bottom:12px;max-height:none}
   .gx__panel.is-hidden{transform:translateY(calc(100% + 24px))}
   .gx:has(.gx__panel:not(.is-hidden)) .gx__facets{right:0;border-right:0}
 }

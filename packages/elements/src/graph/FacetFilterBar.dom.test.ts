@@ -250,6 +250,24 @@ describe("FacetFilterBar — data swap, destroy, fail fast, inert text", () => {
     expect(changes.length).toBe(reported);
   });
 
+  it("setData takes new domain labels, keeps the old ones when given none, and fails fast on bad ones", () => {
+    const doms = () => [...host.querySelectorAll(".facetbar__dom")].map((n) => n.textContent);
+    const bar = mount(host, {
+      nodes: pairedNodes,
+      taxonomy: pairedTaxonomy,
+      domainLabels: { a: "first" },
+    });
+    expect(doms()[0]).toBe("first");
+    bar.setData(pairedNodes, pairedTaxonomy, { a: "renamed" });
+    expect(doms()[0]).toBe("renamed");
+    bar.setData(pairedNodes);
+    expect(doms()[0]).toBe("renamed");
+    expect(() => bar.setData(pairedNodes, undefined, { x: 1 } as never)).toThrow(
+      "domainLabels.x must be a string.",
+    );
+    expect(doms()[0]).toBe("renamed");
+  });
+
   it("destroy removes the bar and stops reporting", () => {
     const changes: FacetFilterChange[] = [];
     const bar = mount(host, {

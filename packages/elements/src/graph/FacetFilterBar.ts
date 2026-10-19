@@ -42,8 +42,15 @@ export interface FacetFilterBarHandle {
   readonly activeCount: number;
   /** Deactivates every chip (calls onChange when any was active). */
   clear(): void;
-  /** Rebuilds the chips for a new bundle (and taxonomy); every chip starts inactive, without calling onChange. */
-  setData(nodes: readonly BundleNode[], taxonomy?: FacetTaxonomy): void;
+  /**
+   * Rebuilds the chips for a new bundle (and taxonomy, and domain labels);
+   * every chip starts inactive, without calling onChange.
+   */
+  setData(
+    nodes: readonly BundleNode[],
+    taxonomy?: FacetTaxonomy,
+    domainLabels?: Readonly<Record<string, string>>,
+  ): void;
   /** Removes the bar and its listeners. */
   destroy(): void;
 }
@@ -68,7 +75,7 @@ export function mount(host: HTMLElement, options: FacetFilterBarOptions): FacetF
     throw new TypeError("onChange must be a function.");
   }
   const labels = resolveLabels(DEFAULT_FACET_BAR_LABELS, options.labels);
-  const domainLabels = requireDomainLabels(options.domainLabels);
+  let domainLabels = requireDomainLabels(options.domainLabels);
   const onChange = options.onChange;
 
   let model: FacetModel = buildFacetModel(options.nodes, options.taxonomy);
@@ -177,11 +184,14 @@ export function mount(host: HTMLElement, options: FacetFilterBarOptions): FacetF
       active.clear();
       changed();
     },
-    setData(nodes, nextTaxonomy) {
+    setData(nodes, nextTaxonomy, nextDomainLabels) {
       if (!Array.isArray(nodes)) throw new TypeError("nodes must be an array of bundle nodes.");
       const next = nextTaxonomy ?? taxonomy;
+      const labelsNext =
+        nextDomainLabels === undefined ? domainLabels : requireDomainLabels(nextDomainLabels);
       model = buildFacetModel(nodes, next);
       taxonomy = next;
+      domainLabels = labelsNext;
       render();
     },
     destroy() {

@@ -220,6 +220,24 @@ function newestDate(sources: readonly ClaimSource[]): string | null {
  * out; when every source is unavailable there is no date for the line, so the
  * list shows on its own.
  */
+let toggledLists = 0;
+
+/**
+ * Makes `toggle` open and close `list` (collapsed to start): aria-expanded
+ * follows the state and aria-controls names the list by a generated id.
+ */
+function wireListToggle(toggle: HTMLButtonElement, list: HTMLElement): void {
+  toggledLists += 1;
+  list.id = `qb-srclist-${String(toggledLists)}`;
+  toggle.type = "button";
+  toggle.setAttribute("aria-controls", list.id);
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.addEventListener("click", () => {
+    const open = list.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+}
+
 function renderSources(sources: readonly ClaimSource[], options: AnswerOptions): HTMLElement[] {
   if (sources.length === 0) return [];
   const list = renderReadingList(sources, {
@@ -240,12 +258,7 @@ function renderSources(sources: readonly ClaimSource[], options: AnswerOptions):
     "qsrcline ground-wave ground-wave--sources",
     sourcesLine({ sources: list.childElementCount, newestDate: newest }),
   );
-  toggle.type = "button";
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.addEventListener("click", () => {
-    const open = list.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", String(open));
-  });
+  wireListToggle(toggle, list);
   return [toggle, list];
 }
 
@@ -304,12 +317,7 @@ function renderSiteLinks(
     "qsrcline ground-wave ground-wave--sources qsitelinks__line",
     siteLinks.heading,
   );
-  toggle.type = "button";
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.addEventListener("click", () => {
-    const open = list.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", String(open));
-  });
+  wireListToggle(toggle, list);
   return [toggle, list];
 }
 

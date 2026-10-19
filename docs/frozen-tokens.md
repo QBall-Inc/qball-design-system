@@ -64,6 +64,7 @@ pinned** — these are guaranteed never to move in 1.x: `--color-signal`, `--col
 | `--border-default` | `rgba(0,0,0,.06)` | `rgba(255,255,255,.06)` |
 | `--border-strong` | `rgba(0,0,0,.14)` | `rgba(255,255,255,.14)` |
 | `--signal-bg` | `rgba(63,107,91,.10)` | `rgba(91,158,135,.15)` |
+| `--signal-strong` | `#3F6B5B` | `#6DB39A` |
 | `--highlight-bg` | `rgba(180,83,9,.10)` | `rgba(217,119,6,.15)` |
 
 ### Overlay / scrim (theme-independent)
@@ -177,6 +178,7 @@ reference them directly.
 |---|---|
 | `--stage-signal` / `--stage-highlight` | `#5B9E87` / `#D97706` |
 | `--stage-signal-bg` / `--stage-highlight-bg` | `rgba(91,158,135,.15)` / `rgba(217,119,6,.15)` |
+| `--stage-signal-strong` | `#6DB39A` |
 | `--stage-data-up` / `-down` / `-warn` / `-info` / `-flat` | `#4FB07A` / `#E2705F` / `#D9B43C` / `#5B9BD6` / `#A8A29E` |
 | `--stage-data-up-bg` / `-down-bg` / `-warn-bg` / `-info-bg` | `rgba(79,176,122,.15)` / `rgba(226,112,95,.15)` / `rgba(217,180,60,.16)` / `rgba(91,155,214,.15)` |
 | `--stage-anno-source` / `--stage-anno-source-bg` | `#93A7B5` / `rgba(147,167,181,.16)` |

@@ -52,6 +52,12 @@ export interface EntityPanelOptions {
   onShowMore?: () => void;
   /** Receives development warnings, e.g. why a hop's detail could not be shown (default: console.warn outside production). */
   onWarn?: (message: string) => void;
+  /**
+   * One control of your own (e.g. a "hide" button) shown at the right of the
+   * header's top row, beside the click path or the idle title. The panel
+   * re-appends this same element on every redraw and keeps its focus.
+   */
+  headAction?: HTMLElement;
 }
 
 export interface EntityPanelHandle {
@@ -109,6 +115,10 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
   requireFunction("onSelect", options.onSelect, true);
   requireFunction("onShowMore", options.onShowMore, true);
   requireFunction("onWarn", options.onWarn, true);
+  const headAction = options.headAction;
+  if (headAction !== undefined && !(headAction instanceof HTMLElement)) {
+    throw new TypeError("headAction must be an HTMLElement.");
+  }
   const warn = options.onWarn ?? defaultWarn;
   const labels = resolveLabels(DEFAULT_PANEL_LABELS, options.labels);
   const badges = options.sourceBadges === undefined ? {} : { sourceBadges: options.sourceBadges };
@@ -129,11 +139,24 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
   const foot = el("div", "epanel__foot");
   root.append(head, scroll, foot);
 
+  /** The header's first element, sharing a row with the consumer's action when there is one. */
+  function topRow(first: HTMLElement | null): void {
+    if (headAction === undefined) {
+      if (first !== null) head.append(first);
+      return;
+    }
+    const row = el("div", "epanel__top");
+    if (first !== null) row.append(first);
+    headAction.classList.add("epanel__action");
+    row.append(headAction);
+    head.append(row);
+  }
+
   function renderHead(): void {
     head.replaceChildren();
     const current = path.at(-1);
     if (current === undefined) {
-      if (labels.idleTitle !== "") head.append(el("h3", "epanel__name", labels.idleTitle));
+      topRow(labels.idleTitle === "" ? null : el("h3", "epanel__name", labels.idleTitle));
       head.append(el("div", "epanel__meta", labels.idleMeta(stats.episodes)));
       return;
     }
@@ -159,7 +182,8 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
       "epanel__meta",
       labels.episodes(current.eps) + (alias === undefined ? "" : ` · ${labels.aka(alias)}`),
     );
-    head.append(crumbs, name, meta);
+    topRow(crumbs);
+    head.append(name, meta);
     const tags = [...(current.facets?.domains ?? []), ...(current.facets?.sub_domains ?? [])];
     if (tags.length > 0) {
       const box = el("div", "epanel__tags");
@@ -246,6 +270,7 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
   function focusKey(): string | null {
     const active = document.activeElement;
     if (!(active instanceof HTMLElement) || !root.contains(active)) return null;
+    if (headAction?.contains(active) === true) return "action";
     if (active.dataset["crumb"] !== undefined) return "crumb";
     if (active.classList.contains("nrow--more")) return "more";
     if (active.classList.contains("epanel__retry")) return "retry";
@@ -261,7 +286,9 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
     if (key === null) return;
     const rows = [...scroll.querySelectorAll<HTMLElement>(".epanel__rows .nrow")];
     let target: HTMLElement | null | undefined = null;
-    if (key.startsWith("row:")) {
+    if (key === "action") {
+      target = headAction;
+    } else if (key.startsWith("row:")) {
       target = rows.find((row) => {
         const node = rowNodes.get(row);
         return node !== undefined && `row:${String(node.id)}` === key;
@@ -361,7 +388,7 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
 
   function onClick(event: MouseEvent): void {
     const button = event.target instanceof Element ? event.target.closest("button") : null;
-    if (button === null || !root.contains(button)) return;
+    if (button === null || !root.contains(button) || headAction?.contains(button) === true) return;
     const crumb = button.dataset["crumb"];
     if (crumb !== undefined) {
       const index = Number(crumb);

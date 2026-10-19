@@ -6,6 +6,7 @@
 
 import { mount } from "./canvas";
 import { mount as mountEntityPanel } from "./EntityPanel";
+import { mount as mountGraphExplorer } from "./GraphExplorer";
 import { mount as mountFacetFilterBar } from "./FacetFilterBar";
 
 /** Identifies which public entry a module was loaded from. */
@@ -56,3 +57,16 @@ export type { ChipCount, FacetChip, FacetModel, FacetTaxonomy } from "./facets";
 
 export type { FacetBarLabels, PanelLabels } from "./panel-copy";
 export { DEFAULT_FACET_BAR_LABELS, DEFAULT_PANEL_LABELS } from "./panel-copy";
+
+/** The assembled explorer: canvas, facet chips and entity panel in one dark-stage frame. */
+export const GraphExplorer = Object.freeze({ mount: mountGraphExplorer });
+export type {
+  ExplorerCanvasOptions,
+  ExplorerPathDetail,
+  GraphExplorerEventMap,
+  GraphExplorerEventType,
+  GraphExplorerHandle,
+  GraphExplorerOptions,
+} from "./GraphExplorer";
+export type { ExplorerLabels } from "./explorer-copy";
+export { DEFAULT_EXPLORER_LABELS } from "./explorer-copy";

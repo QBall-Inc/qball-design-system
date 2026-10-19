@@ -185,7 +185,8 @@ turn.finalize({
   ↗), and raises a development warning through `onWarn` naming the URL and the
   fix.
 - Markup: `button.qsrcline.ground-wave.ground-wave--sources.qsitelinks__line`
-  (`aria-expanded` mirrors the state), then `div.srclist.qsrclist.qsitelinks`
+  (`aria-expanded` mirrors the state; `aria-controls` names the list, as on the
+  sources line), then `div.srclist.qsrclist.qsitelinks`
   (`.open` when expanded) holding
   `.srcrow.qsitelinks__link` rows (`a`, or `div.is-inert` when not navigable).
   Rows are plain `div`/`a` like the reading list, with no list role.

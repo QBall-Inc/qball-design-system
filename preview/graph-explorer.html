@@ -1,0 +1,53 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GraphExplorer — assembled knowledge-graph explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<link rel="stylesheet" href="../packages/tokens/graph.css">
+<style>
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  #explorer{height:max(520px, calc(100vh - 220px));max-width:1200px}
+  .events{margin:8px 0 0;min-height:1.4em;font-size:11px;color:var(--text-secondary);max-width:1200px}
+  .note{margin:14px 0 0;font-size:10.5px;color:var(--text-muted);max-width:1200px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:1200px}
+  html[data-specimens="ready"] .pending{display:none}
+  @media (max-width:720px){ body{padding:16px} #explorer{height:max(460px, calc(100vh - 240px))} }
+</style>
+</head><body>
+<div class="head">
+  <div>
+    <div class="eyebrow">Organism · QuBrain graph family · @qball-inc/elements/graph</div>
+    <h3>GraphExplorer · canvas + facet chips + entity panel</h3>
+  </div>
+  <div class="seg-th" role="group" aria-label="Theme">
+    <button data-theme-set="light" aria-pressed="true">light</button>
+    <button data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+<p class="pending">Live specimen not loaded. This page renders the built package: run <code>pnpm --filter @qball-inc/elements build</code> and <code>node scripts/bundle-pages-specimens.mjs</code>, or view it on the deployed gallery.</p>
+<div id="explorer"></div>
+<p class="events" id="events" aria-live="polite"></p>
+<p class="note">Synthetic mock bundle (pseudonymised); hop claims come from the input-model fixtures through the detail callback, as a consumer would supply them. Click an entity, then a connection, to narrate the hop; crumbs step back, Esc clears. Every overlay starts minimized. Above 900px the details panel opens on select; at 900px and below it is a bottom sheet you open from the pill. The whole frame stays on the dark stage in either page theme. The explorer never fetches, never writes the URL and never touches the page body: it reports through events (shown above).</p>
+<script type="module" src="../specimens/graph-explorer.bundle.js"></script>
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));
+    btns.forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  }));
+</script>
+</body></html>

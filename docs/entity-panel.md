@@ -93,8 +93,9 @@ Handle:
 
 - `active` and `activeCount`.
 - `clear()`: reports a change only if a chip was active.
-- `setData(nodes, taxonomy?)`: rebuilds the chips with none active and reports
-  no change, because the canvas clears its own filter on `setData`.
+- `setData(nodes, taxonomy?, domainLabels?)`: rebuilds the chips with none
+  active and reports no change, because the canvas clears its own filter on
+  `setData`. Omitted taxonomy or labels keep the current ones.
 - `destroy()`.
 
 ### Incomplete facet data
@@ -135,6 +136,7 @@ previous content is replaced.
 | `onSelect`     | `(node) => void`                                 | A connection row was activated.                                                   |
 | `onShowMore`   | `() => void`                                     | The "show more" row was activated.                                                |
 | `onWarn`       | `(message) => void`                              | Development warnings, e.g. why a hop's detail could not be shown.                 |
+| `headAction`   | `HTMLElement`                                    | One control of yours (e.g. a hide button) at the right of the header's top row.   |
 
 Handle:
 
@@ -150,6 +152,11 @@ Handle:
 Keyboard focus survives redraws: a crumb or row that changes the selection hands
 focus to the new current crumb, "show more" keeps it (or moves it to the last
 row once every row is shown), and a new selection scrolls the body to the top.
+
+With `headAction`, the header's first row holds the click path (or the idle
+title) on the left and your control on the right. The panel re-appends the same
+element on every redraw and keeps its focus; its clicks are yours, not panel
+actions. The explorer puts its `hide` control there.
 
 The panel owns no click path. Push, truncate and re-select in your code, as in
 the example above.

@@ -53,6 +53,7 @@
   --border-default:  rgba(0, 0, 0, 0.06);
   --border-strong:   rgba(0, 0, 0, 0.14);
   --signal-bg:       rgba(63, 107, 91, 0.10);
+  --signal-strong:   #3F6B5B;   /* sage text on a --signal-bg fill */
   --highlight-bg:    rgba(180, 83, 9, 0.10);
   /* Modal/overlay scrim — the brand's no-shadow lift partner (dims the page
      behind a dialog). Theme-independent dark veil, matching the preview cards;
@@ -125,6 +126,7 @@
   --border-default:  rgba(255, 255, 255, 0.06);
   --border-strong:   rgba(255, 255, 255, 0.14);
   --signal-bg:       rgba(91, 158, 135, 0.15);
+  --signal-strong:   #6DB39A;   /* brighter sage: AA on a --signal-bg fill */
   --highlight-bg:    rgba(217, 119, 6, 0.15);
 
   /* Finance / data palette — luminous for charcoal */
@@ -157,6 +159,7 @@
     --border-default:  rgba(255, 255, 255, 0.06);
     --border-strong:   rgba(255, 255, 255, 0.14);
     --signal-bg:       rgba(91, 158, 135, 0.15);
+    --signal-strong:   #6DB39A;
     --highlight-bg:    rgba(217, 119, 6, 0.15);
     --data-up:       #4FB07A;
     --data-down:     #E2705F;
@@ -500,6 +503,7 @@ hr, .rule {
   --stage-signal:          #5B9E87;
   --stage-highlight:       #D97706;
   --stage-signal-bg:       rgba(91, 158, 135, 0.15);
+  --stage-signal-strong:   #6DB39A;
   --stage-highlight-bg:    rgba(217, 119, 6, 0.15);
   --stage-data-up:         #4FB07A;
   --stage-data-down:       #E2705F;

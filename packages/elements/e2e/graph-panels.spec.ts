@@ -252,14 +252,12 @@ test("faint text (incomplete mark, count, domain names, co-mention rows, meta, h
     );
     for (const { scope, mark, label, fill, under } of pressed) {
       expect(mark, `${theme} ${scope} pressed mark`).toBe(label);
-      // On a light page the pressed label (and so the mark) meets AA. On a dark
-      // fill the shipped pressed-chip label is ~4.3:1: a known design gap, owned
-      // by the pressed-chip rule, not by the mark.
-      if (scope === "#plainBar" && theme === "light") {
-        expect(contrast(mark, over(fill, under)), `${theme} pressed mark`).toBeGreaterThanOrEqual(
-          4.5,
-        );
-      }
+      // The pressed label (and so the mark) meets AA on its own fill, on the
+      // page in both themes and on the stage: dark fills use --signal-strong.
+      expect(
+        contrast(label, over(fill, under)),
+        `${theme} ${scope} pressed label ${label} on ${fill}`,
+      ).toBeGreaterThanOrEqual(4.5);
     }
     for (const { sel, fg, bg } of pairs) {
       if (fg === null) throw new Error(`${sel} missing`);
