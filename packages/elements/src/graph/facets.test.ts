@@ -168,5 +168,29 @@ describe("buildFacetModel (fail fast)", () => {
     expect(() => model.activeFacets([{ domain: "pm-craft", sub_domain: "agentic" }])).toThrow(
       "chip (pm-craft, agentic) is not in the facet taxonomy",
     );
+    expect(() => model.unattributableFor([{ domain: "pm-craft", sub_domain: "agentic" }])).toThrow(
+      "chip (pm-craft, agentic) is not in the facet taxonomy",
+    );
+  });
+});
+
+describe("unattributableFor", () => {
+  const three: FacetTaxonomy = { domains: { a: ["shared", "x"], b: ["shared", "y"] } };
+  const nodes = [
+    node(1, { domains: ["a", "b"], sub_domains: ["shared"] }), // shared in both: unattributable
+    node(2, { domains: ["a"], sub_domains: ["shared"] }), // a only: a match
+    node(3, { domains: ["a", "b"], sub_domains: ["shared", "x"] }), // x is a's: match; shared: unattributable
+  ];
+  const model = buildFacetModel(nodes, three);
+
+  it("returns the union of the chips' unattributable nodes, each node once", () => {
+    const a = { domain: "a", sub_domain: "shared" };
+    const b = { domain: "b", sub_domain: "shared" };
+    expect([...model.unattributableFor([a])].sort()).toEqual([1, 3]);
+    // Nodes 1 and 3 are unattributable for both chips but count once.
+    expect([...model.unattributableFor([a, b])].sort()).toEqual([1, 3]);
+    expect(model.unattributableFor([{ domain: "a", sub_domain: "x" }]).size).toBe(0);
+    expect(model.unattributableFor([]).size).toBe(0);
+    expect(model.facetsComplete).toBe(false);
   });
 });

@@ -27,6 +27,8 @@ const SPECIMENS = [
   { name: "qubae-launcher", entry: "specimens/qubae-launcher.entry.mjs" },
   { name: "qubae-answers", entry: "specimens/qubae-answers.entry.mjs" },
   { name: "graph-canvas", entry: "specimens/graph-canvas.entry.mjs" },
+  { name: "facet-filter-bar", entry: "specimens/facet-filter-bar.entry.mjs" },
+  { name: "entity-panel", entry: "specimens/entity-panel.entry.mjs" },
 ];
 
 if (!existsSync(ELEMENTS_DIST)) {

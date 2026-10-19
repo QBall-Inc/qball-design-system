@@ -44,6 +44,12 @@ export interface FacetModel {
    * as "no filter". Throws when a chip is not in the taxonomy.
    */
   activeFacets(chips: readonly FacetChip[]): Set<number>;
+  /**
+   * Ids of the nodes that are unattributable for ANY of the given chips (each
+   * node once), so a match count can say how many it may be missing. Throws
+   * when a chip is not in the taxonomy.
+   */
+  unattributableFor(chips: readonly FacetChip[]): Set<number>;
 }
 
 interface ChipNodes {
@@ -121,16 +127,19 @@ export function buildFacetModel(nodes: readonly BundleNode[], taxonomy: FacetTax
   return {
     chips,
     facetsComplete: chips.every((c) => c.unattributable === 0),
-    activeFacets(active) {
-      const result = new Set<number>();
-      for (const chip of active) {
-        const entry = index.get(chipKey(chip.domain, chip.sub_domain));
-        if (!entry) {
-          throw new Error(`chip (${chip.domain}, ${chip.sub_domain}) is not in the facet taxonomy`);
-        }
-        for (const id of entry.matches) result.add(id);
-      }
-      return result;
-    },
+    activeFacets: (active) => union(active, "matches"),
+    unattributableFor: (active) => union(active, "unattributable"),
   };
+
+  function union(active: readonly FacetChip[], bucket: keyof ChipNodes): Set<number> {
+    const result = new Set<number>();
+    for (const chip of active) {
+      const entry = index.get(chipKey(chip.domain, chip.sub_domain));
+      if (!entry) {
+        throw new Error(`chip (${chip.domain}, ${chip.sub_domain}) is not in the facet taxonomy`);
+      }
+      for (const id of entry[bucket]) result.add(id);
+    }
+    return result;
+  }
 }

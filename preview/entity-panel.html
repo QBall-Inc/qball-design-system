@@ -1,0 +1,64 @@
+<!-- @dsCard group="Components" -->
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EntityPanel — the reading surface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../packages/tokens/colors_and_type.css">
+<link rel="stylesheet" href="../packages/tokens/components.css">
+<link rel="stylesheet" href="../packages/tokens/graph.css">
+<style>
+  html,body{margin:0;min-height:100vh}
+  body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
+  .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;max-width:1120px}
+  .lab{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  /* a fixed-height frame, as beside the canvas: the body scrolls, the footer stays */
+  .frame{height:460px;border:1px solid var(--border-strong);border-radius:var(--radius-md);overflow:hidden;display:flex}
+  .frame > .epanel,.gx.demo > .epanel{flex:1;min-width:0}
+  .gx.demo{min-height:0;height:460px;display:flex}
+  .note{margin:14px 0 0;font-size:10.5px;color:var(--text-muted);max-width:820px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
+  html[data-specimens="ready"] .pending{display:none}
+  @media (max-width:600px){ body{padding:16px} .grid{grid-template-columns:1fr} }
+</style>
+</head><body>
+<div class="head">
+  <div>
+    <div class="eyebrow">Component · QuBrain graph family · @qball-inc/elements/graph</div>
+    <h3>EntityPanel</h3>
+  </div>
+  <div class="seg-th" role="group" aria-label="Theme">
+    <button data-theme-set="light" aria-pressed="true">light</button>
+    <button data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+<p class="pending">Live specimen not loaded. This page renders the built package: run <code>pnpm --filter @qball-inc/elements build</code> and <code>node scripts/bundle-pages-specimens.mjs</code>, or view it on the deployed gallery.</p>
+
+<div class="grid">
+  <div><p class="lab">Idle (consumer title)</p><div class="frame" data-specimen="idle"></div></div>
+  <div><p class="lab">Typed hop · superseded claim · connections · reading list</p><div class="frame" data-specimen="typed"></div></div>
+  <div><p class="lab">Co-mention hop · association, not assertion</p><div class="frame" data-specimen="comention"></div></div>
+  <div><p class="lab">One entity · connections with "show more"</p><div class="frame" data-specimen="connections"></div></div>
+  <div><p class="lab">Hop loading</p><div class="frame" data-specimen="loading"></div></div>
+  <div><p class="lab">Hop error · retry</p><div class="frame" data-specimen="error"></div></div>
+  <div><p class="lab">On the dark stage (inside the explorer frame, any page theme)</p><div class="gx demo" data-specimen="stage"></div></div>
+</div>
+
+<p class="note">The panel never fetches: the consumer passes the click path and neighbours, and answers each hop through a callback. A response for a hop that is no longer shown is discarded. Superseded claims are never hidden; they are counted in the footer. The footer stays pinned while the body scrolls.</p>
+
+<script type="module" src="../specimens/entity-panel.bundle.js"></script>
+<script>
+  // per-card theme toggle (preview convenience only)
+  const btns=document.querySelectorAll('[data-theme-set]');
+  btns.forEach(b=>b.addEventListener('click',()=>{document.documentElement.setAttribute('data-theme',b.getAttribute('data-theme-set'));btns.forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'))}));
+</script>
+</body></html>

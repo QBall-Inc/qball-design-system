@@ -107,7 +107,8 @@ export function resolveCanvasLabels(partial: unknown): CanvasLabels {
   return merged;
 }
 
-function requireClassLabels(value: unknown): ClassLabels {
+/** Checks a `labels.classes` value: an object of strings. */
+export function requireClassLabels(value: unknown): ClassLabels {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     throw new TypeError("labels.classes must be an object of strings.");
   }
@@ -118,6 +119,6 @@ function requireClassLabels(value: unknown): ClassLabels {
 }
 
 /** Display name for an entity class: the configured label, else the raw class. */
-export function classLabel(labels: CanvasLabels, cls: string): string {
+export function classLabel(labels: { readonly classes: ClassLabels }, cls: string): string {
   return Object.hasOwn(labels.classes, cls) ? labels.classes[cls]! : cls;
 }

@@ -35,6 +35,9 @@ Prerequisites:
 - Give the host a size: the canvas fills it. The host's previous content is
   replaced.
 
+The facet chips and the reading panel beside the canvas are separate
+renderers in the same entry: see [entity-panel.md](entity-panel.md).
+
 Mount once the bundle is in hand. Loading and fetch errors for the data belong
 to you (or to the explorer organism); the canvas has no data-fetch states.
 
