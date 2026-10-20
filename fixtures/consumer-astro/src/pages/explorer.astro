@@ -1,0 +1,30 @@
+---
+// The explorer route: the shared ChatLayout (so the ask launcher is on this
+// page too) plus graph.css, imported here AFTER the layout so the locked order
+// colors-and-type -> components -> graph holds. Only graph pages pay for it.
+import ChatLayout from "../layouts/ChatLayout.astro";
+import "@qball-inc/tokens/graph.css";
+// Evaluated during the static prerender (Node, no DOM): proves importing the
+// graph entry touches no browser global and loads no three.js at module load.
+import { ENTRY as GRAPH_ENTRY } from "@qball-inc/elements/graph";
+---
+
+<ChatLayout
+  title="Explorer"
+  theme="light"
+  variant="corner"
+  persona={{
+    title: "guide",
+    hint: "ask the guide",
+    placeholder: "ask about these notes…",
+    disclaimer: "answers come only from saved notes and can be wrong.",
+  }}
+>
+  <main>
+    <h1>notes graph</h1>
+    <div id="explorer" data-ssr-entry={GRAPH_ENTRY} style="height: 640px"></div>
+  </main>
+  <script>
+    import "../explorer-demo";
+  </script>
+</ChatLayout>

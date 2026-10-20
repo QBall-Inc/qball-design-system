@@ -1281,7 +1281,7 @@ a.claim__src:hover{color:var(--color-signal)}
 .epanel__comnote{font-family:var(--font-ui);font-size:calc(11.5px * var(--text-scale, 1));color:var(--text-secondary);line-height:1.6;margin:0}
 .epanel__empty{font-family:var(--font-ui);font-size:calc(11.5px * var(--text-scale, 1));color:var(--text-secondary);line-height:1.7;padding:8px 0}
 .epanel__foot{padding:0 16px 12px}
-.nrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 2px;border:0;background:none;text-align:left;cursor:pointer;font-family:var(--font-ui)}
+.nrow{display:grid;width:100%;box-sizing:border-box;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 2px;border:0;background:none;text-align:left;cursor:pointer;font-family:var(--font-ui)}
 .nrow+.nrow{border-top:.5px solid var(--border-default)}
 .nrow__name{font-size:calc(12px * var(--text-scale, 1));color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nrow:hover .nrow__name{color:var(--color-signal)}

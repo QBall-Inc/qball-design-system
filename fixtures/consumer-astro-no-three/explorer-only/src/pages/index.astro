@@ -1,0 +1,45 @@
+---
+// Mounts the explorer with no three installed. The build still passes (Vite
+// stubs the missing optional peer); the browser shows the canvas error figure
+// while the page, the chips and the panel keep working.
+import "@qball-inc/tokens/colors-and-type.css";
+import "@qball-inc/tokens/components.css";
+import "@qball-inc/tokens/graph.css";
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Explorer without three</title>
+  </head>
+  <body style="background: var(--bg-primary); color: var(--text-primary); padding: 24px;">
+    <div id="explorer" style="height: 560px"></div>
+    <script>
+      import { GraphExplorer } from "@qball-inc/elements/graph";
+      import bundleUrl from "../../../../qubrain/mock-bundle.with-layout.json?url";
+      import taxonomy from "../../../../qubrain/taxonomy.json";
+
+      declare global {
+        interface Window {
+          __mounted?: { ok: true; canvasError: string | null } | { ok: false; error: string };
+        }
+      }
+
+      try {
+        const host = document.getElementById("explorer");
+        if (host === null) throw new Error("missing #explorer host");
+        const bundle = await fetch(bundleUrl).then((r) => r.json());
+        const explorer = await GraphExplorer.mount(host, {
+          bundle,
+          taxonomy,
+          detail: () => Promise.reject(new Error("no detail in this fixture")),
+        });
+        window.__mounted = { ok: true, canvasError: explorer.canvasError };
+      } catch (err) {
+        window.__mounted = { ok: false, error: String(err) };
+      }
+    </script>
+  </body>
+</html>

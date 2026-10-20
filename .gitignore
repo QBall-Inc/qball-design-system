@@ -31,6 +31,8 @@ perf-results/
 fixtures/consumer/pnpm-lock.yaml
 fixtures/consumer-astro/pnpm-lock.yaml
 fixtures/consumer-astro/.astro/
+fixtures/consumer-astro-no-three/*/pnpm-lock.yaml
+fixtures/consumer-astro-no-three/*/.astro/
 
 # Environment
 .env

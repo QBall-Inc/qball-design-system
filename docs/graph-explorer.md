@@ -46,7 +46,11 @@ if (wanted) explorer.select(wanted, { openPanel: true });
 ```
 
 `three` is an optional peer of the package. Install it on pages that mount the
-explorer (see [graph canvas](graph-canvas.md)).
+explorer (see [graph canvas](graph-canvas.md)). If it is missing, the build
+still passes (Vite stubs the missing optional peer) and the explorer shows its
+`three-unavailable` error figure. Catch that in CI by failing the build when
+the output contains `Could not resolve "three"` (the exact check is in the
+[consumer hand-back](consumer-handback-elements.md#install-three-on-graph-pages)).
 
 ## Mount
 

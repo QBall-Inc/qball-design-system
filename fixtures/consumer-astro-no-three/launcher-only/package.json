@@ -1,0 +1,17 @@
+{
+  "name": "qball-consumer-astro-no-three-launcher-only",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Negative fixture (WP-QB-4.3): a static Astro site that installs the PACKED tarballs WITHOUT the optional three peer. Built and checked only by scripts/validate-no-three.sh.",
+  "dependencies": {
+    "@qball-inc/elements": "file:../qball-inc-elements.tgz",
+    "@qball-inc/tokens": "file:../qball-inc-tokens.tgz",
+    "astro": "^7.3.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

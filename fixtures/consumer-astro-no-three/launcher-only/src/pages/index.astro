@@ -1,0 +1,39 @@
+---
+// The ask launcher alone, with no three installed: builds and runs.
+import "@qball-inc/tokens/colors-and-type.css";
+import "@qball-inc/tokens/components.css";
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Launcher without three</title>
+  </head>
+  <body style="background: var(--bg-primary); color: var(--text-primary); padding: 24px;">
+    <main><h1>notes</h1></main>
+    <script>
+      import { mount } from "@qball-inc/elements/chat";
+
+      declare global {
+        interface Window {
+          __mounted?: { ok: true } | { ok: false; error: string };
+        }
+      }
+
+      try {
+        mount(document.body, {
+          title: "guide",
+          hint: "ask the guide",
+          placeholder: "ask about these notes…",
+          disclaimer: "answers come only from saved notes and can be wrong.",
+          onAsk: () => undefined,
+        });
+        window.__mounted = { ok: true };
+      } catch (err) {
+        window.__mounted = { ok: false, error: String(err) };
+      }
+    </script>
+  </body>
+</html>

@@ -9,6 +9,40 @@ The versioning contract (token / type-stack / radius-scale changes = MAJOR; addi
 component / variant = MINOR) is defined in `CAVEATS.md` and enforced via Changesets
 in the release pipeline.
 
+## Release C — @qball-inc/elements 0.5.0, @qball-inc/tokens 1.3.0, @qball-inc/react 1.0.8 — 2026-10-20
+
+**`@qball-inc/elements` 0.5.0** adds `GraphExplorer` to `./graph`: the canvas, the facet
+filter chips and the entity details panel in one dark-stage frame. Clicking entities builds
+a path; the panel narrates each hop with the claims behind it, through your own `detail`
+callback. The explorer reports `pathchange`, `panel` and `error` events for URL sync and
+launcher yield, and never fetches or writes history. `FacetFilterBar` and `EntityPanel`
+ship as their own renderers too, and answer-turn toggles now carry `aria-controls`. `three`
+stays an optional peer: a site that mounts the explorer without it still builds, and the
+explorer shows its error figure. The consumer hand-back gives a one-line CI check for
+that. This is renderer-only: backend integration is a later, gated step. Guides:
+[docs/graph-explorer.md](./docs/graph-explorer.md),
+[docs/entity-panel.md](./docs/entity-panel.md), and the Release C section of
+[docs/consumer-handback-elements.md](./docs/consumer-handback-elements.md).
+
+**`@qball-inc/tokens` 1.3.0** (minor) adds `--signal-strong` (the pressed facet chip label,
+AA in every theme), the panel and chip styles, and full-width connection rows.
+**`@qball-inc/react` 1.0.8** has no code changes; it depends on `@qball-inc/tokens` 1.3.0.
+
+## Interim release — @qball-inc/elements 0.4.0, @qball-inc/tokens 1.2.0, @qball-inc/react 1.0.7 — 2026-10-18
+
+**`@qball-inc/elements` 0.4.0** ships the 3D knowledge-graph canvas in `./graph`
+(`GraphCanvas.mount`), with `three` loaded lazily as an optional peer, a seeded layout that
+settles in a Web Worker, and `computeLayout` for precomputing that layout on a server
+([docs/graph-canvas.md](./docs/graph-canvas.md)). Chat links can open in a new tab
+(`openLinksInNewTab`, with your own `newTabLabel`), and site links under an answer now
+look like the sources list. Patches 0.3.1 to 0.3.3 added restoring a visitor's earlier
+vote, an overlay that follows the on-screen keyboard, and the status-text and site-links
+slots.
+
+**`@qball-inc/tokens` 1.2.0** (minor) adds the canvas label rules and the `--stage-hub`
+token, and removes the old site-links classes (use with elements 0.4.0 or later).
+**`@qball-inc/react` 1.0.7** has no code changes; it depends on `@qball-inc/tokens` 1.2.0.
+
 ## Release B — @qball-inc/elements 0.3.0, @qball-inc/tokens 1.1.2, @qball-inc/react 1.0.4 — 2026-10-11
 
 **`@qball-inc/elements` 0.3.0** completes the `./chat` entry with answer turns.

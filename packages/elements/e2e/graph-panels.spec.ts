@@ -177,6 +177,20 @@ test("inside .gx both components resolve to the dark stage on a light page; bare
   expect(read.stage.panelBg).not.toBe(read.plain.panelBg);
 });
 
+test("connection rows span the full list width, so dividers align and the whole row is the click target", async ({
+  page,
+}) => {
+  await load(page);
+  for (const panel of ["#plainPanel", "#stagePanel"]) {
+    const widths = await page.locator(`${panel} .epanel__rows`).evaluate((list) => {
+      const rows = [...list.querySelectorAll<HTMLElement>(".nrow")];
+      return { list: list.clientWidth, rows: rows.map((r) => r.getBoundingClientRect().width) };
+    });
+    expect(widths.rows.length).toBeGreaterThanOrEqual(2); // a connection row and "show more"
+    for (const w of widths.rows) expect(Math.round(w)).toBe(widths.list);
+  }
+});
+
 test("the panel footer stays pinned while the body scrolls", async ({ page }) => {
   await load(page);
   const scroller = page.locator("#stagePanel .epanel__scroll");

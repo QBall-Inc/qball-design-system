@@ -4,7 +4,12 @@
 // overlay — the wiring a real site does with its backend stream. After every
 // replayed event it records whether any streamed draft text reached the page.
 import type { FinalTurn } from "@qball-inc/elements";
-import { mount, mountTranscript, type ChatMountOptions } from "@qball-inc/elements/chat";
+import {
+  mount,
+  mountTranscript,
+  type ChatHandle,
+  type ChatMountOptions,
+} from "@qball-inc/elements/chat";
 import grounded from "../../qubrain/answers/grounded.json";
 import groundedStructured from "../../qubrain/answers/grounded-structured.json";
 import refusedAbstained from "../../qubrain/answers/refused-abstained.json";
@@ -110,7 +115,7 @@ async function controls(): Promise<number> {
   return fired;
 }
 
-async function main(): Promise<void> {
+async function main(): Promise<ChatHandle | null> {
   try {
     const controlFired = await controls();
     const runs: ChatRun[] = [];
@@ -168,9 +173,12 @@ async function main(): Promise<void> {
       onWarn: () => undefined,
     });
     window.__chat = { ok: true, runs, controlFired };
+    return handle;
   } catch (err) {
     window.__chat = { ok: false, error: String(err) };
+    return null;
   }
 }
 
-void main();
+/** The page's one launcher (null if mounting failed), for page scripts that wire to it. */
+export const chatReady: Promise<ChatHandle | null> = main();

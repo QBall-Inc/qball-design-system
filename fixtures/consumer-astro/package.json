@@ -11,7 +11,8 @@
   "dependencies": {
     "@qball-inc/elements": "file:./qball-inc-elements.tgz",
     "@qball-inc/tokens": "file:./qball-inc-tokens.tgz",
-    "astro": "^7.3.8"
+    "astro": "^7.3.8",
+    "three": "0.186.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

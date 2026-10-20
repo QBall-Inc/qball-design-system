@@ -39,6 +39,9 @@ components:
 - **Knowledge-graph canvas:** an interactive 3D view of entities and the
   relationships between them, with filtering, selection and labels. On npm
   since `0.4.0`.
+- **Graph explorer:** the canvas, facet filter chips and a details panel in one
+  frame. Clicking entities builds a path, and the panel narrates each hop with
+  the claims behind it. Since `0.5.0`.
 
 Each component is a plain function or `mount()` call that takes data and builds
 DOM. Components never fetch: your site calls its own backend and maps the reply

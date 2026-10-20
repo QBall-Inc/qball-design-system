@@ -84,7 +84,8 @@ spdx-check:
 # its token vars resolve self-contained + the optional token utility generates +
 # a single Tailwind base block + a negative control. A second gate packs tokens +
 # elements into the static fixtures/consumer-astro site and checks the trust atoms
-# in Chromium. scripts/consumer-validate.sh runs both (CI calls the same script).
+# in Chromium. A third packs them into two sites without the optional three peer (fixtures/consumer-astro-no-three).
+# scripts/consumer-validate.sh runs all three (CI calls the same script).
 # Multi-line shell lives in the committed scripts (WSL exec-bit pattern), invoked via bash.
 consumer-validate:
     bash scripts/consumer-validate.sh
