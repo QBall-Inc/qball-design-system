@@ -1,5 +1,12 @@
 # @qball-inc/tokens
 
+## 1.3.1
+
+### Patch Changes
+
+- 729c8a6: graph.css: the explorer frame (`.gx`) sets its own text colour (the stage text colour), so
+  wrapper text never inherits the host page's body colour on a light or dark page.
+
 ## 1.3.0
 
 ### Minor Changes
