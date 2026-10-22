@@ -377,9 +377,15 @@ for (const theme of ["light", "dark"]) {
         toggle: css(".gx__ftoggle", "color"),
         canvasBg: css(".gx .graphcanvas", "background-color"),
         status: css(".gx .gc-status", "color"),
+        frameText: css(".gx", "color"),
+        panelText: css(".gx__panel", "color"),
         pageText: css("body", "color"),
       };
     });
+    // Wrapper text never inherits the page body's colour.
+    expect(read.frameText).toBe("rgb(231, 224, 214)"); // --stage-panel-text-primary #E7E0D6
+    expect(read.panelText).toBe("rgb(231, 224, 214)");
+    if (theme === "light") expect(read.pageText).not.toBe(read.frameText);
     expect(read.frameBg).toBe("rgb(30, 29, 27)"); // --stage-panel-bg #1E1D1B
     expect(read.panelMeta).toBe("rgb(205, 198, 187)"); // --stage-panel-text-secondary #CDC6BB
     expect(read.toggle).toBe("rgb(138, 132, 125)"); // --stage-panel-text-muted #8A847D

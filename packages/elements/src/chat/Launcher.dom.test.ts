@@ -143,6 +143,40 @@ describe("mount() launcher options", () => {
     expect(handle.launcher.style.display).toBe("");
   });
 
+  it("never touches launcher classes after mount — the site owns runtime toggles", () => {
+    const handle = mountIn({ onStage: true });
+    const launcher = handle.launcher;
+    expect(launcher.classList.contains("qlaunch--on-stage")).toBe(true);
+
+    const expectClasses = (expected: string): void => {
+      handle.open();
+      expect(launcher.className).toBe(expected);
+      handle.close();
+      expect(launcher.className).toBe(expected);
+      handle.setHidden(true);
+      handle.setHidden(false);
+      expect(launcher.className).toBe(expected);
+      document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "q", bubbles: true }));
+      expect(handle.isOpen()).toBe(true);
+      handle.close();
+      expect(launcher.className).toBe(expected);
+      handle.setComposerDisabled(true, "limit reached");
+      handle.setComposerDisabled(false);
+      expect(launcher.className).toBe(expected);
+      launcher.click();
+      expect(handle.isOpen()).toBe(true);
+      handle.close();
+      expect(launcher.className).toBe(expected);
+    };
+
+    launcher.classList.remove("qlaunch--on-stage");
+    launcher.classList.add("site-pinned");
+    expectClasses("qlaunch site-pinned");
+
+    launcher.classList.add("qlaunch--on-stage");
+    expectClasses("qlaunch site-pinned qlaunch--on-stage");
+  });
+
   it("validates options at the boundary", () => {
     expect(() => mount(null as never)).toThrow(TypeError);
     expect(() => mount(document.body, { title: 3 as never })).toThrow(TypeError);

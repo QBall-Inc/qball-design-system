@@ -52,6 +52,13 @@ Load `components.css` from `@qball-inc/tokens` (and `graph.css` if you use
 | `suppressHotkey` | `() => boolean`           | —                           | Return `true` to ignore Q, e.g. while one of your own dialogs is open.                                                               |
 | `onAsk`          | `(text, handle) => void`  | —                           | Called after the `ask` event for every submitted question.                                                                           |
 
+`onStage` only sets `.qlaunch--on-stage` when the launcher is created. After mount the
+library never adds, removes or re-applies any class on `handle.launcher`, so a site may
+toggle `.qlaunch--on-stage` itself at any time, e.g. light ink only while the launcher
+overlaps a dark graph frame:
+`handle.launcher.classList.toggle("qlaunch--on-stage", overStage)`. Opening, closing,
+`setHidden`, the Q key and `setComposerDisabled` leave the site's classes as they are.
+
 Invalid options throw at mount: a non-string copy option, an unknown
 `variant`, a `mascot` that is not a function or does not return an `Element`.
 

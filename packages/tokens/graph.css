@@ -71,7 +71,7 @@
 
 /* ---- GraphExplorer: the assembled organism (canvas full-bleed, panel as hideable overlay;
    ≤900px the panel becomes a near-full bottom sheet and the pill names the entity) ---- */
-.gx{position:relative;isolation:isolate;height:100%;min-height:480px;border:1px solid var(--border-strong);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-primary)}
+.gx{position:relative;isolation:isolate;height:100%;min-height:480px;border:1px solid var(--border-strong);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-primary);color:var(--text-primary)}
 .gx__stage{position:absolute;inset:0;min-width:0}
 .gx__stage .graphcanvas{position:absolute;inset:0;border:0;border-radius:0}
 .gx .gc-lgwrap{right:auto;left:16px;align-items:flex-start}

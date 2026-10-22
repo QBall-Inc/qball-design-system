@@ -195,6 +195,11 @@ no `three` in the bundle, and hostile persona and answer text staying inert.
 - `post-page`: moves the launcher bottom-left on small screens (under 720px), for pages
   whose bottom-right corner already holds other chrome (a post's reading controls, a
   back-to-top button).
+- `onStage: true` gives the launcher light ink for a dark graph stage (needs `graph.css`).
+  It is applied once, at mount. If the launcher only sometimes sits over the stage, toggle
+  the class yourself: `handle.launcher.classList.toggle("qlaunch--on-stage", overStage)`.
+  The library never touches the launcher's classes after mount, and a test holds it to
+  that.
 
 ### Events
 
