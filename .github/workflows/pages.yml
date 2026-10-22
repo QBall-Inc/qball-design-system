@@ -52,13 +52,13 @@ jobs:
       pages: write # actions/configure-pages
     steps:
       - name: Checkout (public DS repo)
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
 
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 22
           cache: pnpm
@@ -82,7 +82,7 @@ jobs:
       # Sparse cone checkout keeps the rest of the private repo off the runner;
       # persist-credentials:false so the PAT never lands in .git/config.
       - name: Fetch Berkeley Mono from private stock-watcher
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ashaykubal/stock-watcher
           token: ${{ secrets.BERKELEY_FONT_SECRET }}
@@ -92,7 +92,7 @@ jobs:
           persist-credentials: false
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       # Stage the curated surface into _site/ and inject the 6 licensed
       # @font-face blocks + Berkeley-first --font-display into the _site copy of
@@ -110,7 +110,7 @@ jobs:
         run: pnpm exec playwright test --config playwright.pages.config.mjs
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: _site
 
@@ -127,4 +127,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

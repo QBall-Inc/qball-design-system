@@ -28,3 +28,6 @@ reference/
 /CAVEATS.md
 /FONTS.md
 /SKILL.md
+
+# Wide-unicode tables: prettier is non-idempotent on this doc; hand-authored.
+/docs/tool-use-indicator-design.md

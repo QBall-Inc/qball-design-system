@@ -219,7 +219,10 @@ describe("Icon migration DOM-equivalence gate", () => {
     describe("AppBar / NotificationBell", () => {
       it("renders the B2 Bell in the .iconbtn (19px)", () => {
         const { container } = render(<NotificationBell />);
-        expectMigratedIcon(container.querySelector(".iconbtn svg"), { expected: <Bell />, size: 19 });
+        expectMigratedIcon(container.querySelector(".iconbtn svg"), {
+          expected: <Bell />,
+          size: 19,
+        });
       });
     });
 
@@ -312,13 +315,15 @@ describe("Icon migration DOM-equivalence gate", () => {
     });
 
     describe("ToolUseIndicator", () => {
-      const glyphs: { state: "pending" | "success" | "error" | "partial"; expected: ReactElement }[] =
-        [
-          { state: "pending", expected: <Clock /> },
-          { state: "success", expected: <Check /> },
-          { state: "error", expected: <CircleX /> },
-          { state: "partial", expected: <TriangleAlert /> },
-        ];
+      const glyphs: {
+        state: "pending" | "success" | "error" | "partial";
+        expected: ReactElement;
+      }[] = [
+        { state: "pending", expected: <Clock /> },
+        { state: "success", expected: <Check /> },
+        { state: "error", expected: <CircleX /> },
+        { state: "partial", expected: <TriangleAlert /> },
+      ];
 
       it.each(glyphs)(
         "the $state leading glyph renders its B2 icon (.tuf__glyph, 16px)",

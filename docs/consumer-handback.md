@@ -22,27 +22,27 @@ npm install react react-dom \
 
 **Required:**
 
-| Peer | Range | Used by |
-|---|---|---|
-| `react` | `>=18` | all |
-| `react-dom` | `>=18` | all |
-| `@radix-ui/react-alert-dialog` | `>=1.1.0` | `Modal` |
-| `@radix-ui/react-dialog` | `>=1.1.0` | `Modal` |
-| `@radix-ui/react-dropdown-menu` | `>=2.0.0` | `UserMenu` |
-| `@radix-ui/react-popover` | `>=1.1.0` | `CommandDock`, `NotificationCenter` |
-| `@radix-ui/react-select` | `>=2.0.0` | `Select` |
-| `@radix-ui/react-slot` | `>=1.1.0` | `Button` (`asChild`) |
-| `@radix-ui/react-tabs` | `>=1.1.0` | `Tabs` |
-| `@radix-ui/react-tooltip` | `>=1.1.0` | `Tooltip`, `GroundingFlag` |
+| Peer                            | Range     | Used by                             |
+| ------------------------------- | --------- | ----------------------------------- |
+| `react`                         | `>=18`    | all                                 |
+| `react-dom`                     | `>=18`    | all                                 |
+| `@radix-ui/react-alert-dialog`  | `>=1.1.0` | `Modal`                             |
+| `@radix-ui/react-dialog`        | `>=1.1.0` | `Modal`                             |
+| `@radix-ui/react-dropdown-menu` | `>=2.0.0` | `UserMenu`                          |
+| `@radix-ui/react-popover`       | `>=1.1.0` | `CommandDock`, `NotificationCenter` |
+| `@radix-ui/react-select`        | `>=2.0.0` | `Select`                            |
+| `@radix-ui/react-slot`          | `>=1.1.0` | `Button` (`asChild`)                |
+| `@radix-ui/react-tabs`          | `>=1.1.0` | `Tabs`                              |
+| `@radix-ui/react-tooltip`       | `>=1.1.0` | `Tooltip`, `GroundingFlag`          |
 
 **Optional** (install only if you use the component; marked `optional` in
 `peerDependenciesMeta`, so a missing one does not warn):
 
-| Peer | Range | Needed for |
-|---|---|---|
-| `@tanstack/react-table` | `>=8` | `DataTable` |
-| `d3` | `>=7` | `Candlestick` |
-| `lucide-react` | `>=0.400.0` | supplementary icons |
+| Peer                    | Range       | Needed for          |
+| ----------------------- | ----------- | ------------------- |
+| `@tanstack/react-table` | `>=8`       | `DataTable`         |
+| `d3`                    | `>=7`       | `Candlestick`       |
+| `lucide-react`          | `>=0.400.0` | supplementary icons |
 
 > There are **eight** required `@radix-ui/*` peers (not seven). Under-installing them breaks
 > the corresponding component at runtime, not at build time.
@@ -69,7 +69,7 @@ Removing/renaming a token or changing a `--font-display` fallback value is a maj
   renders light.
 - Server-render with `data-theme` already on `<html>` and every static/island component themes
   correctly before any JS runs.
-- `<ThemeToggle />` is the only piece needed to *flip* it at runtime (it reads + writes that one
+- `<ThemeToggle />` is the only piece needed to _flip_ it at runtime (it reads + writes that one
   attribute in a click handler). It is **not** required for theming to work.
 
 ## 5. SSR / static-safety + per-component island matrix

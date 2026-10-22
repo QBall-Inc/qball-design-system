@@ -14,22 +14,22 @@ correctly?
 > that never runs on the server. Nothing throws during SSR.
 
 So the only thing the matrix below distinguishes is whether a component **needs hydration
-to be correct**, not whether it is *safe* to render — all of them are.
+to be correct**, not whether it is _safe_ to render — all of them are.
 
 ---
 
 ## How this was verified
 
 Every `.ts`/`.tsx` under `packages/react/src` (excluding tests) was swept for browser-global
-access, then each hit was classified by *where* it executes:
+access, then each hit was classified by _where_ it executes:
 
-| Access site | Examples | SSR? |
-|---|---|---|
-| Module top-level | `const x = window.x` | ❌ would run on server — **none found** |
-| Render body / `useState`/`useMemo`/`useRef` initializer | `useState(() => document…)` | ❌ runs during render — **none found** |
-| `useEffect` / `useLayoutEffect` body | scroll listeners, scroll-lock, `ResizeObserver` | ✅ client-only |
-| Event handler | click, change | ✅ client-only |
-| `<canvas>` per-frame draw closure | `getComputedStyle` token reads | ✅ client-only (inside the rAF loop) |
+| Access site                                             | Examples                                        | SSR?                                    |
+| ------------------------------------------------------- | ----------------------------------------------- | --------------------------------------- |
+| Module top-level                                        | `const x = window.x`                            | ❌ would run on server — **none found** |
+| Render body / `useState`/`useMemo`/`useRef` initializer | `useState(() => document…)`                     | ❌ runs during render — **none found**  |
+| `useEffect` / `useLayoutEffect` body                    | scroll listeners, scroll-lock, `ResizeObserver` | ✅ client-only                          |
+| Event handler                                           | click, change                                   | ✅ client-only                          |
+| `<canvas>` per-frame draw closure                       | `getComputedStyle` token reads                  | ✅ client-only (inside the rAF loop)    |
 
 The first two rows — the only ones that would execute on the server — returned **zero**
 matches across the source tree. Evidence per hotspot:
@@ -37,7 +37,7 @@ matches across the source tree. Evidence per hotspot:
 - **`ThemeToggle`** — `document.documentElement` is touched only inside `handleClick`
   (read + `setAttribute`); `readTheme()` is never called at render. (`chrome/ThemeToggle.tsx:45-46`)
 - **`Scrim`** — `document.body.style.overflow` is set/restored inside `useEffect`, and the
-  `if (!open) return null` early-return sits *after* the effect. (`chrome/Scrim.tsx:30-39`)
+  `if (!open) return null` early-return sits _after_ the effect. (`chrome/Scrim.tsx:30-39`)
 - **`AppBar` / `CommandDock`** — `scrollContainer ?? window` + `addEventListener("scroll", …)`
   live inside `useEffect` with matching cleanup. (`chrome/AppBar.tsx:105-119`, `chrome/CommandDock.tsx:141-160`)
 - **`useCanvas2D`** (drives all three backgrounds) — `window.matchMedia`,
@@ -53,7 +53,7 @@ matches across the source tree. Evidence per hotspot:
   effect. (`media/MediaSlot.tsx:172-174`)
 
 **No source changes were required** — the library was already render-safe by construction.
-(GroundingFlag / MarkdownRenderer / ToolUseIndicator only *mention* `matchMedia` in JSDoc to
+(GroundingFlag / MarkdownRenderer / ToolUseIndicator only _mention_ `matchMedia` in JSDoc to
 document that they deliberately have none.)
 
 ---
@@ -69,50 +69,50 @@ container on the server and paints after hydration.
 Pure display / markup styled entirely by shipped CSS. Native interactivity (links, form
 inputs) works without JS.
 
-| Component(s) | Notes |
-|---|---|
-| `Button` | `asChild` uses `@radix-ui/react-slot` (a render helper, SSR-safe). |
-| `Field`, `Input`, `SecretInput`, `Switch` | Native inputs render statically and toggle uncontrolled with no JS (the `Switch` is a CSS-driven `<input type="checkbox">`, **not** Radix); the secret reveal toggle and any React-controlled state are progressive enhancement. |
-| `Badge`, `Card`, `Divider`, `Meter`, `Stat`, `Avatar` | Presentational. |
-| `Sparkline` | Pure inline SVG (no canvas, no effect). |
-| `Skeleton`, `Spinner`, `Callout`, `StateFig`, `Toast` | Presentational; CSS-only animation. |
-| `DigestCard`, `Surface` | Presentational. |
-| `Icon`, `IconBase`, all `icons/generated/*` | Pure inline SVG. |
-| `MarkdownRenderer`, `Terminal`, `ToolUseIndicator` | Render markup/CSS shimmer; no globals. |
-| `GroundingFlag` | The flag renders statically; its Radix tooltip is a hover enhancement that needs hydration. |
-| `MediaSlot` | DISPLAY-first facade renders server-side (poster/embed-facade); `matchMedia` is guarded. |
+| Component(s)                                          | Notes                                                                                                                                                                                                                            |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`                                              | `asChild` uses `@radix-ui/react-slot` (a render helper, SSR-safe).                                                                                                                                                               |
+| `Field`, `Input`, `SecretInput`, `Switch`             | Native inputs render statically and toggle uncontrolled with no JS (the `Switch` is a CSS-driven `<input type="checkbox">`, **not** Radix); the secret reveal toggle and any React-controlled state are progressive enhancement. |
+| `Badge`, `Card`, `Divider`, `Meter`, `Stat`, `Avatar` | Presentational.                                                                                                                                                                                                                  |
+| `Sparkline`                                           | Pure inline SVG (no canvas, no effect).                                                                                                                                                                                          |
+| `Skeleton`, `Spinner`, `Callout`, `StateFig`, `Toast` | Presentational; CSS-only animation.                                                                                                                                                                                              |
+| `DigestCard`, `Surface`                               | Presentational.                                                                                                                                                                                                                  |
+| `Icon`, `IconBase`, all `icons/generated/*`           | Pure inline SVG.                                                                                                                                                                                                                 |
+| `MarkdownRenderer`, `Terminal`, `ToolUseIndicator`    | Render markup/CSS shimmer; no globals.                                                                                                                                                                                           |
+| `GroundingFlag`                                       | The flag renders statically; its Radix tooltip is a hover enhancement that needs hydration.                                                                                                                                      |
+| `MediaSlot`                                           | DISPLAY-first facade renders server-side (poster/embed-facade); `matchMedia` is guarded.                                                                                                                                         |
 
 ### Tier B — static render, interactivity needs `client:*`
 
 SSR a correct initial DOM (default tab, closed menu, idle control); a client island is
 required for the interaction.
 
-| Component(s) | Interactivity that needs hydration |
-|---|---|
-| `Select` (Radix Select) | open/keyboard panel |
-| `Segmented` (native `<button aria-pressed>`, stateful) | selection |
-| `Search` | type-ahead / results popover |
-| `Tabs` (Radix Tabs) | tab switching (default panel renders) |
-| `Tooltip` (Radix Tooltip) | hover/focus content (trigger renders) |
-| `Modal` (Radix Dialog/AlertDialog) | open/close (trigger renders) |
-| `Composer` | submit / input state |
-| `AppBar` | hide-on-scroll |
-| `CommandDock` (Radix Popover) | hide-on-scroll + popover |
-| `NotificationCenter` (Radix Popover) | popover open (bell + count render) |
-| `UserMenu` (Radix DropdownMenu) | menu open (trigger renders) |
-| `ThemeToggle` | the theme flip itself |
-| `Scrim` | scroll-lock effect (backdrop renders) |
-| `DataTable` (@tanstack/react-table) | sort / interaction (rows render) |
+| Component(s)                                           | Interactivity that needs hydration    |
+| ------------------------------------------------------ | ------------------------------------- |
+| `Select` (Radix Select)                                | open/keyboard panel                   |
+| `Segmented` (native `<button aria-pressed>`, stateful) | selection                             |
+| `Search`                                               | type-ahead / results popover          |
+| `Tabs` (Radix Tabs)                                    | tab switching (default panel renders) |
+| `Tooltip` (Radix Tooltip)                              | hover/focus content (trigger renders) |
+| `Modal` (Radix Dialog/AlertDialog)                     | open/close (trigger renders)          |
+| `Composer`                                             | submit / input state                  |
+| `AppBar`                                               | hide-on-scroll                        |
+| `CommandDock` (Radix Popover)                          | hide-on-scroll + popover              |
+| `NotificationCenter` (Radix Popover)                   | popover open (bell + count render)    |
+| `UserMenu` (Radix DropdownMenu)                        | menu open (trigger renders)           |
+| `ThemeToggle`                                          | the theme flip itself                 |
+| `Scrim`                                                | scroll-lock effect (backdrop renders) |
+| `DataTable` (@tanstack/react-table)                    | sort / interaction (rows render)      |
 
 ### Tier C — needs `client:*` to display at all
 
 `<canvas>` / D3 paint nothing on the server; they render an inert element that fills after
 hydration. Use `client:visible` (decorative) or `client:load`.
 
-| Component(s) | Why |
-|---|---|
+| Component(s)                    | Why                                                       |
+| ------------------------------- | --------------------------------------------------------- |
 | `AsciiBg`, `GlyphsBg`, `GridBg` | Animated `<canvas>`; paints inside the effect's rAF loop. |
-| `Candlestick` | D3 draws into the SVG inside a `useEffect`. |
+| `Candlestick`                   | D3 draws into the SVG inside a `useEffect`.               |
 
 ---
 
@@ -126,7 +126,7 @@ hydration. Use `client:visible` (decorative) or `client:load`.
 - **Theme** is global and JS-free at the token layer: it is driven entirely by
   `data-theme="light|dark"` on `<html>` (see [consumer-setup.md](./consumer-setup.md#theme-switching)).
   Server-render with the attribute already set and every Tier A/B component themes correctly
-  before any JS runs. `ThemeToggle` is only needed to *flip* it at runtime.
+  before any JS runs. `ThemeToggle` is only needed to _flip_ it at runtime.
 
 ## Durability note
 
