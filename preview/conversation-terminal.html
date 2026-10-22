@@ -14,11 +14,11 @@
   body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
-  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
-  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
 
   /* ---- terminal conversation component ---- */
   .term{display:flex;flex-direction:column;max-width:560px;
@@ -36,7 +36,7 @@
   .t-you{color:var(--text-primary)}
   .t-bot{color:var(--text-secondary)}
   .n{color:var(--data-up);font-weight:600}
-  .bul{color:var(--text-muted)}
+  .bul{color:var(--text-secondary)}
   .cursor{display:inline-block;width:7px;height:14px;background:var(--color-signal);
     vertical-align:text-bottom;margin-left:2px;animation:cdblink 1s steps(1) infinite}
   .term__composer{padding:11px 14px 4px;border-top:.5px solid var(--border-default);
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <p style="margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-muted);max-width:560px">Note: the light/dark toggle above is a preview convenience. Theme switching is a global control and lives in the app shell (see the App Shell component), not on individual surfaces.</p>
+  <p style="margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-secondary);max-width:560px">Note: the light/dark toggle above is a preview convenience. Theme switching is a global control and lives in the app shell (see the App Shell component), not on individual surfaces.</p>
 
   <div class="term">
     <div class="term__head">

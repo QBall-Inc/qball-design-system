@@ -23,15 +23,15 @@
     white-space: nowrap; }
   @media (max-width: 560px) { h1 { white-space: normal; } }
   .sub { font-family: var(--font-body); font-size: clamp(15px, 1.25vw, 18px); line-height: 1.5;
-    color: var(--text-muted); margin: 0; max-width: 80ch; }
+    color: var(--text-secondary); margin: 0; max-width: 80ch; }
   .meta { font-family: var(--font-ui); font-size: 11px; letter-spacing: 1.25px; text-transform: uppercase;
-    color: var(--text-muted); }
+    color: var(--text-secondary); }
   .toolbar { display: flex; gap: 8px; align-items: center; }
   .tg { font-family: var(--font-ui); font-size: 12px; padding: 7px 14px; border-radius: var(--radius-sm);
     border: 1px solid var(--color-signal); color: var(--color-signal); background: transparent; cursor: pointer; }
   .tg:hover { background: var(--signal-bg); }
   /* hero "Get it for free:" + composite menu-buttons (npm / GitHub) — dogfood the shipped .dropdown panel */
-  .hero-get { font-family: var(--font-ui); font-size: 12.5px; letter-spacing: 0.3px; color: var(--text-muted); align-self: center; }
+  .hero-get { font-family: var(--font-ui); font-size: 12.5px; letter-spacing: 0.3px; color: var(--text-secondary); align-self: center; }
   .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }  /* keep the 2 buttons grouped when the row wraps — the label drops to its own line first */
   .menu-btn { position: relative; display: inline-flex; }
   .hero-buttons .btn svg.menu-btn__chev { width: 13px; height: 13px; transition: transform 150ms ease; }
@@ -39,12 +39,12 @@
   .menu-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; display: none; }
   .menu-btn.open .menu-panel { display: block; }
   .menu-panel .dropdown__row { text-decoration: none; box-sizing: border-box; }  /* border-box so the ↗ isn't clipped by the panel's overflow:hidden */
-  .menu-panel .dropdown__row .row-arrow { margin-left: auto; color: var(--text-muted); font-size: 11px; }
+  .menu-panel .dropdown__row .row-arrow { margin-left: auto; color: var(--text-secondary); font-size: 11px; }
   .menu-panel .dropdown__rule { margin-inline: -6px; }  /* full-width divider between options */
   .wrap { margin: 0; }
   h2 { font-family: var(--font-heading); font-size: clamp(18px, 1.7vw, 24px); font-weight: 600; color: var(--text-primary);
     letter-spacing: -0.3px; margin: 48px 0 5px; padding-top: 18px; border-top: 1px solid var(--border-default); }
-  .sec-note { font-family: var(--font-body); font-size: clamp(13px, 1.05vw, 15.5px); color: var(--text-muted); margin: 0 0 20px; }
+  .sec-note { font-family: var(--font-body); font-size: clamp(13px, 1.05vw, 15.5px); color: var(--text-secondary); margin: 0 0 20px; }
   .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
   .cell { border: 0.5px solid var(--border-default); border-radius: var(--radius-md); overflow: hidden;
     background: var(--bg-surface); display: flex; flex-direction: column; }
@@ -54,7 +54,7 @@
   .cap { display: flex; align-items: center; justify-content: space-between; gap: 8px;
     padding: 9px 13px; border-bottom: 0.5px solid var(--border-default); }
   .cap b { font-family: var(--font-heading); font-size: 12px; font-weight: 600; color: var(--text-primary); }
-  .cap a { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); text-decoration: none; }
+  .cap a { font-family: var(--font-ui); font-size: 10px; color: var(--text-secondary); text-decoration: none; }
   .cap a:hover { color: var(--color-signal); }
   /* tile heights scale with the viewport (so wide tiles aren't cramped/short) but stay bounded by
      a max, so they don't keep growing once the grid width caps at the shell on big screens (AC-2). */
@@ -71,7 +71,7 @@
   .frame iframe { position: absolute; top: 0; left: 0; border: 0; display: block;
     transform-origin: top left; background: var(--bg-primary); }
   footer { margin: 48px 0 0; padding-top: 18px; border-top: 1px solid var(--border-default);
-    font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); }
+    font-family: var(--font-ui); font-size: 11px; color: var(--text-secondary); }
   /* in-page preview modal (replaces opening previews in a new tab) */
   .modal-overlay { position: fixed; inset: 0; z-index: 50; display: none;
     align-items: center; justify-content: center; padding: clamp(16px, 4vw, 48px);
@@ -87,9 +87,9 @@
   .modal-head b { font-family: var(--font-heading); font-size: 13px; color: var(--text-primary);
     flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .modal-actions { display: flex; align-items: center; gap: 14px; flex: none; }
-  .modal-actions a { font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); text-decoration: none; }
+  .modal-actions a { font-family: var(--font-ui); font-size: 11px; color: var(--text-secondary); text-decoration: none; }
   .modal-actions a:hover { color: var(--color-signal); }
-  .modal-x { font-family: var(--font-ui); font-size: 16px; line-height: 1; color: var(--text-muted);
+  .modal-x { font-family: var(--font-ui); font-size: 16px; line-height: 1; color: var(--text-secondary);
     background: transparent; border: 0; cursor: pointer; padding: 2px 6px; border-radius: var(--radius-sm); }
   .modal-x:hover { color: var(--color-signal); background: var(--signal-bg); }
   .modal-box iframe { flex: 1; width: 100%; height: auto; border: 0; background: var(--bg-primary); display: block; }
@@ -118,7 +118,7 @@
   .hero-main { display: flex; flex-direction: column; align-items: flex-start; }
   .hero-aside { display: flex; flex-direction: column; align-items: center; gap: clamp(18px,2.2vw,26px); }
   .hero-eyebrow { display: flex; align-items: center; gap: 11px; margin: 0 0 20px;
-    font-family: var(--font-ui); font-size: 11.5px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--text-muted); }
+    font-family: var(--font-ui); font-size: 11.5px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--text-secondary); }
   .hero-eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--color-signal); }
   .hero-title { font-family: var(--font-display); font-weight: 700; letter-spacing: -2px;
     font-size: clamp(40px,6.5vw,84px); line-height: 0.97; margin: 0 0 22px; color: var(--text-primary); }
@@ -146,14 +146,14 @@
   }
   /* === S109 QA batch === */
   /* QA-2: theme keyboard-shortcut hint cap (main page only) */
-  .kbd-hint { font-family: var(--font-code); font-size: 10.5px; line-height: 1; color: var(--text-muted);
+  .kbd-hint { font-family: var(--font-code); font-size: 10.5px; line-height: 1; color: var(--text-secondary);
     border: 1px solid var(--border-default); border-bottom-width: 2px; border-radius: 5px;
     padding: 3px 6px; background: var(--bg-surface); user-select: none; }
   /* QA-3: tiles are non-interactive cropped teasers; the WHOLE tile opens the modal */
   .cell { position: relative; cursor: pointer; transition: transform 150ms ease, border-color 150ms ease; }
   .cell:hover { transform: translateY(-2px); border-color: var(--color-signal); }
   .cell iframe { pointer-events: none; }
-  .cap .open-cue { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); }
+  .cap .open-cue { font-family: var(--font-ui); font-size: 10px; color: var(--text-secondary); }
   .cell:hover .open-cue { color: var(--color-signal); }
   .cell-link { position: absolute; inset: 0; z-index: 2; display: block; }
   .cell-link:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; border-radius: var(--radius-md); }

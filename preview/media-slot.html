@@ -15,18 +15,18 @@
   .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:16px 28px;
        background:var(--bg-primary);border-bottom:.5px solid var(--border-default)}
   .top h1{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.5px;margin:0}
-  .top .pill{font-family:var(--font-ui);font-size:11px;color:var(--text-muted);border:.5px solid var(--border-default);
+  .top .pill{font-family:var(--font-ui);font-size:11px;color:var(--text-secondary);border:.5px solid var(--border-default);
              border-radius:999px;padding:3px 9px}
   .toggle{margin-left:auto;display:inline-flex;border:.5px solid var(--border-strong);border-radius:var(--radius-sm);overflow:hidden}
-  .toggle button{font-family:var(--font-ui);font-size:12px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .toggle button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .toggle button{font-family:var(--font-ui);font-size:12px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
   main{padding:8px 28px 0;max-width:1180px}
   section{padding:24px 0;border-bottom:.5px solid var(--border-default)}
   h2{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.2px;margin:0 0 4px;text-transform:uppercase}
-  .sub{font-family:var(--font-ui);font-size:12.5px;color:var(--text-muted);margin:0 0 18px;max-width:74ch;line-height:1.55}
+  .sub{font-family:var(--font-ui);font-size:12.5px;color:var(--text-secondary);margin:0 0 18px;max-width:74ch;line-height:1.55}
   .grid{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
   .spec{display:flex;flex-direction:column;gap:8px}
-  .spec .lab{font-family:var(--font-ui);font-size:11px;color:var(--text-muted)}
+  .spec .lab{font-family:var(--font-ui);font-size:11px;color:var(--text-secondary)}
   .spec .lab b{color:var(--text-primary);font-weight:600}
   .w260{width:260px}.w220{width:220px}.w160{width:160px}.w120{width:120px}
   /* QA Item 7b: at narrow width the header description drops BELOW the "MediaSlot" title
@@ -80,7 +80,7 @@
   .media-slot__bar .tri{width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent var(--text-primary)}
   .media-slot__bar .line{flex:1;height:2px;border-radius:999px;background:var(--border-strong)}
   .media-slot__bar .line i{display:block;width:38%;height:100%;border-radius:999px;background:var(--color-signal)}
-  .media-slot__bar .t{font-family:var(--font-ui);font-size:10px;color:var(--text-muted)}
+  .media-slot__bar .t{font-family:var(--font-ui);font-size:10px;color:var(--text-secondary)}
 
   /* embed FACADE: real provider thumbnail + a real play <button> on a DARK SCRIM (so it never
      blends into the thumbnail). Click swaps the real iframe; never auto-load. */

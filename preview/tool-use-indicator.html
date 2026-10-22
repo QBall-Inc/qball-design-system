@@ -14,22 +14,22 @@
   body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:16px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
-  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
-  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
-  .pnote{margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-muted);max-width:600px}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
+  .pnote{margin:-6px 0 0;font-family:var(--font-ui);font-size:10.5px;color:var(--text-secondary);max-width:600px}
 
   /* ---- state matrix layout ---- */
   .matrix{display:grid;grid-template-columns:108px minmax(280px, max-content) 1fr;gap:0;max-width:840px;
     border:1px solid var(--border-default);border-radius:var(--radius-lg);overflow:hidden}
   .matrix > div{padding:13px 16px;border-top:.5px solid var(--border-default);min-width:0}
-  .mh{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);
+  .mh{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);
     border-top:0!important;background:transparent}
   .m-state{font-family:var(--font-display);font-size:12px;color:var(--text-primary);font-weight:600}
   .m-state small{display:block;font-family:var(--font-ui);font-weight:400;font-size:10px;
-    color:var(--text-muted);margin-top:3px;letter-spacing:.2px}
+    color:var(--text-secondary);margin-top:3px;letter-spacing:.2px}
   .m-cell{display:flex;align-items:center}
   .m-desc{font-family:var(--font-ui);font-size:11px;line-height:1.5;color:var(--text-secondary)}
 
@@ -75,7 +75,7 @@
     .matrix .mh{display:none}
     .matrix > div{border-top:0}
     .matrix .m-state{border-top:.5px solid var(--border-default);padding-bottom:2px}
-    .matrix .m-desc{padding-top:2px;color:var(--text-muted)}
+    .matrix .m-desc{padding-top:2px;color:var(--text-secondary)}
   }
   /* AC-6 (S110 QA Item 1): narrow-width header — shrink the title block so the light|dark switcher stays right and is never clipped (wrap as a fallback). */
   @media (max-width: 600px){ .head{flex-wrap:wrap;gap:10px} .head>:first-child{min-width:0} .head>:last-child{margin-left:auto} }

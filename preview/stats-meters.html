@@ -14,13 +14,13 @@
   body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:18px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
-  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
-  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:-6px}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:-6px}
   .meters{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   .meters .meter__label,.meters .meter__val{white-space:nowrap}
   .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);padding:16px 18px}
@@ -102,7 +102,7 @@
         <span id="sp5"></span>
         <span class="sparkline__cap">TSLA · 30d</span>
       </div>
-      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;max-width:160px">Standalone sparkline — trend color follows direction.</div>
+      <div style="font-size:11px;color:var(--text-secondary);line-height:1.5;max-width:160px">Standalone sparkline — trend color follows direction.</div>
     </div>
   </div>
 

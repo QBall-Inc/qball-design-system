@@ -16,15 +16,15 @@
   body{background:var(--bg-surface);box-sizing:border-box;padding:24px 28px;
     display:flex;flex-direction:column;gap:22px;font-family:var(--font-ui)}
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
-  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
-  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
-  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
+  .state{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)}
   .panel{border:.5px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);padding:18px 20px}
   .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .note{font-size:11px;color:var(--text-muted);line-height:1.5}
+  .note{font-size:11px;color:var(--text-secondary);line-height:1.5}
 
   /* Tabs (.tab/.tab-list/.tab-panel) + the shared sage :focus-visible ring now
      SHIP in packages/tokens/components.css (imported above) — this specimen

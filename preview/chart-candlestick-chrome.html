@@ -18,14 +18,14 @@
   }
   .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
   .eyebrow{font-family:var(--font-ui);font-size:11px;letter-spacing:1.25px;
-    text-transform:uppercase;color:var(--text-muted)}
+    text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;
     font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
   .seg button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;
-    border:0;background:transparent;color:var(--text-muted);cursor:pointer;
+    border:0;background:transparent;color:var(--text-secondary);cursor:pointer;
     transition:background var(--dur-base) var(--ease-out),color var(--dur-base) var(--ease-out)}
-  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .seg button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
 
   .grid{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
   figure{margin:0;display:flex;flex-direction:column;gap:10px;position:relative}
@@ -33,8 +33,8 @@
   .tag-head{display:flex;align-items:center;gap:8px}
   .use{font-family:var(--font-ui);font-size:10px;font-weight:500;letter-spacing:.6px;
     text-transform:uppercase;padding:3px 8px;border-radius:var(--radius-sm)}
-  .use--compact{color:var(--text-muted);background:var(--bg-surface);border:.5px solid var(--border-strong)}
-  .use--detail{color:var(--color-signal);background:var(--signal-bg)}
+  .use--compact{color:var(--text-secondary);background:var(--bg-surface);border:.5px solid var(--border-strong)}
+  .use--detail{color:var(--signal-strong);background:var(--signal-bg)}
   .tag-head .nm{font-family:var(--font-heading);font-size:14px;font-weight:600;color:var(--text-primary)}
 
   svg{width:100%;height:auto;display:block;
@@ -57,9 +57,9 @@
     font-family:var(--font-display);font-size:11px;line-height:1.5;
     color:var(--text-secondary);transition:opacity var(--dur-fast) var(--ease-out);z-index:5}
   .tt .d{font-family:var(--font-ui);font-size:9.5px;letter-spacing:1px;
-    text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+    text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px}
   .tt .r{display:flex;justify-content:space-between;gap:14px}
-  .tt .r span:first-child{color:var(--text-muted)}
+  .tt .r span:first-child{color:var(--text-secondary)}
   .tt .r b{color:var(--text-primary);font-weight:600;font-variant-numeric:tabular-nums}
   .tt .chg{margin-top:4px;font-weight:600;font-variant-numeric:tabular-nums}
   /* AC-6 responsive: reflow to narrow widths (stacks in modal + standalone-on-phone) */

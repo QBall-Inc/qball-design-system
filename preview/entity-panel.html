@@ -14,19 +14,19 @@
   html,body{margin:0;min-height:100vh}
   body{background:var(--bg-primary);box-sizing:border-box;padding:24px 28px;font-family:var(--font-ui)}
   .head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 16px;margin-bottom:16px}
-  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-muted)}
+  .eyebrow{font-size:11px;letter-spacing:1.25px;text-transform:uppercase;color:var(--text-secondary)}
   .head h3{margin:4px 0 0;font-family:var(--font-heading);font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-.3px}
   .seg-th{display:inline-flex;border:1px solid var(--border-strong);border-radius:4px;overflow:hidden}
-  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-muted);cursor:pointer}
-  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--color-signal)}
+  .seg-th button{font-family:var(--font-ui);font-size:11px;letter-spacing:.4px;padding:5px 12px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer}
+  .seg-th button[aria-pressed="true"]{background:var(--signal-bg);color:var(--signal-strong)}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;max-width:1120px}
-  .lab{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
+  .lab{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)}
   /* a fixed-height frame, as beside the canvas: the body scrolls, the footer stays */
   .frame{height:460px;border:1px solid var(--border-strong);border-radius:var(--radius-md);overflow:hidden;display:flex}
   .frame > .epanel,.gx.demo > .epanel{flex:1;min-width:0}
   .gx.demo{min-height:0;height:460px;display:flex}
-  .note{margin:14px 0 0;font-size:10.5px;color:var(--text-muted);max-width:820px;line-height:1.6}
-  .pending{font-size:11px;color:var(--text-muted);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
+  .note{margin:14px 0 0;font-size:10.5px;color:var(--text-secondary);max-width:820px;line-height:1.6}
+  .pending{font-size:11px;color:var(--text-secondary);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;max-width:640px}
   html[data-specimens="ready"] .pending{display:none}
   @media (max-width:600px){ body{padding:16px} .grid{grid-template-columns:1fr} }
 </style>
