@@ -55,6 +55,9 @@ jobs:
           # OIDC trusted publishing. registry-url wires the npm registry so the
           # publish step authenticates via OIDC (no NPM_TOKEN, no NODE_AUTH_TOKEN).
           node-version: 22
+          # Always the newest Node 22: fixtures install the latest Astro, whose engines
+          # field tracks recent Node patches; a stale runner cache fails the build.
+          check-latest: true
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
