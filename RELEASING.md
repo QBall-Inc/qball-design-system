@@ -58,7 +58,7 @@ The workflow grants `id-token: write`, so each publish carries a signed provenan
 
 ### Publish client (resolves the pnpm/OIDC tooling caveat)
 
-npm trusted publishing requires **npm CLI ≥ 11.5.1 on Node ≥ 22.14**, and `pnpm@9.15.0` (this repo's `packageManager`) cannot perform the OIDC token exchange. So `release.yml` runs on **Node 22**, **upgrades npm to `npm@latest`**, and the publish step (`scripts/publish-packages.sh`) **packs each package with `pnpm pack`** — the only client that rewrites `workspace:*` to a real version inside the tarball — and **publishes that tarball with `npm publish`**. pnpm stays at 9.15.0 for install/build/pack.
+npm trusted publishing requires **npm CLI ≥ 11.5.1 on Node ≥ 22.14**, and `pnpm@9.15.0` (this repo's `packageManager`) cannot perform the OIDC token exchange. So `release.yml` runs on **Node 24**, **upgrades npm to `npm@latest`**, and the publish step (`scripts/publish-packages.sh`) **packs each package with `pnpm pack`** — the only client that rewrites `workspace:*` to a real version inside the tarball — and **publishes that tarball with `npm publish`**. pnpm stays at 9.15.0 for install/build/pack.
 
 > **Proven live** with the `1.0.1` release of tokens + react (OIDC exchange + provenance). If it ever fails, the **fallback is a local publish**: `npm login`, then `bash scripts/publish-packages.sh` (uses the login token; no provenance).
 

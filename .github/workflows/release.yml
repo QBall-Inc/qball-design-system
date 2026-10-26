@@ -54,8 +54,8 @@ jobs:
           # Node >= 22.14 + npm >= 11.5.1 (upgraded below) are required for npm
           # OIDC trusted publishing. registry-url wires the npm registry so the
           # publish step authenticates via OIDC (no NPM_TOKEN, no NODE_AUTH_TOKEN).
-          node-version: 22
-          # Always the newest Node 22: fixtures install the latest Astro, whose engines
+          node-version: 24
+          # Always the newest Node 24: fixtures install the latest Astro, whose engines
           # field tracks recent Node patches; a stale runner cache fails the build.
           check-latest: true
           registry-url: https://registry.npmjs.org
