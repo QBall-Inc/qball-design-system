@@ -1259,6 +1259,9 @@ a.claim__src:hover{color:var(--color-signal)}
 /* incomplete facet data: the chip still filters; the mark says its count may miss entities */
 .fchip__inc{margin-left:4px;color:var(--color-highlight)}
 .fchip[aria-pressed="true"] .fchip__inc{color:inherit}
+/* empty category (nothing saved under it yet): greyed in place, vocabulary order kept; it cannot be pressed */
+.fchip.is-empty,.fchip.is-empty:hover{color:var(--text-muted);border-color:var(--border-default);border-style:dashed;cursor:default}
+.facetbar__dom.is-empty{color:var(--text-muted)}
 .facetbar__clear{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));border:0;background:none;color:var(--anno-source);cursor:pointer;padding:3px 4px}
 .facetbar__clear:hover{color:var(--color-signal)}
 .facetbar__count{font-size:calc(10px * var(--text-scale, 1));color:var(--text-secondary)}

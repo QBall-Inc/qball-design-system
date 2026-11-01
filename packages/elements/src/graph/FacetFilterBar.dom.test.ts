@@ -87,6 +87,61 @@ describe("FacetFilterBar — chips from the taxonomy", () => {
   });
 });
 
+describe("FacetFilterBar — empty categories (owner S139: greyed, vocabulary order)", () => {
+  // "b" has a populated chip and an empty one; "c" has only an empty chip; "d" has none.
+  const sparse: FacetTaxonomy = { domains: { b: ["y", "z"], c: ["w"], d: [] } };
+  const nodes = [
+    node(1, { domains: ["b"], sub_domains: ["y"], pairs: [{ domain: "b", sub_domain: "y" }] }),
+  ];
+
+  it("keeps empty chips in place, greyed and aria-disabled; populated chips are unchanged", () => {
+    mount(host, { nodes, taxonomy: sparse });
+    expect(chipsOf().map((b) => b.firstChild?.textContent)).toEqual(["y", "z", "w"]);
+    const [y, z, w] = chipsOf();
+    expect(y!.classList.contains("is-empty")).toBe(false);
+    expect(y!.hasAttribute("aria-disabled")).toBe(false);
+    for (const empty of [z!, w!]) {
+      expect(empty.classList.contains("is-empty")).toBe(true);
+      expect(empty.getAttribute("aria-disabled")).toBe("true");
+    }
+  });
+
+  it("greys a domain label only when none of its chips is populated", () => {
+    mount(host, { nodes, taxonomy: sparse });
+    const labels = [...host.querySelectorAll(".facetbar__dom")];
+    expect(labels.map((l) => [l.textContent, l.classList.contains("is-empty")])).toEqual([
+      ["b", false],
+      ["c", true],
+      ["d", true],
+    ]);
+  });
+
+  it("an empty chip cannot be pressed: no state change, no onChange", () => {
+    const changes: FacetFilterChange[] = [];
+    const bar = mount(host, { nodes, taxonomy: sparse, onChange: (c) => changes.push(c) });
+    const z = chipsOf()[1]!;
+    z.click();
+    expect(z.getAttribute("aria-pressed")).toBe("false");
+    expect(bar.activeCount).toBe(0);
+    expect(changes).toHaveLength(0);
+    chipsOf()[0]!.click();
+    expect(bar.activeCount).toBe(1);
+    expect(changes).toHaveLength(1);
+  });
+
+  it("a data swap that populates a chip makes it pressable again", () => {
+    const bar = mount(host, { nodes, taxonomy: sparse });
+    bar.setData([
+      ...nodes,
+      node(2, { domains: ["b"], sub_domains: ["z"], pairs: [{ domain: "b", sub_domain: "z" }] }),
+    ]);
+    const z = chipsOf()[1]!;
+    expect(z.classList.contains("is-empty")).toBe(false);
+    z.click();
+    expect(z.getAttribute("aria-pressed")).toBe("true");
+  });
+});
+
 describe("FacetFilterBar — toggling, OR semantics, clear", () => {
   it("toggles aria-pressed, ORs the active chips and reports the canvas predicate", () => {
     const changes: FacetFilterChange[] = [];

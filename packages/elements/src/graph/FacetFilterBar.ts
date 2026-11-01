@@ -4,6 +4,9 @@
 // active it shows the match count and a clear-all button. When the facet data
 // is incomplete (entities whose sub-topic cannot be placed in one domain), the
 // affected chips carry a mark and the count says how many may be missing.
+// An empty category (no entity under it) stays in its taxonomy place, greyed
+// and aria-disabled so it cannot be pressed; a domain with no populated chip
+// gets a greyed label.
 // A renderer: it owns no canvas. The caller applies `onChange`'s predicate
 // (e.g. to GraphCanvas.setFilter) and owns any collapse toggle around it.
 
@@ -103,12 +106,20 @@ export function mount(host: HTMLElement, options: FacetFilterBarOptions): FacetF
     for (const [domain, subs] of Object.entries(taxonomy.domains)) {
       const group = el("div", "facetbar__group");
       const label = Object.hasOwn(domainLabels, domain) ? domainLabels[domain]! : domain;
-      group.append(el("span", "facetbar__dom", label));
+      const heading = el("span", "facetbar__dom", label);
+      group.append(heading);
+      let populated = false;
       for (const sub of subs) {
         const counts = model.chips[at++]!;
         const button = el("button", "fchip", sub);
         button.type = "button";
         button.setAttribute("aria-pressed", "false");
+        if (counts.matches === 0 && counts.unattributable === 0) {
+          button.classList.add("is-empty");
+          button.setAttribute("aria-disabled", "true");
+        } else {
+          populated = true;
+        }
         if (counts.unattributable > 0) {
           button.classList.add("is-incomplete");
           button.setAttribute("aria-label", labels.incompleteChip(sub, counts.unattributable));
@@ -119,6 +130,7 @@ export function mount(host: HTMLElement, options: FacetFilterBarOptions): FacetF
         chips.push({ chip: { domain, sub_domain: sub }, button });
         group.append(button);
       }
+      if (!populated) heading.classList.add("is-empty");
       bar.append(group);
     }
     bar.append(count, clearButton);
@@ -163,6 +175,7 @@ export function mount(host: HTMLElement, options: FacetFilterBarOptions): FacetF
       return;
     }
     if (!chips.some(({ button }) => button === target)) return;
+    if (target.getAttribute("aria-disabled") === "true") return;
     if (active.has(target)) active.delete(target);
     else active.add(target);
     changed();

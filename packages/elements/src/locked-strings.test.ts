@@ -9,23 +9,74 @@ import {
   sourcesLine,
   withheldExplanation,
 } from "./locked-strings";
+import { TEST_LABELS } from "./trust/test-fixtures";
 
 // Expected strings are written out verbatim (plan AD-11); only the numeric,
-// date and tier slots vary. Every counted noun is covered at N = 0, 1 and > 1.
+// date and tier slots vary, plus the consumer-worded segments (TEST_LABELS).
+// Every counted noun is covered at N = 0, 1 and > 1.
 
 describe("groundedExplanation", () => {
   it.each([
-    [0, 0, "0 claims · 0 episodes · high confidence"],
-    [1, 1, "1 claim · 1 episode · high confidence"],
-    [6, 4, "6 claims · 4 episodes · high confidence"],
-  ])("claims=%i episodes=%i → %s", (claims, episodes, expected) => {
-    expect(groundedExplanation({ claims, episodes, confidenceTier: "high" })).toBe(expected);
+    [0, 0, "0 claims · 0 sources · Evidence: high"],
+    [1, 1, "1 claim · 1 source · Evidence: high"],
+    [6, 4, "6 claims · 4 sources · Evidence: high"],
+  ])("claims=%i sources=%i → %s", (claims, sources, expected) => {
+    expect(groundedExplanation({ claims, sources, confidenceTier: "high" }, TEST_LABELS)).toBe(
+      expected,
+    );
   });
 
-  it("uses the tier word for the confidence slot", () => {
-    expect(groundedExplanation({ claims: 2, episodes: 1, confidenceTier: "med" })).toBe(
-      "2 claims · 1 episode · medium confidence",
+  it("passes the canonical tier to the consumer's evidence label (`med` → medium)", () => {
+    const seen: string[] = [];
+    const labels = {
+      ...TEST_LABELS,
+      evidence: (tier: string) => {
+        seen.push(tier);
+        return `Evidence: ${tier}`;
+      },
+    };
+    expect(groundedExplanation({ claims: 2, sources: 1, confidenceTier: "med" }, labels)).toBe(
+      "2 claims · 1 source · Evidence: medium",
     );
+    expect(seen).toEqual(["medium"]);
+  });
+
+  it("an abstained label takes the evidence segment's place (labels not needed)", () => {
+    expect(
+      groundedExplanation({
+        claims: 6,
+        sources: 4,
+        confidenceTier: "high",
+        abstained: { label: "notes don't cover this" },
+      }),
+    ).toBe("6 claims · 4 sources · notes don't cover this");
+  });
+
+  it("still checks the tier on an abstained answer", () => {
+    expect(() =>
+      groundedExplanation({
+        claims: 1,
+        sources: 1,
+        confidenceTier: "sure",
+        abstained: { label: "x" },
+      }),
+    ).toThrow('Unknown confidence_tier "sure"');
+  });
+
+  it("without labels, a line with evidence fails with the fix", () => {
+    expect(() => groundedExplanation({ claims: 1, sources: 1, confidenceTier: "high" })).toThrow(
+      "groundedExplanation needs EvidenceLabels { outdated, evidence } (functions).",
+    );
+  });
+
+  it.each([
+    ["", "EvidenceLabels.evidence must return a non-empty string."],
+    ["   ", "EvidenceLabels.evidence must return a non-empty string."],
+  ])("rejects an empty evidence label %j", (bad, message) => {
+    const labels = { ...TEST_LABELS, evidence: () => bad };
+    expect(() =>
+      groundedExplanation({ claims: 1, sources: 1, confidenceTier: "high" }, labels),
+    ).toThrow(message);
   });
 });
 
@@ -50,96 +101,123 @@ describe("withheldExplanation", () => {
 
 describe("refusedExplanation", () => {
   it("has one locked line per refusal kind", () => {
-    expect(refusedExplanation("off_topic")).toBe("out of scope");
-    expect(refusedExplanation("in_scope_empty")).toBe("unable to answer · 0 references found");
-    expect(refusedExplanation("abstained")).toBe("insufficient evidence");
+    expect(refusedExplanation("out_of_scope")).toBe("out of scope");
+    expect(refusedExplanation("no_evidence")).toBe("unable to answer · 0 references found");
+  });
+
+  it("rejects a kind outside the contract (abstained is a grounded flag, not a refusal)", () => {
+    expect(() => refusedExplanation("abstained" as never)).toThrow(
+      'Unknown refusal kind "abstained" — expected out_of_scope or no_evidence.',
+    );
   });
 });
 
 describe("answerFooter", () => {
   it.each([
-    [
-      0,
-      0,
-      0,
-      "0 claims · 0 episodes · high confidence · snapshot 2026-07-17 · 0 superseded excluded",
-    ],
-    [
-      1,
-      1,
-      1,
-      "1 claim · 1 episode · high confidence · snapshot 2026-07-17 · 1 superseded excluded",
-    ],
-    [
-      7,
-      5,
-      1,
-      "7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded",
-    ],
-  ])("claims=%i episodes=%i superseded=%i → %s", (claims, episodes, superseded, expected) => {
+    [0, 0, 0, "0 claims · 0 sources · 2026-07-17 · 0 outdated claims · Evidence: high"],
+    [1, 1, 1, "1 claim · 1 source · 2026-07-17 · 1 outdated claim · Evidence: high"],
+    [7, 5, 1, "7 claims · 5 sources · 2026-07-17 · 1 outdated claim · Evidence: high"],
+  ])("claims=%i sources=%i superseded=%i → %s", (claims, sources, superseded, expected) => {
     expect(
-      answerFooter({
-        claims,
-        episodes,
-        confidenceTier: "high",
-        snapshotDate: "2026-07-17",
-        supersededExcluded: superseded,
-      }),
+      answerFooter(
+        {
+          claims,
+          sources,
+          confidenceTier: "high",
+          revisionDate: "2026-07-17",
+          supersededExcluded: superseded,
+        },
+        TEST_LABELS,
+      ),
     ).toBe(expected);
+  });
+
+  it("passes the superseded count to the consumer's outdated label", () => {
+    const labels = { ...TEST_LABELS, outdated: (k: number) => `K=${String(k)}` };
+    expect(
+      answerFooter({ claims: 3, sources: 2, confidenceTier: "low", supersededExcluded: 4 }, labels),
+    ).toBe("3 claims · 2 sources · K=4 · Evidence: low");
+  });
+
+  it("needs the consumer labels (no DS wording)", () => {
+    expect(() =>
+      answerFooter(
+        { claims: 1, sources: 1, confidenceTier: "high", supersededExcluded: 0 },
+        undefined as never,
+      ),
+    ).toThrow("answerFooter needs EvidenceLabels { outdated, evidence } (functions).");
+    expect(() =>
+      answerFooter(
+        { claims: 1, sources: 1, confidenceTier: "high", supersededExcluded: 0 },
+        null as never,
+      ),
+    ).toThrow("answerFooter needs EvidenceLabels { outdated, evidence } (functions).");
+    expect(() =>
+      answerFooter(
+        { claims: 1, sources: 1, confidenceTier: "high", supersededExcluded: 0 },
+        { ...TEST_LABELS, outdated: () => "" },
+      ),
+    ).toThrow("EvidenceLabels.outdated must return a non-empty string.");
   });
 });
 
-describe("answerFooter without a snapshot date (owner S123: drop the segment)", () => {
+describe("answerFooter without a revision date (owner S123: drop the segment)", () => {
   it.each([
-    [0, 0, 0, undefined, "0 claims · 0 episodes · high confidence · 0 superseded excluded"],
-    [1, 1, 1, null, "1 claim · 1 episode · high confidence · 1 superseded excluded"],
-    [7, 5, 2, null, "7 claims · 5 episodes · high confidence · 2 superseded excluded"],
+    [0, 0, 0, undefined, "0 claims · 0 sources · 0 outdated claims · Evidence: high"],
+    [1, 1, 1, null, "1 claim · 1 source · 1 outdated claim · Evidence: high"],
+    [7, 5, 2, null, "7 claims · 5 sources · 2 outdated claims · Evidence: high"],
   ])(
-    "claims=%i episodes=%i superseded=%i date=%s → %s",
-    (claims, episodes, superseded, snapshotDate, expected) => {
+    "claims=%i sources=%i superseded=%i date=%s → %s",
+    (claims, sources, superseded, revisionDate, expected) => {
       expect(
-        answerFooter({
-          claims,
-          episodes,
-          confidenceTier: "high",
-          snapshotDate,
-          supersededExcluded: superseded,
-        }),
+        answerFooter(
+          {
+            claims,
+            sources,
+            confidenceTier: "high",
+            revisionDate,
+            supersededExcluded: superseded,
+          },
+          TEST_LABELS,
+        ),
       ).toBe(expected);
     },
   );
 
   it("still rejects a present but malformed date", () => {
     expect(() =>
-      answerFooter({
-        claims: 1,
-        episodes: 1,
-        confidenceTier: "high",
-        snapshotDate: "",
-        supersededExcluded: 0,
-      }),
-    ).toThrow('snapshotDate must be an ISO date YYYY-MM-DD (got "").');
+      answerFooter(
+        {
+          claims: 1,
+          sources: 1,
+          confidenceTier: "high",
+          revisionDate: "",
+          supersededExcluded: 0,
+        },
+        TEST_LABELS,
+      ),
+    ).toThrow('revisionDate must be an ISO date YYYY-MM-DD (got "").');
   });
 });
 
 describe("groundedExplanation for a no-evidence answer (owner S123: counts, no confidence)", () => {
-  it("reads `0 claims · 0 episodes` without a tier", () => {
-    expect(groundedExplanation({ claims: 0, episodes: 0 })).toBe("0 claims · 0 episodes");
+  it("reads `0 claims · 0 sources` without a tier", () => {
+    expect(groundedExplanation({ claims: 0, sources: 0 })).toBe("0 claims · 0 sources");
   });
 
   it.each([
     [1, 0],
     [0, 1],
     [3, 2],
-  ])("requires a tier when there is evidence (claims=%i episodes=%i)", (claims, episodes) => {
-    expect(() => groundedExplanation({ claims, episodes })).toThrow(
-      "confidenceTier is required unless the answer has no evidence (0 claims, 0 episodes).",
+  ])("requires a tier when there is evidence (claims=%i sources=%i)", (claims, sources) => {
+    expect(() => groundedExplanation({ claims, sources })).toThrow(
+      "confidenceTier is required unless the answer has no evidence (0 claims, 0 sources).",
     );
   });
 
   it("keeps the tier when one is given at zero counts", () => {
-    expect(groundedExplanation({ claims: 0, episodes: 0, confidenceTier: "low" })).toBe(
-      "0 claims · 0 episodes · low confidence",
+    expect(groundedExplanation({ claims: 0, sources: 0, confidenceTier: "low" }, TEST_LABELS)).toBe(
+      "0 claims · 0 sources · Evidence: low",
     );
   });
 });
@@ -203,9 +281,9 @@ describe("canvasStatus", () => {
 
 describe("input guards", () => {
   it.each([-1, 1.5, Number.NaN])("rejects a count of %s", (bad) => {
-    expect(() => groundedExplanation({ claims: bad, episodes: 1, confidenceTier: "high" })).toThrow(
-      `claims must be a non-negative integer (got ${String(bad)}).`,
-    );
+    expect(() =>
+      groundedExplanation({ claims: bad, sources: 1, confidenceTier: "high" }, TEST_LABELS),
+    ).toThrow(`claims must be a non-negative integer (got ${String(bad)}).`);
   });
 
   it.each(["2026-7-17", "17/07/2026", "", "2026-07-17T00:00:00Z"])(
@@ -218,14 +296,14 @@ describe("input guards", () => {
   );
 
   it("rejects an unknown confidence tier instead of printing it", () => {
-    expect(() => groundedExplanation({ claims: 1, episodes: 1, confidenceTier: "sure" })).toThrow(
-      'Unknown confidence_tier "sure"',
-    );
+    expect(() =>
+      groundedExplanation({ claims: 1, sources: 1, confidenceTier: "sure" }, TEST_LABELS),
+    ).toThrow('Unknown confidence_tier "sure"');
   });
 
   it("joins segments with the exported separator", () => {
     expect(LOCKED_SEPARATOR).toBe(" · ");
-    expect(refusedExplanation("in_scope_empty").split(LOCKED_SEPARATOR)).toEqual([
+    expect(refusedExplanation("no_evidence").split(LOCKED_SEPARATOR)).toEqual([
       "unable to answer",
       "0 references found",
     ]);

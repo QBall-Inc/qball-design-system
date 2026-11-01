@@ -1,52 +1,50 @@
 import { describe, expect, it } from "vitest";
 import { renderProvenanceFooter } from "./ProvenanceFooter";
+import { TEST_LABELS } from "./test-fixtures";
 
 describe("renderProvenanceFooter — answer", () => {
   it.each([
-    [
-      0,
-      0,
-      0,
-      "0 claims",
-      "0 claims · 0 episodes · high confidence · snapshot 2026-07-17 · 0 superseded excluded",
-    ],
-    [
-      1,
-      1,
-      1,
-      "1 claim",
-      "1 claim · 1 episode · high confidence · snapshot 2026-07-17 · 1 superseded excluded",
-    ],
+    [0, 0, 0, "0 claims", "0 claims · 0 sources · 2026-07-17 · 0 outdated claims · Evidence: high"],
+    [1, 1, 1, "1 claim", "1 claim · 1 source · 2026-07-17 · 1 outdated claim · Evidence: high"],
     [
       12,
       9,
       2,
       "12 claims",
-      "12 claims · 9 episodes · high confidence · snapshot 2026-07-17 · 2 superseded excluded",
+      "12 claims · 9 sources · 2026-07-17 · 2 outdated claims · Evidence: high",
     ],
-  ])("claims=%i episodes=%i superseded=%i", (claims, episodes, superseded, bold, text) => {
-    const footer = renderProvenanceFooter("answer", {
-      claims,
-      episodes,
-      confidenceTier: "high",
-      snapshotDate: "2026-07-17",
-      supersededExcluded: superseded,
-    });
+  ])("claims=%i sources=%i superseded=%i", (claims, sources, superseded, bold, text) => {
+    const footer = renderProvenanceFooter(
+      "answer",
+      {
+        claims,
+        sources,
+        confidenceTier: "high",
+        revisionDate: "2026-07-17",
+        supersededExcluded: superseded,
+      },
+      TEST_LABELS,
+    );
     expect(footer.tagName).toBe("FOOTER");
     expect(footer.className).toBe("provfoot");
     expect(footer.textContent).toBe(text);
     expect(footer.querySelector("b")?.textContent).toBe(bold);
   });
 
-  it("renders the tier word for each confidence tier", () => {
-    const footer = renderProvenanceFooter("answer", {
-      claims: 3,
-      episodes: 2,
-      confidenceTier: "low",
-      snapshotDate: "2026-07-17",
-      supersededExcluded: 0,
-    });
-    expect(footer.textContent).toContain(" · low confidence · ");
+  it("ends with the consumer's evidence label for the tier", () => {
+    const footer = renderProvenanceFooter(
+      "answer",
+      {
+        claims: 3,
+        sources: 2,
+        confidenceTier: "low",
+        revisionDate: "2026-07-17",
+        supersededExcluded: 0,
+      },
+      TEST_LABELS,
+    );
+    expect(footer.textContent?.endsWith(" · Evidence: low")).toBe(true);
+    expect(footer.textContent).not.toContain("confidence");
   });
 });
 
@@ -81,13 +79,17 @@ describe("renderProvenanceFooter — invalid data", () => {
       }),
     ).toThrow(RangeError);
     expect(() =>
-      renderProvenanceFooter("answer", {
-        claims: 1,
-        episodes: 1,
-        confidenceTier: "high",
-        snapshotDate: "17 July",
-        supersededExcluded: 0,
-      }),
+      renderProvenanceFooter(
+        "answer",
+        {
+          claims: 1,
+          sources: 1,
+          confidenceTier: "high",
+          revisionDate: "17 July",
+          supersededExcluded: 0,
+        },
+        TEST_LABELS,
+      ),
     ).toThrow(/ISO date/);
   });
 });

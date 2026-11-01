@@ -6,15 +6,21 @@
 // prefers-reduced-motion the CSS stops every animation and wraps the text.
 
 import type { GroundedTurn, RefusedTurn, Verdict, WithheldTurn } from "../answer-turn";
-import { groundedExplanation, refusedExplanation, withheldExplanation } from "../locked-strings";
+import {
+  groundedExplanation,
+  refusedExplanation,
+  withheldExplanation,
+  type EvidenceLabels,
+} from "../locked-strings";
 import { el } from "./dom";
 
 /**
  * The verdict slice of an answer turn. A FinalTurn can be passed as is; the
- * explanation is built from these numbers and enums only, never free text.
+ * explanation is built from these numbers and enums, plus the consumer's
+ * EvidenceLabels (and abstained label) for a grounded answer.
  */
 export type VerdictInput =
-  | Pick<GroundedTurn, "verdict" | "explanation">
+  | Pick<GroundedTurn, "verdict" | "explanation" | "abstained">
   | Pick<WithheldTurn, "verdict" | "explanation">
   | Pick<RefusedTurn, "verdict" | "reason">;
 
@@ -25,6 +31,8 @@ export interface VerdictStampOptions {
    * once, call markStampSeen on each row from here.
    */
   onOpen?: (row: HTMLElement) => void;
+  /** The consumer's wording for a grounded answer's evidence segment (required for one with evidence). */
+  labels?: EvidenceLabels;
 }
 
 const LABELS: Record<Verdict, string> = {
@@ -38,10 +46,10 @@ const TICKER_PX_PER_SECOND = 28;
 const TICKER_MIN_SECONDS = 6;
 
 /** The owner-locked explanation line for a verdict. */
-export function verdictExplanation(verdict: VerdictInput): string {
+export function verdictExplanation(verdict: VerdictInput, labels?: EvidenceLabels): string {
   switch (verdict.verdict) {
     case "grounded":
-      return groundedExplanation(verdict.explanation);
+      return groundedExplanation({ ...verdict.explanation, abstained: verdict.abstained }, labels);
     case "withheld":
       return withheldExplanation(verdict.explanation);
     case "refused":
@@ -84,7 +92,7 @@ export function renderVerdictStamp(
   verdict: VerdictInput,
   options: VerdictStampOptions = {},
 ): HTMLElement {
-  const text = verdictExplanation(verdict);
+  const text = verdictExplanation(verdict, options.labels);
   const label = LABELS[verdict.verdict];
   const word = verdict.verdict;
 

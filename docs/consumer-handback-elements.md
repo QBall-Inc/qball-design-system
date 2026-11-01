@@ -89,11 +89,17 @@ import "@qball-inc/tokens/components.css";
         save_date: "2025-06-20",
       };
 
+      // Your wording for the two worded segments; the package ships none.
+      const labels = {
+        outdated: (k) => `${k} outdated ${k === 1 ? "claim" : "claims"}`,
+        evidence: (tier) => `Evidence: ${tier}`,
+      };
+
       document.querySelector("#answer")?.append(
-        renderVerdictStamp({
-          verdict: "grounded",
-          explanation: { claims: 1, episodes: 1, confidenceTier: "high" },
-        }),
+        renderVerdictStamp(
+          { verdict: "grounded", explanation: { claims: 1, sources: 1, confidenceTier: "high" } },
+          { labels },
+        ),
         renderClaimCard(
           {
             claim_id: 1,
@@ -107,13 +113,17 @@ import "@qball-inc/tokens/components.css";
           { sourceBadges: { domains: { "example-lab.com": { mark: "EL", label: "Example Lab" } } } },
         ),
         renderReadingList([source]),
-        renderProvenanceFooter("answer", {
-          claims: 1,
-          episodes: 1,
-          confidenceTier: "high",
-          snapshotDate: "2026-07-17",
-          supersededExcluded: 0,
-        }),
+        renderProvenanceFooter(
+          "answer",
+          {
+            claims: 1,
+            sources: 1,
+            confidenceTier: "high",
+            revisionDate: "2026-07-17",
+            supersededExcluded: 0,
+          },
+          labels,
+        ),
       );
     </script>
   </body>

@@ -1,6 +1,6 @@
 {
   "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
-  "_case": "grounded with an explorer link and no snapshot date — the footer leaves out `snapshot <date>`; the link renders as a real <a href> because it is root-relative",
+  "_case": "grounded with an explorer link and no revision date — the footer leaves out the date segment; the link renders as a real <a href> because it is root-relative",
   "question": "how do teams structure agent harnesses?",
   "events": [
     {
@@ -20,7 +20,7 @@
         "verdict": "grounded",
         "explanation": {
           "claims": 7,
-          "episodes": 5,
+          "sources": 5,
           "confidenceTier": "high"
         },
         "body": [
@@ -99,9 +99,9 @@
         ],
         "provenance": {
           "claims": 7,
-          "episodes": 5,
+          "sources": 5,
           "confidenceTier": "high",
-          "snapshotDate": null,
+          "revisionDate": null,
           "supersededExcluded": 1
         },
         "explorerLink": "/explore?e=agent-harness"

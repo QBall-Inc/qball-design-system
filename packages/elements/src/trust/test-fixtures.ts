@@ -1,4 +1,5 @@
 // Synthetic claim/source builders for the trust-atom tests (no real data).
+import type { EvidenceLabels } from "../locked-strings";
 import type { Claim, SourceRef, UnavailableSource } from "../types";
 
 export const HOSTILE_MARKUP = '<img src=x onerror="globalThis.__trustPwned=1">';
@@ -62,3 +63,9 @@ export function pwned(): boolean {
 export function resetPwned(): void {
   Reflect.deleteProperty(globalThis, "__trustPwned");
 }
+
+/** Consumer wording the tests pass for the two worded answer segments (the DS ships none). */
+export const TEST_LABELS: EvidenceLabels = {
+  outdated: (count) => `${String(count)} outdated ${count === 1 ? "claim" : "claims"}`,
+  evidence: (tier) => `Evidence: ${tier}`,
+};

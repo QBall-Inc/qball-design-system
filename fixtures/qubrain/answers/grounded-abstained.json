@@ -1,0 +1,89 @@
+{
+  "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
+  "_case": "grounded, abstained — the agent says its notes do not cover the question; the consumer's label replaces the evidence segment of the stamp line, the footer keeps the evidence label",
+  "question": "which memory architecture will win by 2030?",
+  "events": [
+    {
+      "op": "start"
+    },
+    {
+      "op": "appendText",
+      "text": "draft: agent memory is drifting toward "
+    },
+    {
+      "op": "appendText",
+      "text": "episodic stores, roughly speaking."
+    },
+    {
+      "op": "finalize",
+      "turn": {
+        "verdict": "grounded",
+        "explanation": {
+          "claims": 6,
+          "sources": 4,
+          "confidenceTier": "high"
+        },
+        "body": [
+          {
+            "kind": "paragraph",
+            "inlines": [
+              {
+                "kind": "text",
+                "text": "short version: memory’s moving from flat context to episodic recall. i’m drawing on "
+              },
+              {
+                "kind": "figure",
+                "text": "6 claims"
+              },
+              {
+                "kind": "text",
+                "text": " from "
+              },
+              {
+                "kind": "figure",
+                "text": "4 sources"
+              },
+              {
+                "kind": "text",
+                "text": " in QuBrain — freshest from july — and the evidence leans episodic for long-running agents."
+              }
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "episode_id": "ep-demo-0001",
+            "title": "Memory in the age of agents",
+            "url": "https://example.com/memory-in-the-age-of-agents",
+            "source_type": "blog",
+            "save_date": "2026-07-02"
+          },
+          {
+            "episode_id": "ep-demo-0002",
+            "title": "LLM-powered autonomous agents",
+            "url": "https://example.com/llm-powered-autonomous-agents",
+            "source_type": "blog",
+            "save_date": "2026-05-18"
+          },
+          {
+            "episode_id": "ep-demo-0003",
+            "title": "Context engineering notes",
+            "url": "https://example.com/context-engineering-notes",
+            "source_type": "web",
+            "save_date": "2026-07-30"
+          }
+        ],
+        "provenance": {
+          "claims": 6,
+          "sources": 4,
+          "confidenceTier": "high",
+          "revisionDate": "2026-07-17",
+          "supersededExcluded": 0
+        },
+        "abstained": {
+          "label": "notes don't cover this"
+        }
+      }
+    }
+  ]
+}

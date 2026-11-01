@@ -127,17 +127,21 @@ thresholds behind a tier are your app's call. An unknown tier throws.
 ## Locked strings
 
 These lines are owner-locked: build them only through these functions, which take numbers,
-dates and enums, never free text. Nouns follow their count (`1 claim`, `2 claims`).
+dates and enums. Nouns follow their count (`1 claim`, `2 claims`). Two segments of a
+grounded answer's lines are worded by you through `EvidenceLabels` (the package ships no
+wording for them): `outdated(count)` for the superseded-claims segment and
+`evidence(tier)` for the evidence-strength segment. The examples below use
+`outdated: (k) => \`${k} outdated claims\``and`evidence: (tier) => \`Evidence: ${tier}\``.
 
-| Function              | Output                                                                                                                |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `groundedExplanation` | `6 claims · 4 episodes · high confidence` (no evidence, no tier: `0 claims · 0 episodes`)                             |
-| `withheldExplanation` | `2 figures untraceable · 12 claims shown`                                                                             |
-| `refusedExplanation`  | `out of scope` (off-topic) · `unable to answer · 0 references found` (in scope) · `insufficient evidence` (abstained) |
-| `answerFooter`        | `7 claims · 5 episodes · high confidence · snapshot 2026-07-17 · 1 superseded excluded` (no date: segment left out)   |
-| `panelFooter`         | `1 claim · 1 source · revision 2026-07-17 · 0 superseded shown`                                                       |
-| `sourcesLine`         | `[3 sources · newest jul 2026]` (needs at least one source; omit the line at zero)                                    |
-| `canvasStatus`        | `3294 entities · 2857 typed · 10003 co-mention · snapshot 2026-07-17` (narrow: `3294 entities · snapshot 2026-07-17`) |
+| Function              | Output                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `groundedExplanation` | `6 claims · 4 sources · Evidence: high` (abstained: `6 claims · 4 sources · <your label>`; no evidence: `0 claims · 0 sources`) |
+| `withheldExplanation` | `2 figures untraceable · 12 claims shown`                                                                                       |
+| `refusedExplanation`  | `out of scope` (`out_of_scope`) · `unable to answer · 0 references found` (`no_evidence`)                                       |
+| `answerFooter`        | `7 claims · 5 sources · 2026-07-17 · 1 outdated claim · Evidence: high` (no date: segment left out)                             |
+| `panelFooter`         | `1 claim · 1 source · revision 2026-07-17 · 0 superseded shown`                                                                 |
+| `sourcesLine`         | `[3 sources · newest jul 2026]` (needs at least one source; omit the line at zero)                                              |
+| `canvasStatus`        | `3294 entities · 2857 typed · 10003 co-mention · snapshot 2026-07-17` (narrow: `3294 entities · snapshot 2026-07-17`)           |
 
 ## AnswerTurn and the trust rule
 
@@ -164,6 +168,17 @@ shows streamed text before finalize. It is off by default. While it is off,
 guarantees an irreversible grounded verdict before any tokens. With it on, a later
 non-grounded `finalize()` is a contract violation: the shown text is withdrawn and the view
 becomes an error.
+
+The certified QuBrain backend contract (CL5) sends no separate verdict event, but it
+streams answer text only after every check has passed: withheld turns and late refusals
+send no text at all. A consumer of that backend may therefore opt in and call
+`authorize("grounded")` on the first streamed chunk. The default stays off, because the
+package does not assume any one backend gives this guarantee.
+
+**Revision changes mid-session.** The package does no polling. Turns already shown keep
+the revision they answered on (their footer date says which). When your app sees a new
+revision, swap the explorer's data through its revision-swap call, which clears the path,
+the chips and the panel. Fetch detail and answers for the new revision from then on.
 
 ## Building the answer body
 
@@ -197,14 +212,18 @@ Rules for the adapter:
   deeper nesting) to plain paragraphs of text.
 - **Strip what the turn already shows.** Leave out a trailing "Sources:" list; the sources
   line renders from `sources`.
-- **No evidence.** A grounded answer with nothing behind it (0 claims, 0 episodes, no
-  sources) leaves out `explanation.confidenceTier` and `provenance`; map a backend
-  confidence of `none` to a missing tier. Its stamp reads `0 claims · 0 episodes` and it
-  has no sources line or footer.
-- **Snapshot date is optional.** A missing or `null` `provenance.snapshotDate` drops the
-  `snapshot <date>` segment from the footer instead of failing.
-- **Refused bodies always show.** For an `abstained` refusal, the body is the agent's own
-  explanation of why it declined.
+- **No evidence.** A grounded answer with nothing behind it (0 claims, 0 sources) leaves out
+  `explanation.confidenceTier` and `provenance`; map a backend confidence of `none` to a
+  missing tier. The chat draws no verdict stamp, sources line or footer for it, only the
+  body and any links.
+- **Abstained.** When your backend says the notes do not cover the question, set
+  `abstained: { label }` on the grounded turn. Your label replaces the evidence segment of
+  the stamp's line; the footer keeps its evidence label. Leave it unset for the usual
+  display.
+- **Revision date is optional.** `provenance.revisionDate` is `YYYY-MM-DD` (slice a
+  datetime). A missing or `null` value drops the date segment from the footer instead of
+  failing.
+- **Refused bodies always show.** The kinds are `out_of_scope` and `no_evidence`.
 
 ## Fixtures
 
@@ -218,7 +237,7 @@ Rules for the adapter:
   They cover typed hops, superseded claims with and without their replacement,
   unavailable sources, and a co-mention hop.
 - `fixtures/qubrain/answers/*.json`: answer-turn event scripts for grounded (plain, with
-  every block and inline kind, with no evidence, and with an explorer link and no snapshot
-  date), withheld, refused (in scope / off-topic / abstained) and error.
+  every block and inline kind, with no evidence, abstained, and with an explorer link and
+  no revision date), withheld, refused (out of scope / no evidence) and error.
 
 All fixture content is synthetic and public-safe.

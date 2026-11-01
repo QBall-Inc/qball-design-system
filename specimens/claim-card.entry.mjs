@@ -46,6 +46,12 @@ const superseded = claim({
   source: source({ save_date: "2025-03-12" }),
 });
 
+// Demo wording for the two consumer-worded answer segments (the DS ships none).
+const labels = {
+  outdated: (k) => `${String(k)} outdated ${k === 1 ? "claim" : "claims"}`,
+  evidence: (tier) => `Evidence: ${tier}`,
+};
+
 const SPECIMENS = {
   "high-both": () => renderClaimCard(claim({ endorsement_tier: "owner", verification: "checked" })),
   "endorsed-only": () =>
@@ -151,13 +157,17 @@ const SPECIMENS = {
       { sourceBadges },
     ),
   "footer-answer": () =>
-    renderProvenanceFooter("answer", {
-      claims: 12,
-      episodes: 9,
-      confidenceTier: "high",
-      snapshotDate: "2026-07-17",
-      supersededExcluded: 2,
-    }),
+    renderProvenanceFooter(
+      "answer",
+      {
+        claims: 12,
+        sources: 9,
+        confidenceTier: "high",
+        revisionDate: "2026-07-17",
+        supersededExcluded: 2,
+      },
+      labels,
+    ),
   "footer-panel": () =>
     renderProvenanceFooter("panel", {
       claims: 7,

@@ -82,7 +82,7 @@ const PAGE = `<!doctype html>
         // error line, explorer link and notice actions.
         const chat = document.createElement("div");
         out.append(chat);
-        const transcript = mountTranscript(chat, { userPrompt: HOSTILE, botPrompt: HOSTILE, onWarn: () => {} });
+        const transcript = mountTranscript(chat, { userPrompt: HOSTILE, botPrompt: HOSTILE, onWarn: () => {}, answer: { labels: { outdated: (k) => k + " outdated claims", evidence: (t) => "Evidence: " + t } } });
         transcript.addUserTurn(HOSTILE);
         const text = (t) => ({ kind: "paragraph", inlines: [{ kind: "text", text: t }, { kind: "marker", text: t }] });
         const grounded = transcript.addBotTurn();
@@ -90,15 +90,15 @@ const PAGE = `<!doctype html>
         grounded.appendText(HOSTILE);
         grounded.finalize({
           verdict: "grounded",
-          explanation: { claims: 1, episodes: 1, confidenceTier: "high" },
+          explanation: { claims: 1, sources: 1, confidenceTier: "high" },
           body: [text(HOSTILE), { kind: "code", text: HOSTILE }],
           sources: [{ ...source, episode_id: "ep-9" }],
-          provenance: { claims: 1, episodes: 1, confidenceTier: "high", snapshotDate: null, supersededExcluded: 0 },
+          provenance: { claims: 1, sources: 1, confidenceTier: "high", revisionDate: null, supersededExcluded: 0 },
           explorerLink: JS_URL,
         });
         const refused = transcript.addBotTurn();
         refused.start();
-        refused.finalize({ verdict: "refused", reason: "off_topic", body: [text(HOSTILE)], closingLine: HOSTILE });
+        refused.finalize({ verdict: "refused", reason: "out_of_scope", body: [text(HOSTILE)], closingLine: HOSTILE });
         const withheld = transcript.addBotTurn();
         withheld.start();
         withheld.finalize({

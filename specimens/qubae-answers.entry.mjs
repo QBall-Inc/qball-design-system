@@ -11,7 +11,7 @@ import noEvidence from "../fixtures/qubrain/answers/grounded-no-evidence.json";
 import withheld from "../fixtures/qubrain/answers/withheld.json";
 import refusedOffTopic from "../fixtures/qubrain/answers/refused-off-topic.json";
 import refusedEmpty from "../fixtures/qubrain/answers/refused-in-scope-empty.json";
-import refusedAbstained from "../fixtures/qubrain/answers/refused-abstained.json";
+import groundedAbstained from "../fixtures/qubrain/answers/grounded-abstained.json";
 import failed from "../fixtures/qubrain/answers/error.json";
 
 const SCRIPTS = [
@@ -20,11 +20,17 @@ const SCRIPTS = [
   withheld,
   refusedEmpty,
   refusedOffTopic,
-  refusedAbstained,
+  groundedAbstained,
   noEvidence,
   groundedStructured,
   failed,
 ];
+
+// Demo wording for the two consumer-worded answer segments (the DS ships none).
+const labels = {
+  outdated: (k) => `${String(k)} outdated ${k === 1 ? "claim" : "claims"}`,
+  evidence: (tier) => `Evidence: ${tier}`,
+};
 
 let nextRef = 0;
 
@@ -39,7 +45,11 @@ function replay(turn, events) {
 }
 
 function conversation(container, onFeedback) {
-  const transcript = mountTranscript(container, { onFeedback, onWarn: () => undefined });
+  const transcript = mountTranscript(container, {
+    onFeedback,
+    onWarn: () => undefined,
+    answer: { labels },
+  });
   for (const script of SCRIPTS) {
     transcript.addUserTurn(script.question);
     nextRef += 1;

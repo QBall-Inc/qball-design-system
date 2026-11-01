@@ -121,21 +121,42 @@ then a verdict-tinted box holding the answer body and, when feedback is on, the
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | grounded | The sources line `[N sources · newest <mon yyyy>]`, which toggles the reading list; the provenance footer; your site links and the explorer link if supplied. |
 | withheld | The lead-in (default `here’s the part i can stand behind:`), then one `.qclaim` row per traceable claim: confidence glyph, sentence, tier word.               |
-| refused  | The `closingLine`, verbatim, when one is supplied (`off_topic`, `in_scope_empty` and `abstained` all render the same way; the stamp explains which).          |
+| refused  | The `closingLine`, verbatim, when one is supplied (`out_of_scope` and `no_evidence` render the same way; the stamp explains which).                           |
 
 The stamp explanation, the footer and the sources line come only from the
 locked formatters (`groundedExplanation`, `withheldExplanation`,
 `refusedExplanation`, `answerFooter`, `sourcesLine`), so their wording cannot drift.
 
+**Your wording for two segments.** Pass `answer.labels` (`EvidenceLabels`) when
+mounting the transcript: `outdated(count)` words the footer's superseded-claims
+segment and `evidence(tier)` the evidence-strength segment of the stamp and the
+footer. There is no default; a grounded answer with evidence throws without them.
+
+```ts
+mountTranscript(container, {
+  answer: {
+    labels: {
+      outdated: (k) => `${k} outdated ${k === 1 ? "claim" : "claims"}`,
+      evidence: (tier) => `Evidence: ${tier}`,
+    },
+  },
+});
+```
+
+**Abstained.** Set `abstained: { label }` on a grounded turn when your backend
+says the notes do not cover the question. Your label replaces the evidence
+segment of the stamp's line (`6 claims · 4 sources · <label>`); the footer is
+unchanged. Leave it unset for the usual display.
+
 **No evidence.** A grounded answer with nothing behind it (0 claims, 0
-episodes, no sources) leaves out `explanation.confidenceTier` and `provenance`.
-Its stamp reads `0 claims · 0 episodes`; it has no sources line and no footer.
+sources) leaves out `explanation.confidenceTier` and `provenance`. It draws no
+verdict stamp, no sources line and no footer, only the body and any links.
 Map a backend confidence of `none` to a missing tier. A grounded answer that
 has evidence but no `provenance` is rejected.
 
-**No snapshot date.** When `provenance.snapshotDate` is missing or `null`, the
-footer leaves out the `snapshot <date>` segment:
-`7 claims · 5 episodes · high confidence · 1 superseded excluded`.
+**No revision date.** When `provenance.revisionDate` is missing or `null`, the
+footer leaves out the date segment:
+`7 claims · 5 sources · 1 outdated claim · Evidence: high`.
 
 **Sources line edge cases.** It counts reading-list rows (one per episode). The
 date is the newest available source's save date. With no sources, neither the

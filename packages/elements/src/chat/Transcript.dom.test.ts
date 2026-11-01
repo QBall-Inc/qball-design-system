@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { HOSTILE_MARKUP } from "../trust/test-fixtures";
+import { HOSTILE_MARKUP, TEST_LABELS } from "../trust/test-fixtures";
 import { mount } from "./mount";
 import { TRANSCRIPT_DEFAULTS, mountTranscript, type TranscriptOptions } from "./Transcript";
 import { draftsOf, finalOf, groundedOf, loadScript, replay } from "./test-answers";
@@ -11,7 +11,10 @@ afterEach(() => {
 function bare(options: TranscriptOptions = {}) {
   const container = document.createElement("div");
   document.body.append(container);
-  return mountTranscript(container, options);
+  return mountTranscript(container, {
+    ...options,
+    answer: { labels: TEST_LABELS, ...options.answer },
+  });
 }
 
 const VERDICT_CASES = [
@@ -22,7 +25,7 @@ const VERDICT_CASES = [
   "withheld",
   "refused-off-topic",
   "refused-in-scope-empty",
-  "refused-abstained",
+  "grounded-abstained",
   "error",
 ];
 
@@ -325,6 +328,7 @@ describe("container-agnostic", () => {
     const transcript = mountTranscript(container, {
       botPrompt: "qubae ›",
       onWarn: () => undefined,
+      answer: { labels: TEST_LABELS },
     });
     for (const name of ["grounded", "withheld", "refused-off-topic", "error"]) {
       transcript.addUserTurn(loadScript(name).question);
@@ -358,6 +362,7 @@ describe("feedback", () => {
       onFeedback: (change) => {
         chat.relayFeedback(change);
       },
+      answer: { labels: TEST_LABELS },
     });
     const turn = transcript.addBotTurn({ turnRef: "turn-7" });
     turn.start();
@@ -443,7 +448,7 @@ describe("hostile payloads stay inert text", () => {
     answered.start();
     answered.finalize({
       verdict: "refused",
-      reason: "off_topic",
+      reason: "out_of_scope",
       body: [{ kind: "paragraph", inlines: [{ kind: "text", text: HOSTILE_MARKUP }] }],
       closingLine: HOSTILE_MARKUP,
     });
@@ -498,6 +503,15 @@ describe("clear / destroy", () => {
       "botPrompt must be a string.",
     );
   });
+
+  it.each([null, {}, { outdated: () => "x" }, { outdated: "x", evidence: () => "y" }])(
+    "rejects malformed answer.labels %j at mount, before any answer",
+    (labels) => {
+      expect(() =>
+        mountTranscript(document.createElement("div"), { answer: { labels: labels as never } }),
+      ).toThrow("answer.labels must have outdated and evidence functions.");
+    },
+  );
 });
 
 describe("openLinksInNewTab (one switch for the whole chat)", () => {

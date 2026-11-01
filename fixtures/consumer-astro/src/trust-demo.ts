@@ -1,7 +1,7 @@
 // Client script for the consumer pages: fills every [data-atom] slot from the
 // PACKED @qball-inc/elements/trust build, then runs the hostile-payload check.
 // Synthetic content only; company badges use reserved example domains.
-import type { Claim, SourceRef } from "@qball-inc/elements";
+import type { Claim, EvidenceLabels, SourceRef } from "@qball-inc/elements";
 import {
   renderClaimCard,
   renderFeedback,
@@ -11,6 +11,12 @@ import {
   renderVerdictStamp,
 } from "@qball-inc/elements/trust";
 import { mountTranscript } from "@qball-inc/elements/chat";
+
+/** This consumer's wording for the two worded answer segments (the DS ships none). */
+const labels: EvidenceLabels = {
+  outdated: (k) => `${String(k)} outdated ${k === 1 ? "claim" : "claims"}`,
+  evidence: (tier) => `Evidence: ${tier}`,
+};
 
 interface HostileResult {
   controlFired: number;
@@ -111,13 +117,17 @@ function renderSourcesAndFooters(): void {
     ),
   );
   slot("footer-answer").append(
-    renderProvenanceFooter("answer", {
-      claims: 12,
-      episodes: 9,
-      confidenceTier: "high",
-      snapshotDate: "2026-07-17",
-      supersededExcluded: 2,
-    }),
+    renderProvenanceFooter(
+      "answer",
+      {
+        claims: 12,
+        sources: 9,
+        confidenceTier: "high",
+        revisionDate: "2026-07-17",
+        supersededExcluded: 2,
+      },
+      labels,
+    ),
   );
   slot("footer-panel").append(
     renderProvenanceFooter("panel", {
@@ -136,8 +146,8 @@ function renderStampsAndFeedback(): void {
   };
   slot("stamp-grounded").append(
     renderVerdictStamp(
-      { verdict: "grounded", explanation: { claims: 6, episodes: 4, confidenceTier: "high" } },
-      { onOpen },
+      { verdict: "grounded", explanation: { claims: 6, sources: 4, confidenceTier: "high" } },
+      { onOpen, labels },
     ),
   );
   slot("stamp-withheld").append(
@@ -147,7 +157,7 @@ function renderStampsAndFeedback(): void {
     ),
   );
   slot("stamp-refused").append(
-    renderVerdictStamp({ verdict: "refused", reason: "off_topic" }, { onOpen }),
+    renderVerdictStamp({ verdict: "refused", reason: "out_of_scope" }, { onOpen }),
   );
 
   const feedback = slot("feedback");
@@ -213,13 +223,14 @@ function renderChatAnswers(): void {
   const transcript = mountTranscript(slot("chat-answers"), {
     onFeedback: () => undefined,
     onWarn: () => undefined,
+    answer: { labels },
   });
   transcript.addUserTurn("what changed in the local server setup?");
   const grounded = transcript.addBotTurn({ turnRef: "chat-1" });
   grounded.start();
   grounded.finalize({
     verdict: "grounded",
-    explanation: { claims: 2, episodes: 1, confidenceTier: "high" },
+    explanation: { claims: 2, sources: 1, confidenceTier: "high" },
     body: [
       {
         kind: "paragraph",
@@ -236,9 +247,9 @@ function renderChatAnswers(): void {
     sources: [source()],
     provenance: {
       claims: 2,
-      episodes: 1,
+      sources: 1,
       confidenceTier: "high",
-      snapshotDate: "2026-07-17",
+      revisionDate: "2026-07-17",
       supersededExcluded: 1,
     },
     explorerLink: "/explore?e=local-server",
@@ -259,7 +270,7 @@ function renderChatAnswers(): void {
   refused.start();
   refused.finalize({
     verdict: "refused",
-    reason: "off_topic",
+    reason: "out_of_scope",
     body: para("that is outside what the notes cover."),
     closingLine: "ask about the local server instead.",
   });

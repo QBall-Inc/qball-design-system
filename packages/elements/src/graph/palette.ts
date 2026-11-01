@@ -60,7 +60,10 @@ export function readPalette(host: HTMLElement): Palette {
   return palette;
 }
 
-/** Palette role for an entity class; unknown classes render in brand sage. */
+/**
+ * Palette role for an entity class. Unknown classes (e.g. a consumer's
+ * "unclassified") render in the neutral muted grey, never a known class's colour.
+ */
 export function classRole(cls: string): PaletteRole {
-  return Object.hasOwn(CLASS_ROLE, cls) ? CLASS_ROLE[cls]! : "signal";
+  return Object.hasOwn(CLASS_ROLE, cls) ? CLASS_ROLE[cls]! : "muted";
 }

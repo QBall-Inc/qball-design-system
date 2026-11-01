@@ -1,6 +1,6 @@
 {
   "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
-  "_case": "grounded — 6 claims · 4 episodes · high confidence",
+  "_case": "grounded — 6 claims · 4 sources · <evidence label>",
   "question": "what’s the current thinking on agent memory?",
   "events": [
     {
@@ -20,7 +20,7 @@
         "verdict": "grounded",
         "explanation": {
           "claims": 6,
-          "episodes": 4,
+          "sources": 4,
           "confidenceTier": "high"
         },
         "body": [
@@ -75,9 +75,9 @@
         ],
         "provenance": {
           "claims": 6,
-          "episodes": 4,
+          "sources": 4,
           "confidenceTier": "high",
-          "snapshotDate": "2026-07-17",
+          "revisionDate": "2026-07-17",
           "supersededExcluded": 0
         }
       }

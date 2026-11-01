@@ -31,7 +31,13 @@ export { isSuperseded, resolveReplacement } from "./claims";
 export type { ConfidenceMark, ConfidenceTier } from "./confidence";
 export { confidenceMark } from "./confidence";
 
-export type { AnswerFooterInput, PanelFooterInput, RefusalKind } from "./locked-strings";
+export type {
+  AbstainedMark,
+  AnswerFooterInput,
+  EvidenceLabels,
+  PanelFooterInput,
+  RefusalKind,
+} from "./locked-strings";
 export {
   LOCKED_SEPARATOR,
   answerFooter,

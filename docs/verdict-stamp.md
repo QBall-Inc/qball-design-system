@@ -31,12 +31,14 @@ import {
 renderVerdictStamp(verdict: VerdictInput, options?: VerdictStampOptions): HTMLElement
 
 type VerdictInput =
-  | { verdict: "grounded"; explanation: { claims; episodes; confidenceTier } }
+  | { verdict: "grounded"; explanation: { claims; sources; confidenceTier }; abstained?: { label } }
   | { verdict: "withheld"; explanation: { untraceableFigures; claimsShown } }
-  | { verdict: "refused"; reason: "off_topic" | "in_scope_empty" | "abstained" };
+  | { verdict: "refused"; reason: "out_of_scope" | "no_evidence" };
 
 interface VerdictStampOptions {
   onOpen?: (row: HTMLElement) => void;
+  /** Your wording for the evidence segment; required for a grounded stamp with evidence. */
+  labels?: EvidenceLabels;
 }
 ```
 
@@ -55,14 +57,15 @@ The stamp shows a glyph and a word, never colour alone.
 ### Locked explanation lines
 
 The explanation is built only from the counts and enums above, through the same
-formatters the rest of the package uses (`verdictExplanation` exposes the
-result). The atom never accepts free text. Nouns follow their counts.
+formatters the rest of the package uses (`verdictExplanation(verdict, labels?)`
+exposes the result). The only words you supply are the evidence segment
+(`labels.evidence(tier)`) and, on an abstained answer, its label. Nouns follow
+their counts.
 
-- grounded — `N claims · M episodes · <tier> confidence`
+- grounded — `N claims · M sources · <evidence label>` (abstained: `N claims · M sources · <your label>`)
 - withheld — `N figures untraceable · M claims shown`
 - refused, off topic — `out of scope`
 - refused, in scope but nothing in the graph — `unable to answer · 0 references found`
-- refused, evidence too weak — `insufficient evidence`
 
 The line carries counts only. The reason itself lives in the answer text.
 

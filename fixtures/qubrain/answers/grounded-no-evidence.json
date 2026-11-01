@@ -1,6 +1,6 @@
 {
   "_note": "AnswerTurn fixture: a transport-neutral event script (start → appendText → authorize? → finalize | fail) a consumer replays into the @qball-inc/elements AnswerTurn. Copy follows the canonical QuBae conversation; source titles are neutral stand-ins.",
-  "_case": "grounded with no evidence — 0 claims · 0 episodes, no confidence tier, no sources, no provenance: the stamp reads `0 claims · 0 episodes` and there is no sources line or footer",
+  "_case": "grounded with no evidence — 0 claims · 0 sources, no confidence tier, no sources, no provenance: no verdict stamp, no sources line, no footer",
   "question": "who writes the notes behind this site?",
   "events": [
     {
@@ -16,7 +16,7 @@
         "verdict": "grounded",
         "explanation": {
           "claims": 0,
-          "episodes": 0
+          "sources": 0
         },
         "body": [
           {

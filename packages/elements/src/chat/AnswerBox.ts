@@ -18,7 +18,7 @@ import type {
 } from "../answer-turn";
 import { confidenceMark } from "../confidence";
 import { defaultWarn } from "../dev-warn";
-import { sourcesLine } from "../locked-strings";
+import { sourcesLine, type EvidenceLabels } from "../locked-strings";
 import { isSourceUnavailable, type Claim, type ClaimSource } from "../types";
 import { el } from "../trust/dom";
 import { renderFeedback, type FeedbackChange, type FeedbackValue } from "../trust/Feedback";
@@ -41,6 +41,12 @@ export interface AnswerOptions {
   feedback?: AnswerFeedbackOptions;
   /** Called when a verdict stamp opens (see VerdictStampOptions.onOpen). */
   onStampOpen?: (row: HTMLElement) => void;
+  /**
+   * Your wording for a grounded answer's outdated-claims and evidence-strength
+   * segments (stamp and footer). No default: required to render a grounded
+   * answer with evidence.
+   */
+  labels?: EvidenceLabels;
   /** Consumer domain badges for the reading list. */
   sourceBadges?: SourceBadgeOptions;
   /** Origins an absolute explorer link may point at (root-relative is always allowed). */
@@ -352,7 +358,16 @@ function renderSiteLinkRow(
 }
 
 function isNoEvidence(turn: GroundedTurn): boolean {
-  return turn.explanation.claims === 0 && turn.explanation.episodes === 0;
+  return turn.explanation.claims === 0 && turn.explanation.sources === 0;
+}
+
+function requireLabels(options: AnswerOptions): EvidenceLabels {
+  if (options.labels === undefined) {
+    throw new RangeError(
+      "A grounded answer with evidence needs answer labels { outdated, evidence }; the design system ships no wording for them.",
+    );
+  }
+  return options.labels;
 }
 
 function groundedParts(
@@ -362,14 +377,16 @@ function groundedParts(
 ): HTMLElement[] {
   if (turn.provenance === undefined && !isNoEvidence(turn)) {
     throw new RangeError(
-      "A grounded answer needs provenance unless it has no evidence (0 claims, 0 episodes).",
+      "A grounded answer needs provenance unless it has no evidence (0 claims, 0 sources).",
     );
   }
   const parts = [
     renderBox("grounded", turn.body, citationIndex(turn.sources), options),
     ...renderSources(turn.sources, options),
   ];
-  if (turn.provenance !== undefined) parts.push(renderProvenanceFooter("answer", turn.provenance));
+  if (turn.provenance !== undefined) {
+    parts.push(renderProvenanceFooter("answer", turn.provenance, requireLabels(options)));
+  }
   if (turn.siteLinks !== undefined) parts.push(...renderSiteLinks(turn.siteLinks, options, newTab));
   if (turn.explorerLink !== undefined)
     parts.push(renderExplorerLink(turn.explorerLink, options, newTab));
@@ -406,22 +423,30 @@ function refusedParts(turn: RefusedTurn, options: AnswerOptions): HTMLElement[] 
   return parts;
 }
 
-/** The nodes of one finished turn, in order: stamp row, box, then per-verdict extras. */
+function stampFor(turn: FinalTurn, options: AnswerOptions): HTMLElement {
+  return renderVerdictStamp(turn, {
+    ...(options.onStampOpen === undefined ? {} : { onOpen: options.onStampOpen }),
+    ...(options.labels === undefined ? {} : { labels: options.labels }),
+  });
+}
+
+/**
+ * The nodes of one finished turn, in order: stamp row, box, then per-verdict
+ * extras. A grounded answer with no evidence (0 claims, 0 sources) has no stamp.
+ */
 export function renderAnswer(turn: FinalTurn, options: AnswerOptions = {}): HTMLElement[] {
   // Resolved once per answer: fails fast on a bad switch or label, even on an
   // answer with no links to draw.
   const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
-  const stamp = renderVerdictStamp(
-    turn,
-    options.onStampOpen === undefined ? {} : { onOpen: options.onStampOpen },
-  );
   switch (turn.verdict) {
-    case "grounded":
-      return [stamp, ...groundedParts(turn, options, newTab)];
+    case "grounded": {
+      const parts = groundedParts(turn, options, newTab);
+      return isNoEvidence(turn) ? parts : [stampFor(turn, options), ...parts];
+    }
     case "withheld":
-      return [stamp, ...withheldParts(turn, options)];
+      return [stampFor(turn, options), ...withheldParts(turn, options)];
     case "refused":
-      return [stamp, ...refusedParts(turn, options)];
+      return [stampFor(turn, options), ...refusedParts(turn, options)];
     default: {
       const unknown: unknown = (turn as { verdict: unknown }).verdict;
       throw new RangeError(`Unknown verdict "${String(unknown)}".`);

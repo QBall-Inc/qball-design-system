@@ -192,8 +192,8 @@ for (const theme of THEMES) {
       await expect(list.locator(".srcrow__mark", { hasText: "EL" })).toHaveCount(1);
       await expect(list).toContainText("source unavailable");
 
-      await expect(atom(page, "footer-answer").locator("footer.provfoot")).toContainText(
-        "snapshot 2026-07-17",
+      await expect(atom(page, "footer-answer").locator("footer.provfoot")).toHaveText(
+        "12 claims · 9 sources · 2026-07-17 · 2 outdated claims · Evidence: high",
       );
       await expect(atom(page, "footer-panel").locator("footer.provfoot")).toHaveCount(1);
     });

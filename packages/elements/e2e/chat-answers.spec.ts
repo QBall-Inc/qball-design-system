@@ -30,6 +30,7 @@ const PAGE = `<!doctype html>
     <div id="newtab"></div>
     <script type="module">
       import { mount, mountTranscript } from "/dist/chat/index.js";
+      const labels = { outdated: (k) => \`\${k} outdated claims\`, evidence: (t) => \`Evidence: \${t}\` };
       const scripts = await Promise.all(
         ${JSON.stringify(SCRIPTS)}.map((name) => fetch("/answers/" + name + ".json").then((r) => r.json())),
       );
@@ -42,7 +43,7 @@ const PAGE = `<!doctype html>
         }
       };
       const conversation = (container) => {
-        const t = mountTranscript(container, { onWarn: () => {} });
+        const t = mountTranscript(container, { onWarn: () => {}, answer: { labels } });
         for (const s of scripts) {
           t.addUserTurn(s.question);
           replay(t.addBotTurn(), s.events);
@@ -61,7 +62,7 @@ const PAGE = `<!doctype html>
       // Status label + site links, inline and in the overlay panel.
       const grounded = scripts[0].events.find((e) => e.op === "finalize").turn;
       const extras = (container) => {
-        const t = mountTranscript(container, { onWarn: () => {} });
+        const t = mountTranscript(container, { onWarn: () => {}, answer: { labels } });
         const turn = t.addBotTurn();
         turn.start();
         turn.setStatus("searching the notes");
@@ -88,6 +89,7 @@ const PAGE = `<!doctype html>
       // The new-tab switch with a consumer label, on a bare page element.
       const tabbed = mountTranscript(document.getElementById("newtab"), {
         onWarn: () => {},
+        answer: { labels },
         openLinksInNewTab: true,
         newTabLabel: "opens in a new tab",
       });

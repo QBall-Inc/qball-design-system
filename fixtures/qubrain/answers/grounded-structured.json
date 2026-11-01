@@ -20,7 +20,7 @@
         "verdict": "grounded",
         "explanation": {
           "claims": 3,
-          "episodes": 2,
+          "sources": 2,
           "confidenceTier": "medium"
         },
         "body": [
@@ -210,9 +210,9 @@
         ],
         "provenance": {
           "claims": 3,
-          "episodes": 2,
+          "sources": 2,
           "confidenceTier": "medium",
-          "snapshotDate": "2026-07-17",
+          "revisionDate": "2026-07-17",
           "supersededExcluded": 0
         }
       }

@@ -166,20 +166,22 @@ The atoms own this policy. The input model passes URLs through unchanged.
 ## ProvenanceFooter
 
 ```ts
-renderProvenanceFooter("answer", data: AnswerFooterInput): HTMLElement
+renderProvenanceFooter("answer", data: AnswerFooterInput, labels: EvidenceLabels): HTMLElement
 renderProvenanceFooter("panel", data: PanelFooterInput): HTMLElement
 ```
 
 The two owner-locked formats, rendered verbatim (`<footer class="provfoot">`, first
 segment in `<b>`):
 
-- answer — `N claims · M episodes · <tier> confidence · snapshot <date> · K superseded excluded`
+- answer — `N claims · M sources · <date> · <outdated label> · <evidence label>`
 - panel — `N claims · M sources · revision <date> · K superseded shown`
 
 The text comes only from `answerFooter` / `panelFooter` in the core entry; this atom
 adds markup, never words. Nouns follow the count (`1 claim · 1 source · revision
-2026-07-17 · 0 superseded shown`); the format is otherwise locked. The answer variant
-says "excluded" because QuBae filters superseded claims out. The panel variant has no
+2026-07-17 · 0 superseded shown`); the format is otherwise locked. On the answer
+variant you word the last two segments through `EvidenceLabels` (`outdated(count)`,
+`evidence(tier)`); the package ships no wording for them, and the call throws without
+them. The date is `YYYY-MM-DD` and is left out when missing. The panel variant has no
 confidence slot and says "shown" because QuBrain never hides them. Invalid counts or
 dates throw instead of rendering a malformed line. The footer is never hidden or
 collapsed.

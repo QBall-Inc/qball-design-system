@@ -156,6 +156,17 @@ export function mountTranscript(
   if (options.newTabLabel !== undefined) answerOptions.newTabLabel = options.newTabLabel;
   // Validates the switch and label at mount, not at the first answer.
   resolveNewTab(answerOptions.openLinksInNewTab, answerOptions.newTabLabel);
+  const labels: unknown = answerOptions.labels;
+  if (labels !== undefined) {
+    const valid =
+      typeof labels === "object" &&
+      labels !== null &&
+      "outdated" in labels &&
+      "evidence" in labels &&
+      typeof labels.outdated === "function" &&
+      typeof labels.evidence === "function";
+    if (!valid) throw new TypeError("answer.labels must have outdated and evidence functions.");
+  }
   const detachers = new Set<() => void>();
   let destroyed = false;
 

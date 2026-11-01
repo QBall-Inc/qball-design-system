@@ -3,7 +3,7 @@
 // question by replaying a shared answer fixture into a transcript inside the
 // overlay — the wiring a real site does with its backend stream. After every
 // replayed event it records whether any streamed draft text reached the page.
-import type { FinalTurn } from "@qball-inc/elements";
+import type { EvidenceLabels, FinalTurn } from "@qball-inc/elements";
 import {
   mount,
   mountTranscript,
@@ -12,8 +12,14 @@ import {
 } from "@qball-inc/elements/chat";
 import grounded from "../../qubrain/answers/grounded.json";
 import groundedStructured from "../../qubrain/answers/grounded-structured.json";
-import refusedAbstained from "../../qubrain/answers/refused-abstained.json";
+import refusedOffTopic from "../../qubrain/answers/refused-off-topic.json";
 import withheld from "../../qubrain/answers/withheld.json";
+
+/** This consumer's wording for the two worded answer segments (the DS ships none). */
+const labels: EvidenceLabels = {
+  outdated: (k) => `${String(k)} outdated ${k === 1 ? "claim" : "claims"}`,
+  evidence: (tier) => `Evidence: ${tier}`,
+};
 
 type AnswerEvent =
   | { op: "start" }
@@ -83,7 +89,7 @@ function hostileScript(): AnswerScript {
 const SCRIPTS: Record<string, () => AnswerScript> = {
   grounded: () => asScript(grounded, "grounded"),
   structured: () => asScript(groundedStructured, "grounded-structured"),
-  refused: () => asScript(refusedAbstained, "refused-abstained"),
+  refused: () => asScript(refusedOffTopic, "refused-off-topic"),
   withheld: () => asScript(withheld, "withheld"),
   hostile: hostileScript,
 };
@@ -171,6 +177,7 @@ async function main(): Promise<ChatHandle | null> {
     const transcript = mountTranscript(handle.body, {
       onFeedback: (change) => handle.relayFeedback(change),
       onWarn: () => undefined,
+      answer: { labels },
     });
     window.__chat = { ok: true, runs, controlFired };
     return handle;

@@ -14,7 +14,7 @@
       "op": "finalize",
       "turn": {
         "verdict": "refused",
-        "reason": "off_topic",
+        "reason": "out_of_scope",
         "body": [
           {
             "kind": "paragraph",

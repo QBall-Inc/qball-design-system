@@ -23,9 +23,10 @@ const PAGE = `<!doctype html>
     <div id="fb"></div>
     <script type="module">
       import { renderVerdictStamp, renderFeedback } from "/dist/trust/index.js";
-      const long = { verdict: "grounded", explanation: { claims: 1234567, episodes: 7654321, confidenceTier: "medium" } };
-      document.getElementById("narrow").append(renderVerdictStamp(long));
-      document.getElementById("wide").append(renderVerdictStamp(long));
+      const long = { verdict: "grounded", explanation: { claims: 1234567, sources: 7654321, confidenceTier: "medium" } };
+      const labels = { outdated: (k) => k + " outdated claims", evidence: (t) => "Evidence: " + t };
+      document.getElementById("narrow").append(renderVerdictStamp(long, { labels }));
+      document.getElementById("wide").append(renderVerdictStamp(long, { labels }));
       window.__feedback = [];
       document.getElementById("fb").append(renderFeedback("turn-1", { onChange: (c) => window.__feedback.push(c.value) }));
       window.__ready = true;

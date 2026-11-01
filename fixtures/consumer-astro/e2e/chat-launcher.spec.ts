@@ -216,7 +216,7 @@ for (const spec of PAGES) {
       const CASES = [
         { name: "grounded", box: "vbox--grounded", phrase: "episodic recall" },
         { name: "withheld", box: "vbox--withheld", phrase: "sitting on it until they do" },
-        { name: "refused", box: "vbox--refused", phrase: "walk you through it" },
+        { name: "refused", box: "vbox--refused", phrase: "outside what my reading covers" },
         { name: "structured", box: "vbox--grounded", phrase: "the short version" },
       ];
       for (const [i, c] of CASES.entries()) {

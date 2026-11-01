@@ -1,18 +1,35 @@
 // The one formatter for every owner-locked QuBrain/QuBae line (plan AD-11).
-// Lines are built from numbers, dates and enums only — never from free text —
-// and render verbatim except that nouns follow their count (`1 claim`,
-// `2 claims`). Every renderer (verdict stamp, provenance footer, sources line,
-// canvas status) reuses these functions so no second phrasing can drift.
-import { confidenceMark } from "./confidence";
+// Lines are built from numbers, dates and enums, and render verbatim except
+// that nouns follow their count (`1 claim`, `2 claims`). The two exceptions
+// are a grounded answer's outdated-claims and evidence-strength segments: the
+// consumer words those through EvidenceLabels (the DS ships no wording for
+// them), still from the count and the tier only. Every renderer (verdict
+// stamp, provenance footer, sources line, canvas status) reuses these
+// functions so no second phrasing can drift.
+import { confidenceMark, type ConfidenceTier } from "./confidence";
 
 /** Separator between the segments of a locked line (renderers may split on it). */
 export const LOCKED_SEPARATOR = " · ";
 
+/** Why a question was refused: out of scope, or in scope with no evidence saved. */
+export type RefusalKind = "out_of_scope" | "no_evidence";
+
 /**
- * Why a question was refused: off-topic; in scope but nothing in the graph; or
- * the agent judged the evidence too weak and explains why in its own words.
+ * The consumer's wording for the two worded segments of a grounded answer's
+ * stamp and footer. There is no default: a grounded answer with evidence
+ * cannot render without them. Each returns the whole segment.
  */
-export type RefusalKind = "off_topic" | "in_scope_empty" | "abstained";
+export interface EvidenceLabels {
+  /** The superseded-claims segment from its count, e.g. `(k) => \`${k} outdated claims\``. */
+  outdated: (count: number) => string;
+  /** The evidence-strength segment from the tier, e.g. `(tier) => \`Evidence: ${tier}\``. */
+  evidence: (tier: ConfidenceTier) => string;
+}
+
+/** A consumer label marking an answer the agent says its notes do not cover. */
+export interface AbstainedMark {
+  label: string;
+}
 
 const PLURALS = {
   claim: "claims",
@@ -56,28 +73,75 @@ function line(...segments: string[]): string {
   return segments.join(LOCKED_SEPARATOR);
 }
 
+function requireLabels(labels: EvidenceLabels | undefined, where: string): EvidenceLabels {
+  if (
+    labels === undefined ||
+    labels === null ||
+    typeof labels.outdated !== "function" ||
+    typeof labels.evidence !== "function"
+  ) {
+    throw new RangeError(
+      `${where} needs EvidenceLabels { outdated, evidence } (functions). The design system ships no wording for these segments; pass your own (answer.labels in the chat).`,
+    );
+  }
+  return labels;
+}
+
+function labelText(value: unknown, name: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new RangeError(`${name} must return a non-empty string.`);
+  }
+  return value;
+}
+
+function evidenceSegment(tier: string, labels: EvidenceLabels): string {
+  return labelText(labels.evidence(confidenceMark(tier).tier), "EvidenceLabels.evidence");
+}
+
+function abstainedText(mark: AbstainedMark): string {
+  const value: unknown = mark;
+  if (typeof value !== "object" || value === null) {
+    throw new RangeError("abstained must be an object with a label.");
+  }
+  return labelText(mark.label, "abstained.label");
+}
+
 /**
- * Grounded verdict explanation: `N claims · M episodes · <tier> confidence`.
- * A grounded answer with no evidence behind it (0 claims, 0 episodes) has no
- * confidence tier; its line is `0 claims · 0 episodes`. A tier may be left out
- * only in that case.
+ * Grounded verdict explanation: `N claims · M sources · <evidence label>`.
+ * With `abstained` set, its label takes the evidence segment's place (the
+ * agent says its notes do not cover the question). A grounded answer with no
+ * evidence (0 claims, 0 sources) has no tier; its line is `0 claims · 0 sources`
+ * (the chat draws no stamp for it). A tier may be left out only in that case.
  */
-export function groundedExplanation(input: {
-  claims: number;
-  episodes: number;
-  confidenceTier?: string | undefined;
-}): string {
+export function groundedExplanation(
+  input: {
+    claims: number;
+    sources: number;
+    confidenceTier?: string | undefined;
+    abstained?: AbstainedMark | undefined;
+  },
+  labels?: EvidenceLabels,
+): string {
   const claims = counted(input.claims, "claim", "claims");
-  const episodes = counted(input.episodes, "episode", "episodes");
+  const sources = counted(input.sources, "source", "sources");
   if (input.confidenceTier === undefined) {
-    if (input.claims !== 0 || input.episodes !== 0) {
+    if (input.claims !== 0 || input.sources !== 0) {
       throw new RangeError(
-        "confidenceTier is required unless the answer has no evidence (0 claims, 0 episodes).",
+        "confidenceTier is required unless the answer has no evidence (0 claims, 0 sources).",
       );
     }
-    return line(claims, episodes);
+    return line(claims, sources);
   }
-  return line(claims, episodes, `${confidenceMark(input.confidenceTier).word} confidence`);
+  if (input.abstained !== undefined) {
+    // The label replaces the evidence segment; the tier is still checked so bad data fails here.
+    confidenceMark(input.confidenceTier);
+    return line(claims, sources, abstainedText(input.abstained));
+  }
+  return line(
+    claims,
+    sources,
+    evidenceSegment(input.confidenceTier, requireLabels(labels, "groundedExplanation")),
+  );
 }
 
 /**
@@ -98,39 +162,50 @@ export function withheldExplanation(input: {
 /** Refused verdict explanation, chosen by the refusal kind. */
 export function refusedExplanation(kind: RefusalKind): string {
   switch (kind) {
-    case "off_topic":
+    case "out_of_scope":
       return "out of scope";
-    case "in_scope_empty":
+    case "no_evidence":
       return line("unable to answer", "0 references found");
-    case "abstained":
-      return "insufficient evidence";
+    default: {
+      const unknown: unknown = kind;
+      throw new RangeError(
+        `Unknown refusal kind "${String(unknown)}" — expected out_of_scope or no_evidence.`,
+      );
+    }
   }
 }
 
 export interface AnswerFooterInput {
   claims: number;
-  episodes: number;
+  sources: number;
   confidenceTier: string;
-  /** ISO date of the graph snapshot; absent or null when unknown (the segment is left out). */
-  snapshotDate?: string | null | undefined;
+  /** ISO date (YYYY-MM-DD) of the revision answered on; absent or null when unknown (the segment is left out). */
+  revisionDate?: string | null | undefined;
+  /** Superseded claims among the evidence retrieved (worded by EvidenceLabels.outdated). */
   supersededExcluded: number;
 }
 
 /**
  * Answer-variant provenance footer:
- * `N claims · M episodes · <tier> confidence · snapshot <date> · K superseded excluded`.
- * Without a snapshot date the `snapshot <date>` segment is left out.
+ * `N claims · M sources · <date> · <outdated label> · <evidence label>`.
+ * Without a revision date the date segment is left out.
  */
-export function answerFooter(input: AnswerFooterInput): string {
+export function answerFooter(input: AnswerFooterInput, labels: EvidenceLabels): string {
+  const worded = requireLabels(labels, "answerFooter");
   const segments = [
     counted(input.claims, "claim", "claims"),
-    counted(input.episodes, "episode", "episodes"),
-    `${confidenceMark(input.confidenceTier).word} confidence`,
+    counted(input.sources, "source", "sources"),
   ];
-  if (input.snapshotDate !== undefined && input.snapshotDate !== null) {
-    segments.push(`snapshot ${isoDate(input.snapshotDate, "snapshotDate")}`);
+  if (input.revisionDate !== undefined && input.revisionDate !== null) {
+    segments.push(isoDate(input.revisionDate, "revisionDate"));
   }
-  segments.push(`${count(input.supersededExcluded, "supersededExcluded")} superseded excluded`);
+  segments.push(
+    labelText(
+      worded.outdated(count(input.supersededExcluded, "supersededExcluded")),
+      "EvidenceLabels.outdated",
+    ),
+    evidenceSegment(input.confidenceTier, worded),
+  );
   return line(...segments);
 }
 

@@ -14,7 +14,7 @@
       "op": "finalize",
       "turn": {
         "verdict": "refused",
-        "reason": "in_scope_empty",
+        "reason": "no_evidence",
         "body": [
           {
             "kind": "paragraph",

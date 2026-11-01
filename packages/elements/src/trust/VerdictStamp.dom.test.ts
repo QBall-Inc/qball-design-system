@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { FinalTurn } from "../answer-turn";
 import { groundedExplanation, refusedExplanation, withheldExplanation } from "../locked-strings";
+import { TEST_LABELS } from "./test-fixtures";
 import {
   markStampSeen,
   renderVerdictStamp,
@@ -22,7 +23,7 @@ function parts(row: HTMLElement): {
 
 const grounded: VerdictInput = {
   verdict: "grounded",
-  explanation: { claims: 6, episodes: 4, confidenceTier: "high" },
+  explanation: { claims: 6, sources: 4, confidenceTier: "high" },
 };
 const withheld: VerdictInput = {
   verdict: "withheld",
@@ -35,28 +36,22 @@ beforeEach(() => {
 
 describe("renderVerdictStamp — structure and wording", () => {
   it.each([
-    [grounded, "vstamp--grounded", "● grounded", "6 claims · 4 episodes · high confidence"],
+    [grounded, "vstamp--grounded", "● grounded", "6 claims · 4 sources · Evidence: high"],
     [withheld, "vstamp--withheld", "◐ withheld", "2 figures untraceable · 3 claims shown"],
     [
-      { verdict: "refused", reason: "off_topic" } as const,
+      { verdict: "refused", reason: "out_of_scope" } as const,
       "vstamp--refused",
       "∅ refused",
       "out of scope",
     ],
     [
-      { verdict: "refused", reason: "in_scope_empty" } as const,
+      { verdict: "refused", reason: "no_evidence" } as const,
       "vstamp--refused",
       "∅ refused",
       "unable to answer · 0 references found",
     ],
-    [
-      { verdict: "refused", reason: "abstained" } as const,
-      "vstamp--refused",
-      "∅ refused",
-      "insufficient evidence",
-    ],
   ])("%j → %s %s", (verdict, cls, label, explanation) => {
-    const row = renderVerdictStamp(verdict);
+    const row = renderVerdictStamp(verdict, { labels: TEST_LABELS });
     const { stamp, close, text } = parts(row);
     expect(row.className).toBe("vrow");
     expect(stamp.classList.contains(cls)).toBe(true);
@@ -68,15 +63,30 @@ describe("renderVerdictStamp — structure and wording", () => {
   });
 
   it.each([
-    [0, 0, "0 claims · 0 episodes · low confidence"],
-    [1, 1, "1 claim · 1 episode · low confidence"],
-    [12, 9, "12 claims · 9 episodes · low confidence"],
-  ])("grounded claims=%i episodes=%i → %s", (claims, episodes, expected) => {
-    const row = renderVerdictStamp({
-      verdict: "grounded",
-      explanation: { claims, episodes, confidenceTier: "low" },
-    });
+    [0, 0, "0 claims · 0 sources · Evidence: low"],
+    [1, 1, "1 claim · 1 source · Evidence: low"],
+    [12, 9, "12 claims · 9 sources · Evidence: low"],
+  ])("grounded claims=%i sources=%i → %s", (claims, sources, expected) => {
+    const row = renderVerdictStamp(
+      { verdict: "grounded", explanation: { claims, sources, confidenceTier: "low" } },
+      { labels: TEST_LABELS },
+    );
     expect(parts(row).text).toBe(expected);
+  });
+
+  it("an abstained grounded stamp shows the consumer's label in the evidence segment", () => {
+    const row = renderVerdictStamp({
+      ...grounded,
+      abstained: { label: "notes don't cover this" },
+    });
+    expect(parts(row).text).toBe("6 claims · 4 sources · notes don't cover this");
+    expect(row.querySelector(".vstamp__wave")?.textContent).toBe("● grounded");
+  });
+
+  it("a grounded stamp with evidence needs the consumer labels", () => {
+    expect(() => renderVerdictStamp(grounded)).toThrow(
+      "groundedExplanation needs EvidenceLabels { outdated, evidence } (functions).",
+    );
   });
 
   it.each([
@@ -92,21 +102,21 @@ describe("renderVerdictStamp — structure and wording", () => {
   });
 
   it("uses the shared locked-string formatters, so the stamp can never drift from them", () => {
-    expect(verdictExplanation(grounded)).toBe(
-      groundedExplanation({ claims: 6, episodes: 4, confidenceTier: "high" }),
+    expect(verdictExplanation(grounded, TEST_LABELS)).toBe(
+      groundedExplanation({ claims: 6, sources: 4, confidenceTier: "high" }, TEST_LABELS),
     );
     expect(verdictExplanation(withheld)).toBe(
       withheldExplanation({ untraceableFigures: 2, claimsShown: 3 }),
     );
-    expect(verdictExplanation({ verdict: "refused", reason: "abstained" })).toBe(
-      refusedExplanation("abstained"),
+    expect(verdictExplanation({ verdict: "refused", reason: "no_evidence" })).toBe(
+      refusedExplanation("no_evidence"),
     );
   });
 
   it("accepts a whole FinalTurn", () => {
     const turn: FinalTurn = {
       verdict: "refused",
-      reason: "off_topic",
+      reason: "out_of_scope",
       body: [{ kind: "paragraph", inlines: [{ kind: "text", text: "not something i cover." }] }],
     };
     expect(parts(renderVerdictStamp(turn)).text).toBe("out of scope");
@@ -116,7 +126,7 @@ describe("renderVerdictStamp — structure and wording", () => {
     expect(() =>
       renderVerdictStamp({
         verdict: "grounded",
-        explanation: { claims: 1, episodes: 1, confidenceTier: "certain" },
+        explanation: { claims: 1, sources: 1, confidenceTier: "certain" },
       }),
     ).toThrow(RangeError);
     expect(() =>
@@ -133,7 +143,7 @@ describe("renderVerdictStamp — structure and wording", () => {
 
 describe("renderVerdictStamp — toggling", () => {
   it("starts closed and unseen", () => {
-    const row = renderVerdictStamp(grounded);
+    const row = renderVerdictStamp(grounded, { labels: TEST_LABELS });
     const { stamp } = parts(row);
     expect(row.classList.contains("open")).toBe(false);
     expect(stamp.getAttribute("aria-expanded")).toBe("false");
@@ -141,7 +151,7 @@ describe("renderVerdictStamp — toggling", () => {
   });
 
   it("opens and closes from the stamp, keeping aria-expanded in step", () => {
-    const row = renderVerdictStamp(grounded);
+    const row = renderVerdictStamp(grounded, { labels: TEST_LABELS });
     const { stamp } = parts(row);
     stamp.click();
     expect(row.classList.contains("open")).toBe(true);
@@ -152,7 +162,7 @@ describe("renderVerdictStamp — toggling", () => {
   });
 
   it("closes from › and returns focus to the stamp", () => {
-    const row = renderVerdictStamp(grounded);
+    const row = renderVerdictStamp(grounded, { labels: TEST_LABELS });
     document.body.append(row);
     const { stamp, close } = parts(row);
     stamp.click();
@@ -173,7 +183,7 @@ describe("renderVerdictStamp — toggling", () => {
   });
 
   it("leaves other stamps shimmering by default, and markStampSeen stops one on request", () => {
-    const first = renderVerdictStamp(grounded);
+    const first = renderVerdictStamp(grounded, { labels: TEST_LABELS });
     const second = renderVerdictStamp(withheld);
     parts(first).stamp.click();
     expect(parts(second).stamp.classList.contains("is-seen")).toBe(false);
@@ -183,7 +193,10 @@ describe("renderVerdictStamp — toggling", () => {
 
   it("calls onOpen with the row on every open, not on close", () => {
     const opened: HTMLElement[] = [];
-    const row = renderVerdictStamp(grounded, { onOpen: (r) => opened.push(r) });
+    const row = renderVerdictStamp(grounded, {
+      labels: TEST_LABELS,
+      onOpen: (r) => opened.push(r),
+    });
     const { stamp } = parts(row);
     stamp.click();
     stamp.click();
@@ -196,14 +209,14 @@ describe("renderVerdictStamp — toggling", () => {
     const stopAll = (): void => {
       for (const r of rows) markStampSeen(r);
     };
-    rows.push(renderVerdictStamp(grounded, { onOpen: stopAll }));
+    rows.push(renderVerdictStamp(grounded, { labels: TEST_LABELS, onOpen: stopAll }));
     rows.push(renderVerdictStamp(withheld, { onOpen: stopAll }));
     parts(rows[0] as HTMLElement).stamp.click();
     expect(rows.every((r) => parts(r).stamp.classList.contains("is-seen"))).toBe(true);
   });
 
   it("does not tick an explanation that fits (overflow is checked in e2e/trust-motion.spec.ts)", () => {
-    const row = renderVerdictStamp(grounded);
+    const row = renderVerdictStamp(grounded, { labels: TEST_LABELS });
     document.body.append(row);
     parts(row).stamp.click();
     expect(row.querySelector(".vrow__txt")?.classList.contains("is-ticking")).toBe(false);

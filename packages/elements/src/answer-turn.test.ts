@@ -10,6 +10,7 @@ import {
   type TurnView,
 } from "./answer-turn";
 import { groundedExplanation, refusedExplanation, withheldExplanation } from "./locked-strings";
+import { TEST_LABELS } from "./trust/test-fixtures";
 
 // vitest runs with the package directory as cwd.
 const ANSWERS_DIR = resolve(process.cwd(), "../../fixtures/qubrain/answers");
@@ -138,7 +139,7 @@ describe("AnswerTurn — trust rule (early display off, the default)", () => {
     "withheld",
     "refused-in-scope-empty",
     "refused-off-topic",
-    "refused-abstained",
+    "grounded-abstained",
     "error",
   ])("%s: no streamed draft text ever reaches a view", (name) => {
     const { events } = load(name);
@@ -177,19 +178,21 @@ describe("AnswerTurn — trust rule (early display off, the default)", () => {
     expect(refusedExplanation(offTopic.turn.reason)).toBe("out of scope");
   });
 
-  it("refused (abstained): keeps the agent's own explanation as the body", () => {
-    const view = replay(load("refused-abstained").events).turn.view();
-    if (view.status !== "final" || view.turn.verdict !== "refused") throw new Error("not refused");
-    expect(refusedExplanation(view.turn.reason)).toBe("insufficient evidence");
-    expect(JSON.stringify(view.turn.body)).toContain("not enough to call a winner");
+  it("grounded (abstained): carries the consumer's label through finalize unchanged", () => {
+    const view = replay(load("grounded-abstained").events).turn.view();
+    if (view.status !== "final" || view.turn.verdict !== "grounded") throw new Error("x");
+    expect(view.turn.abstained).toEqual({ label: "notes don't cover this" });
+    expect(groundedExplanation({ ...view.turn.explanation, abstained: view.turn.abstained })).toBe(
+      "6 claims · 4 sources · notes don't cover this",
+    );
   });
 
   it("grounded: exposes the final answer and the numbers behind its explanation", () => {
     const view = replay(load("grounded").events).turn.view();
     if (view.status !== "final" || view.turn.verdict !== "grounded")
       throw new Error("not grounded");
-    expect(groundedExplanation(view.turn.explanation)).toBe(
-      "6 claims · 4 episodes · high confidence",
+    expect(groundedExplanation(view.turn.explanation, TEST_LABELS)).toBe(
+      "6 claims · 4 sources · Evidence: high",
     );
     expect(view.turn.sources).toHaveLength(3);
   });

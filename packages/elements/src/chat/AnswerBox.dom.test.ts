@@ -7,15 +7,21 @@ import {
   sourcesLine,
   withheldExplanation,
 } from "../locked-strings";
-import { HOSTILE_MARKUP, claim, sourceRef, unavailableSource } from "../trust/test-fixtures";
+import {
+  HOSTILE_MARKUP,
+  TEST_LABELS,
+  claim,
+  sourceRef,
+  unavailableSource,
+} from "../trust/test-fixtures";
 import { ANSWER_DEFAULTS, renderAnswer, renderErrorAnswer, type AnswerOptions } from "./AnswerBox";
 import { finalOf, groundedOf } from "./test-answers";
 
-/** Renders into a detached `.qturn__t-bot` so queries see one turn. */
+/** Renders into a detached `.qturn__t-bot` so queries see one turn (with the test labels). */
 function render(turn: FinalTurn, options: AnswerOptions = {}): HTMLElement {
   const slot = document.createElement("div");
   slot.className = "qturn__t-bot";
-  slot.append(...renderAnswer(turn, options));
+  slot.append(...renderAnswer(turn, { labels: TEST_LABELS, ...options }));
   return slot;
 }
 
@@ -36,10 +42,21 @@ describe("grounded answer", () => {
       "srclist qsrclist",
       "provfoot",
     ]);
-    expect(stampText(slot)).toBe(groundedExplanation(turn.explanation));
+    expect(stampText(slot)).toBe(groundedExplanation(turn.explanation, TEST_LABELS));
+    expect(stampText(slot)).toBe("6 claims · 4 sources · Evidence: high");
     expect(text(slot, ".vstamp")).toBe("● grounded");
     if (turn.provenance === undefined) throw new Error("fixture has provenance");
-    expect(text(slot, ".provfoot")).toBe(answerFooter(turn.provenance));
+    expect(text(slot, ".provfoot")).toBe(answerFooter(turn.provenance, TEST_LABELS));
+    expect(text(slot, ".provfoot")).toBe(
+      "6 claims · 4 sources · 2026-07-17 · 0 outdated claims · Evidence: high",
+    );
+  });
+
+  it("without consumer labels a grounded answer with evidence is rejected (the DS ships no wording)", () => {
+    const turn = groundedOf("grounded");
+    expect(() => renderAnswer(turn)).toThrow(
+      "A grounded answer with evidence needs answer labels { outdated, evidence }; the design system ships no wording for them.",
+    );
   });
 
   it("the sources line counts reading-list rows and names the newest month; it toggles the list", () => {
@@ -155,31 +172,58 @@ describe("grounded answer", () => {
   });
 });
 
-describe("grounded answer without evidence (owner S123)", () => {
-  it("stamp reads `0 claims · 0 episodes`; no sources line, no list, no footer", () => {
+describe("grounded answer without evidence (owner S139: no stamp)", () => {
+  it("draws no verdict stamp, sources line, list or footer — only the body (and any links)", () => {
     const turn = groundedOf("grounded-no-evidence");
     const slot = render(turn);
-    expect(stampText(slot)).toBe("0 claims · 0 episodes");
-    expect(text(slot, ".vstamp")).toBe("● grounded");
+    expect(slot.querySelector(".vrow")).toBeNull();
+    expect(slot.firstElementChild?.className).toBe("vbox vbox--grounded");
     expect(slot.querySelector(".qsrcline")).toBeNull();
     expect(slot.querySelector(".qsrclist")).toBeNull();
     expect(slot.querySelector(".provfoot")).toBeNull();
     expect(text(slot, ".vbox p")).toContain("comes from the site's own profile");
   });
 
+  it("needs no consumer labels (nothing worded is drawn)", () => {
+    expect(() => renderAnswer(groundedOf("grounded-no-evidence"))).not.toThrow();
+  });
+
   it("a grounded answer with evidence but no provenance is rejected, not rendered half-empty", () => {
     const { provenance: _omit, ...rest } = groundedOf("grounded");
     expect(() => render(rest)).toThrow(
-      "A grounded answer needs provenance unless it has no evidence (0 claims, 0 episodes).",
+      "A grounded answer needs provenance unless it has no evidence (0 claims, 0 sources).",
     );
   });
 });
 
-describe("answer footer without a snapshot date (owner S123)", () => {
-  it("leaves the `snapshot <date>` segment out", () => {
+describe("grounded answer the agent abstained on (contract §6.4; switch off unless set)", () => {
+  it("the consumer label replaces the stamp's evidence segment; the footer keeps the evidence label", () => {
+    const turn = groundedOf("grounded-abstained");
+    expect(turn.abstained).toEqual({ label: "notes don't cover this" });
+    const slot = render(turn);
+    expect(stampText(slot)).toBe("6 claims · 4 sources · notes don't cover this");
+    expect(text(slot, ".vstamp")).toBe("● grounded");
+    expect(text(slot, ".provfoot")).toBe(
+      "6 claims · 4 sources · 2026-07-17 · 0 outdated claims · Evidence: high",
+    );
+  });
+
+  it("left unset, the same answer shows the evidence label (today's display)", () => {
+    const { abstained: _off, ...turn } = groundedOf("grounded-abstained");
+    expect(stampText(render(turn))).toBe("6 claims · 4 sources · Evidence: high");
+  });
+
+  it("rejects an empty label", () => {
+    const turn = { ...groundedOf("grounded-abstained"), abstained: { label: " " } };
+    expect(() => render(turn)).toThrow("abstained.label must return a non-empty string.");
+  });
+});
+
+describe("answer footer without a revision date (owner S123)", () => {
+  it("leaves the date segment out", () => {
     const slot = render(groundedOf("grounded-explorer-link"));
     expect(text(slot, ".provfoot")).toBe(
-      "7 claims · 5 episodes · high confidence · 1 superseded excluded",
+      "7 claims · 5 sources · 1 outdated claim · Evidence: high",
     );
     expect(text(slot, ".provfoot b")).toBe("7 claims");
   });
@@ -453,7 +497,7 @@ describe("withheld answer", () => {
 });
 
 describe("refused answer", () => {
-  it.each(["refused-off-topic", "refused-in-scope-empty", "refused-abstained"])(
+  it.each(["refused-off-topic", "refused-in-scope-empty"])(
     "%s: explanation by reason, body always shown, closing line verbatim when given",
     (name) => {
       const turn = finalOf(name) as RefusedTurn;

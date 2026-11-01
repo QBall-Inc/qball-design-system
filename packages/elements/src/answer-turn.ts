@@ -13,7 +13,7 @@
 // and the turn becomes an error.
 import { defaultWarn } from "./dev-warn";
 import type { Claim, ClaimSource } from "./types";
-import type { RefusalKind } from "./locked-strings";
+import type { AbstainedMark, AnswerFooterInput, RefusalKind } from "./locked-strings";
 
 /**
  * One run of answer text. Every run renders as plain text, never as markup.
@@ -50,15 +50,8 @@ export type AnswerBlock =
 /** An answer body: blocks in reading order. */
 export type AnswerBody = AnswerBlock[];
 
-/** Counts behind the answer-variant provenance footer. */
-export interface AnswerProvenance {
-  claims: number;
-  episodes: number;
-  confidenceTier: string;
-  /** ISO date of the graph snapshot; absent or null when unknown (left out of the footer). */
-  snapshotDate?: string | null | undefined;
-  supersededExcluded: number;
-}
+/** Counts behind the answer-variant provenance footer (see answerFooter). */
+export type AnswerProvenance = AnswerFooterInput;
 
 /** One link into the consumer's own pages. */
 export interface SiteLink {
@@ -76,17 +69,23 @@ export interface SiteLinks {
 }
 
 /**
- * A grounded answer. One with no evidence behind it (0 claims, 0 episodes,
- * no sources) leaves out `explanation.confidenceTier` and `provenance`: its
- * stamp reads `0 claims · 0 episodes` and it shows no sources line or footer.
+ * A grounded answer. One with no evidence behind it (0 claims, 0 sources)
+ * leaves out `explanation.confidenceTier` and `provenance`: the chat draws no
+ * verdict stamp, sources line or footer for it, only the body and links.
  */
 export interface GroundedTurn {
   verdict: "grounded";
   /**
-   * Numbers behind `N claims · M episodes · <tier> confidence`. The tier is
-   * left out only for a no-evidence answer (0 claims, 0 episodes).
+   * Numbers behind `N claims · M sources · <evidence label>`. The tier is
+   * left out only for a no-evidence answer (0 claims, 0 sources).
    */
-  explanation: { claims: number; episodes: number; confidenceTier?: string | undefined };
+  explanation: { claims: number; sources: number; confidenceTier?: string | undefined };
+  /**
+   * Set when the agent says its notes do not cover the question: the label
+   * replaces the evidence segment of the stamp's line (the footer is
+   * unchanged). Leave it out to show the evidence label as usual.
+   */
+  abstained?: AbstainedMark;
   body: AnswerBody;
   sources: ClaimSource[];
   /** The footer's numbers. Left out only for a no-evidence answer. */
@@ -110,7 +109,7 @@ export interface WithheldTurn {
 export interface RefusedTurn {
   verdict: "refused";
   reason: RefusalKind;
-  /** Always shown. For `abstained` it is the agent's own explanation. */
+  /** Always shown. */
   body: AnswerBody;
   /** Consumer-supplied closing line (e.g. where the agent is useful). */
   closingLine?: string;
