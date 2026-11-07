@@ -1218,6 +1218,8 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 .claim__meta{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:14px;row-gap:4px;align-items:baseline;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.3px;color:var(--text-secondary)}
 .claim__meta>.claim__conf{grid-column:1;grid-row:1;min-width:0}
 .claim__valid{grid-column:1;grid-row:2;min-width:0}
+/* confidence hidden by the consumer (elements trustMarks): validity takes row 1 */
+.claim__meta--noconf>.claim__valid{grid-row:1}
 .claim__valid>span{white-space:nowrap}
 .claim__conf{font-weight:600}
 .claim__conf--high{color:var(--color-signal)}
@@ -1284,6 +1286,8 @@ a.claim__src:hover{color:var(--color-signal)}
 .epanel__comnote{font-family:var(--font-ui);font-size:calc(11.5px * var(--text-scale, 1));color:var(--text-secondary);line-height:1.6;margin:0}
 .epanel__empty{font-family:var(--font-ui);font-size:calc(11.5px * var(--text-scale, 1));color:var(--text-secondary);line-height:1.7;padding:8px 0}
 .epanel__foot{padding:0 16px 12px}
+/* footer hidden by the consumer (elements trustMarks.footer): no empty padded strip */
+.epanel__foot:empty{display:none}
 .nrow{display:grid;width:100%;box-sizing:border-box;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 2px;border:0;background:none;text-align:left;cursor:pointer;font-family:var(--font-ui)}
 .nrow+.nrow{border-top:.5px solid var(--border-default)}
 .nrow__name{font-size:calc(12px * var(--text-scale, 1));color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1347,7 +1351,9 @@ a.claim__src:hover{color:var(--color-signal)}
 .qpanel__comp{padding:10px 14px 4px;border-top:.5px solid var(--border-default);display:grid;grid-template-columns:56px 1fr;gap:8px;align-items:start}
 .qpanel__prompt{font-family:var(--font-display);font-size:calc(12.5px * var(--text-scale, 1));color:var(--color-signal);font-weight:600;white-space:nowrap;line-height:1.65;padding-top:7px}
 .qpanel__input{font-family:var(--font-display);font-size:calc(12.5px * var(--text-scale, 1));line-height:1.65;border:0;border-bottom:1px solid var(--border-strong);padding:7px 4px;min-height:20px;background:transparent;color:var(--text-primary);outline:none;width:100%;resize:none;overflow:hidden;box-sizing:border-box}
-.qpanel__disc{padding:8px 14px 12px;font-family:var(--font-ui);font-size:calc(9.5px * var(--text-scale, 1));color:var(--text-secondary);line-height:1.45}
+/* disclaimer — the consumer's line under the composer, in primary ink after a sage info icon */
+.qpanel__disc{display:flex;align-items:flex-start;gap:6px;padding:8px 14px 12px;font-family:var(--font-ui);font-size:calc(11px * var(--text-scale, 1));color:var(--text-primary);line-height:1.45}
+.qpanel__disc-ic{flex:none;width:1.2em;height:1.2em;margin-top:.05em;color:var(--color-signal)}
 
 /* conversation turns (terminal register) */
 .qturn{display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;align-items:start;padding:11px 0;font-family:var(--font-display);font-size:calc(12.5px * var(--text-scale, 1));line-height:1.65}
@@ -1355,6 +1361,8 @@ a.claim__src:hover{color:var(--color-signal)}
 .qturn__bot{color:var(--color-highlight);font-weight:700;white-space:nowrap}
 .qturn__t-you{color:var(--text-primary)}
 .qturn__t-bot{color:var(--text-secondary)}
+/* intro — the consumer's welcome line atop an empty chat (a bot-styled row, not a turn) */
+.qturn--intro .qturn__t-bot{white-space:pre-line;color:var(--text-primary)}
 .qsep{height:0;border:0;border-top:.5px solid var(--border-default);margin:0}
 .qn{color:color-mix(in srgb,var(--data-up) 72%,var(--text-primary));font-weight:600}
 
@@ -1385,8 +1393,16 @@ a.claim__src:hover{color:var(--color-signal)}
 .qfb .qfb__up[aria-pressed="true"]{color:color-mix(in srgb,var(--color-signal) 72%,var(--text-primary));text-decoration:underline;text-underline-offset:3px}
 .qfb .qfb__down[aria-pressed="true"]{color:color-mix(in srgb,var(--color-highlight) 72%,var(--text-primary));text-decoration:underline;text-underline-offset:3px}
 
-/* sources line — [N sources · newest …]: count + freshness only, titles on expand */
-.qsrcline{display:inline-flex;background-color:transparent;border:0;padding:0;cursor:pointer;font-family:var(--font-display);font-size:calc(10.5px * var(--text-scale, 1));margin-top:7px}
+/* sources line — [N sources · newest …]: count + freshness only, titles on expand.
+   A finished answer's toggle is a static, clearly clickable row (no shimmer, which
+   reads as "still loading"): info ink + a chevron that turns when the list is open.
+   The site-links toggle uses the same class, so the two always match. */
+.qsrcline{display:inline-flex;align-items:center;gap:5px;background-color:transparent;border:0;padding:0;cursor:pointer;font-family:var(--font-display);font-size:calc(10.5px * var(--text-scale, 1));font-weight:600;color:var(--data-info);margin-top:7px}
+.qsrcline::after{content:"\203A";content:"\203A"/"";display:inline-block;transition:transform var(--dur-fast) var(--ease-out)}
+.qsrcline[aria-expanded="true"]::after{transform:rotate(90deg)}
+.qsrcline:hover{text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion:reduce){.qsrcline::after{transition:none}}
+/* Kept for tokens 1.x compatibility: @qball-inc/elements no longer applies it (1.0). */
 .ground-wave--sources{--wave-base:var(--data-info);--wave-hi:#A7D0F0}
 @media (prefers-reduced-motion:reduce){.qsrcline.ground-wave{background-image:none}}
 .qsrclist{display:none;flex-direction:column;margin-top:2px}
@@ -1419,7 +1435,7 @@ a.claim__src:hover{color:var(--color-signal)}
 .qpanel .qclaim,.qpanel .claim .badge{font-size:calc(12.5px * var(--text-scale, 1))}
 .qpanel .qnotice,.qpanel .vbox table,.qpanel .vbox pre,.qpanel .vbox code{font-size:calc(13px * var(--text-scale, 1))}
 .qpanel .vrow__close{font-size:calc(13.5px * var(--text-scale, 1))}
-.qpanel .qpanel__disc{font-size:calc(11px * var(--text-scale, 1))}
+.qpanel .qpanel__disc{font-size:calc(12px * var(--text-scale, 1))}
 }
 /* touch screens wider than 720px (a phone held sideways, a tablet) keep the
    desktop type but get the composer's 16px floor for the same iOS reason */
@@ -1449,7 +1465,7 @@ a.claim__src:hover{color:var(--color-signal)}
 /* site links — the consumer's links into its own pages, under a grounded answer:
    a .qsrcline toggle (the consumer's heading) over .srcrow rows, like the sources.
    The line is its own row (an explorer .qlink may follow a closed list), sized
-   to its text so the shimmer spans the words. A link left inert by the
+   to its text. A link left inert by the
    internal-link policy keeps a muted title, no hover (the :hover selector
    outranks .srcrow:hover, whatever the rule order). */
 .qsitelinks__line{display:flex;width:fit-content}
@@ -1472,6 +1488,10 @@ a.claim__src:hover{color:var(--color-signal)}
 .vbox pre{padding:8px 10px;border-left:0;border-radius:var(--radius-sm);background:var(--bg-surface);font-family:var(--font-code);font-size:calc(11.5px * var(--text-scale, 1));line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 .vbox code{font-family:var(--font-code);font-size:calc(11.5px * var(--text-scale, 1))}
 .qcite{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));font-weight:600;color:var(--data-info);white-space:nowrap}
+/* A citation whose source has a link: same look as the plain one (no global link ink
+   or border), underlined on hover/focus so it reads as clickable. */
+a.qcite,a.qcite:hover{color:var(--data-info);border-bottom:0;text-decoration:none}
+a.qcite:hover,a.qcite:focus-visible{text-decoration:underline;text-underline-offset:2px}
 .qcite.is-unavailable{color:var(--text-secondary);font-weight:400}
 .qgap{color:color-mix(in srgb,var(--color-highlight) 72%,var(--text-primary));font-style:italic}
 .qlead{margin-top:10px}

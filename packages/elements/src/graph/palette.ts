@@ -32,6 +32,7 @@ export const ROLE_TOKEN = Object.freeze({
   info: "--data-info",
   flat: "--data-flat",
   hub: "--stage-hub",
+  unclassified: "--stage-unclassified",
 });
 
 export type PaletteRole = keyof typeof ROLE_TOKEN;
@@ -62,8 +63,8 @@ export function readPalette(host: HTMLElement): Palette {
 
 /**
  * Palette role for an entity class. Unknown classes (e.g. a consumer's
- * "unclassified") render in the neutral muted grey, never a known class's colour.
+ * "unclassified") render in their own stage grey, never a known class's colour.
  */
 export function classRole(cls: string): PaletteRole {
-  return Object.hasOwn(CLASS_ROLE, cls) ? CLASS_ROLE[cls]! : "muted";
+  return Object.hasOwn(CLASS_ROLE, cls) ? CLASS_ROLE[cls]! : "unclassified";
 }

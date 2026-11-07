@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { runInNewContext } from "node:vm";
 import * as THREE from "three";
+import { ROLE_TOKEN } from "./palette";
 import type { RendererFactory, RendererLike, Three } from "./scene";
 
 const TOKENS_DIR = resolve(process.cwd(), "../tokens");
@@ -34,7 +35,9 @@ export function resolvedCanvasTokens(): Record<string, string> {
     const value = root.get(ref);
     if (value !== undefined) out[prop] = value;
   }
-  out["--stage-hub"] = root.get("--stage-hub") ?? "";
+  // Palette roles that read a stage token directly (not via the tier mapping).
+  for (const token of Object.values(ROLE_TOKEN).filter((t) => t.startsWith("--stage-")))
+    out[token] = root.get(token) ?? "";
   return out;
 }
 

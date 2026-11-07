@@ -12,6 +12,7 @@ import { defaultWarn } from "../dev-warn";
 import { focusWithoutRing } from "../focus";
 import { el } from "../trust/dom";
 import type { SourceBadgeOptions } from "../trust/source-badge";
+import type { TrustMarks } from "../trust/trust-marks";
 import type { BundleNode, ConnectionDetail, SkeletonBundle } from "../types";
 import {
   mount as mountGraphCanvas,
@@ -57,6 +58,8 @@ export interface GraphExplorerOptions {
   canvas?: ExplorerCanvasOptions;
   /** Consumer domain badges for claim cards and the reading list. */
   sourceBadges?: SourceBadgeOptions;
+  /** Show or hide the panel's trust marks (footer, claim labels, confidence); all show by default. */
+  trustMarks?: TrustMarks;
   /**
    * Open the details panel when an entity is selected. Default: yes above
    * 900px, no on the ≤900px bottom sheet (the pill shows the entity instead).
@@ -245,6 +248,7 @@ export async function mountWith(
       headAction: hide,
       ...(options.panelLabels === undefined ? {} : { labels: options.panelLabels }),
       ...(options.sourceBadges === undefined ? {} : { sourceBadges: options.sourceBadges }),
+      ...(options.trustMarks === undefined ? {} : { trustMarks: options.trustMarks }),
       ...(options.onWarn === undefined ? {} : { onWarn: options.onWarn }),
       onCrumb: (index) => {
         const target = path[index];

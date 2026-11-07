@@ -596,3 +596,47 @@ describe("newTabLabel (spoken suffix, consumer words only)", () => {
     expect(() => bare({ newTabLabel: "" })).toThrow("newTabLabel must be a non-empty string.");
   });
 });
+
+describe("intro (site request S141)", () => {
+  const INTRO = "hello. ask me about the notes.\nI say so when I don't know.";
+
+  it("shows a bot-styled intro row in the empty chat, with no stamp, marks or sources", () => {
+    const transcript = bare({ intro: INTRO });
+    const rows = [...transcript.container.children];
+    expect(rows).toHaveLength(1);
+    const row = rows[0]!;
+    expect(row.className).toBe("qturn qturn--intro");
+    expect(row.querySelector(".qturn__bot")?.textContent).toBe(TRANSCRIPT_DEFAULTS.botPrompt);
+    expect(row.querySelector(".qturn__t-bot")?.textContent).toBe(INTRO);
+    expect(row.querySelector(".vrow, .qfb, .provfoot, .qsrcline, button")).toBeNull();
+  });
+
+  it("sits above the first turn, separated like any turn, and comes back after clear()", () => {
+    const transcript = bare({ intro: INTRO });
+    transcript.addUserTurn("first question");
+    expect([...transcript.container.children].map((n) => n.className)).toEqual([
+      "qturn qturn--intro",
+      "qsep",
+      "qturn",
+    ]);
+    transcript.clear();
+    expect([...transcript.container.children].map((n) => n.className)).toEqual([
+      "qturn qturn--intro",
+    ]);
+    transcript.destroy();
+    expect(transcript.container.childElementCount).toBe(0);
+  });
+
+  it("is plain text: markup in it never parses", () => {
+    const transcript = bare({ intro: HOSTILE_MARKUP });
+    const row = transcript.container.querySelector(".qturn--intro .qturn__t-bot")!;
+    expect(row.textContent).toBe(HOSTILE_MARKUP);
+    expect(row.children).toHaveLength(0);
+  });
+
+  it("is left out when not given or empty, and must be a string", () => {
+    expect(bare().container.childElementCount).toBe(0);
+    expect(bare({ intro: "" }).container.childElementCount).toBe(0);
+    expect(() => bare({ intro: 1 as never })).toThrow("intro must be a string.");
+  });
+});

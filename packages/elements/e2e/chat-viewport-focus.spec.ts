@@ -178,7 +178,7 @@ test.describe("phone type scale", () => {
       body: 14,
       prompt: 14,
       composer: 16,
-      disclaimer: 11,
+      disclaimer: 12, // 1.0: a more prominent disclaimer (site request)
       title: 13,
     });
     // The prompt column widens with the type: `qubae ›` fits on one line.
@@ -191,14 +191,14 @@ test.describe("phone type scale", () => {
     expect(fits).toBe(true);
   });
 
-  test("desktop (1280px): unchanged", async ({ page }) => {
+  test("desktop (1280px): unchanged but the larger disclaimer", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await load(page);
     expect(await sizes(page)).toEqual({
       body: 12.5,
       prompt: 12.5,
       composer: 12.5,
-      disclaimer: 9.5,
+      disclaimer: 11, // 1.0: up from 9.5px (site request)
       title: 11.5,
     });
   });

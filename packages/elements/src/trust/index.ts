@@ -6,6 +6,7 @@
 export const ENTRY = "trust" as const;
 
 export type { ClaimCardOptions } from "./ClaimCard";
+export type { TrustMarks } from "./trust-marks";
 export { safeInternalUrl } from "./url";
 
 export { REPLACEMENT_UNAVAILABLE, renderClaimCard } from "./ClaimCard";

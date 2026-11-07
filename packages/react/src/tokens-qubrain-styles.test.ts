@@ -221,7 +221,13 @@ describe("new styles are token-driven and self-contained", () => {
     ]) {
       expect(reduced, `no reduced-motion rule for ${selector}`).toContain(`${selector}{`);
     }
-    // The sources shimmer rides the shipped .ground-wave rule, which already stops under reduced motion.
+    // The sources toggle is static from elements 1.0; its chevron turn stops under reduced motion,
+    // and the old shimmer modifier stays shipped for tokens 1.x compatibility.
+    expect(addedCss).toContain(
+      "@media (prefers-reduced-motion:reduce){.qsrcline::after{transition:none}}",
+    );
+    // A footer hidden via elements trustMarks leaves the panel footer empty: it takes no space.
+    expect(addedCss).toContain(".epanel__foot:empty{display:none}");
     expect(addedCss).toMatch(
       /\.ground-wave--sources\{--wave-base:var\(--data-info\);--wave-hi:#A7D0F0\}/,
     );

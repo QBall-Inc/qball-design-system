@@ -12,6 +12,7 @@ import { isSourceUnavailable, type Claim, type ClaimSource } from "../types";
 import { el } from "./dom";
 import { resolveSourceBadge, sourceHost, type SourceBadgeOptions } from "./source-badge";
 import { SOURCE_UNAVAILABLE } from "./SourceRow";
+import { resolveTrustMarks, type ResolvedTrustMarks, type TrustMarks } from "./trust-marks";
 import { EXTERNAL_LINK_REL, safeExternalUrl } from "./url";
 
 export interface ClaimCardOptions {
@@ -23,6 +24,8 @@ export interface ClaimCardOptions {
   replacement?: Replacement | null;
   /** Consumer domain badges (see SourceBadgeOptions). */
   sourceBadges?: SourceBadgeOptions;
+  /** Show or hide the endorsed / verified / superseded labels and the confidence score; all show by default. */
+  trustMarks?: TrustMarks;
 }
 
 /** Shown in place of a replacement sentence the payload does not carry. */
@@ -96,12 +99,17 @@ function validityElement(claim: Claim): HTMLElement {
 }
 
 /** Status labels above the sentence, or null when the claim carries none. */
-function tagsElement(claim: Claim, superseded: boolean): HTMLElement | null {
+function tagsElement(
+  claim: Claim,
+  superseded: boolean,
+  marks: ResolvedTrustMarks,
+): HTMLElement | null {
   const tags = el("div", "claim__tags");
-  if (superseded) tags.append(el("span", "badge badge--highlight", "superseded"));
-  if (claim.endorsement_tier !== undefined)
+  if (superseded && marks.superseded)
+    tags.append(el("span", "badge badge--highlight", "superseded"));
+  if (claim.endorsement_tier !== undefined && marks.endorsed)
     tags.append(el("span", "claim__mark--endorsed", "✓ endorsed"));
-  if (claim.verification !== undefined)
+  if (claim.verification !== undefined && marks.verified)
     tags.append(el("span", "claim__mark--verified", "⁂ verified"));
   return tags.childElementCount === 0 ? null : tags;
 }
@@ -120,6 +128,7 @@ function replacementText(claim: Claim, replacement: Replacement | null): string 
 export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): HTMLElement {
   const superseded = isSuperseded(claim);
   const replacement = options.replacement ?? null;
+  const marks = resolveTrustMarks(options.trustMarks);
   if (!superseded && replacement !== null) {
     throw new RangeError(
       `claim ${String(claim.claim_id)} is current; a replacement applies only to a superseded claim.`,
@@ -127,7 +136,7 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
   }
 
   const card = el("article", superseded ? "claim claim--superseded" : "claim");
-  const tags = tagsElement(claim, superseded);
+  const tags = tagsElement(claim, superseded, marks);
   if (tags !== null) card.append(tags);
   card.append(el("p", "claim__text", claim.claim_text));
   if (superseded) {
@@ -141,8 +150,12 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
 
   // Fixed 2x2 grid (components.css): confidence | source on row 1, validity on
   // row 2; the source block spans both rows. DOM order is the reading order.
-  const meta = el("div", "claim__meta");
-  meta.append(confidenceSpan(claim), validityElement(claim), sourceElement(claim.source, options));
+  // With confidence hidden, validity moves up to row 1 (`claim__meta--noconf`).
+  // The score is still range-checked, so bad data fails the same either way.
+  const confidence = confidenceSpan(claim);
+  const meta = el("div", marks.confidence ? "claim__meta" : "claim__meta claim__meta--noconf");
+  if (marks.confidence) meta.append(confidence);
+  meta.append(validityElement(claim), sourceElement(claim.source, options));
   card.append(meta);
   return card;
 }

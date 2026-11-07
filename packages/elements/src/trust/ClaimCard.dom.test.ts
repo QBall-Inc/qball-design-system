@@ -258,3 +258,41 @@ describe("renderClaimCard — hostile payloads (rendered as text; execution is c
     expect(pwned()).toBe(false);
   });
 });
+
+describe("renderClaimCard — trustMarks", () => {
+  const marked = () => claim({ endorsement_tier: "owner", verification: "checked" });
+
+  it("hides the endorsed and verified labels independently", () => {
+    const noVerified = renderClaimCard(marked(), { trustMarks: { verified: false } });
+    expect(noVerified.querySelector(".claim__mark--endorsed")).not.toBeNull();
+    expect(noVerified.querySelector(".claim__mark--verified")).toBeNull();
+    const neither = renderClaimCard(marked(), {
+      trustMarks: { verified: false, endorsed: false },
+    });
+    expect(neither.querySelector(".claim__tags")).toBeNull();
+  });
+
+  it("hides the superseded label but keeps the struck sentence and its replacement", () => {
+    const { old, replacement } = supersededPair();
+    const card = renderClaimCard(old, {
+      replacement: resolveReplacement(old, [old, replacement]),
+      trustMarks: { superseded: false },
+    });
+    expect(card.querySelector(".badge")).toBeNull();
+    expect(card.classList.contains("claim--superseded")).toBe(true);
+    expect(card.querySelector(".claim__now")?.textContent).toContain(replacement.claim_text);
+  });
+
+  it("hides the confidence score; validity moves to the first row", () => {
+    const card = renderClaimCard(claim(), { trustMarks: { confidence: false } });
+    expect(card.querySelector(".claim__conf")).toBeNull();
+    expect(metaCells(card)).toEqual(["claim__valid", "claim__src"]);
+    expect(meta(card).className).toBe("claim__meta claim__meta--noconf");
+  });
+
+  it("still rejects an out-of-range score with confidence hidden", () => {
+    expect(() =>
+      renderClaimCard(claim({ confidence: 2 }), { trustMarks: { confidence: false } }),
+    ).toThrow("confidence must be 0..1");
+  });
+});

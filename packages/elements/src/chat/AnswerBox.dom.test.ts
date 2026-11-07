@@ -38,7 +38,7 @@ describe("grounded answer", () => {
     expect(Array.from(slot.children, (node) => node.className)).toEqual([
       "vrow",
       "vbox vbox--grounded",
-      "qsrcline ground-wave ground-wave--sources",
+      "qsrcline",
       "srclist qsrclist",
       "provfoot",
     ]);
@@ -147,8 +147,48 @@ describe("grounded answer", () => {
       "source unavailable",
     ]);
     expect(cites[2]?.classList.contains("is-unavailable")).toBe(true);
-    // Citations are text, never links.
-    expect(slot.querySelectorAll(".vbox a")).toHaveLength(0);
+    expect(cites[2]?.tagName).toBe("SPAN");
+  });
+
+  it("links a citation to the same href as its reading-list row (site request S141)", () => {
+    const slot = render(groundedOf("grounded-structured"));
+    const rows = new Map(
+      [...slot.querySelectorAll<HTMLAnchorElement>(".qsrclist a.srcrow")].map((row) => [
+        row.querySelector(".srcrow__title")!.textContent,
+        row.getAttribute("href"),
+      ]),
+    );
+    const links = [...slot.querySelectorAll<HTMLAnchorElement>(".vbox a.qcite")];
+    expect(links.map((a) => a.textContent)).toEqual(["[1]", "[2]"]);
+    for (const a of links) {
+      expect(a.getAttribute("href")).not.toBeNull();
+      expect(a.getAttribute("href")).toBe(rows.get(a.getAttribute("title") ?? ""));
+      expect(a.getAttribute("rel")).toBe("noopener noreferrer");
+      expect(a.hasAttribute("target")).toBe(false);
+    }
+  });
+
+  it("with the new-tab switch on, a linked citation opens in a new tab and reads the label", () => {
+    const slot = render(groundedOf("grounded-structured"), {
+      openLinksInNewTab: true,
+      newTabLabel: "(new tab)",
+    });
+    const link = slot.querySelector<HTMLAnchorElement>(".vbox a.qcite")!;
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.querySelector(".qnewtab")?.textContent).toBe(" (new tab)");
+    expect(link.textContent).toBe("[1] (new tab)");
+  });
+
+  it("a citation whose source has no http(s) URL stays text, never a link", () => {
+    const turn: GroundedTurn = {
+      ...groundedOf("grounded-explorer-link"),
+      sources: [sourceRef({ episode_id: "ep-js", url: "javascript:alert(1)", title: "bad" })],
+      body: [{ kind: "paragraph", inlines: [{ kind: "citation", episode_id: "ep-js" }] }],
+    };
+    const cite = render(turn).querySelector(".vbox .qcite")!;
+    expect(cite.tagName).toBe("SPAN");
+    expect(cite.textContent).toBe("[1]");
+    expect(cite.hasAttribute("href")).toBe(false);
   });
 
   it("a citation of a known but unavailable source keeps its number, styled unavailable", () => {
@@ -298,7 +338,7 @@ describe("site links (consumer-titled, internal-link policy)", () => {
     );
     expect(Array.from(slot.children, (node) => node.className).slice(-4)).toEqual([
       "provfoot",
-      "qsrcline ground-wave ground-wave--sources qsitelinks__line",
+      "qsrcline qsitelinks__line",
       "srclist qsrclist qsitelinks",
       "qlink",
     ]);
@@ -635,5 +675,52 @@ describe("openLinksInNewTab", () => {
     expect(() => render(refused, { openLinksInNewTab: "true" as never })).toThrow(
       "openLinksInNewTab must be a boolean.",
     );
+  });
+});
+
+describe("trustMarks (owner S141: switches, every mark on by default)", () => {
+  it("hides the stamp and the footer of a grounded answer, keeping the body and sources", () => {
+    const slot = render(groundedOf("grounded"), { trustMarks: { stamp: false, footer: false } });
+    expect(Array.from(slot.children, (node) => node.className)).toEqual([
+      "vbox vbox--grounded",
+      "qsrcline",
+      "srclist qsrclist",
+    ]);
+  });
+
+  it("hides the stamp of withheld and refused answers", () => {
+    for (const name of ["withheld", "refused-off-topic"]) {
+      const slot = render(finalOf(name), { trustMarks: { stamp: false } });
+      expect(slot.querySelector(".vrow")).toBeNull();
+      expect(slot.firstElementChild?.className).toMatch(/^vbox vbox--/);
+    }
+  });
+
+  it("hides confidence on a withheld answer's claims, keeping each sentence in its column", () => {
+    const shown = render(finalOf("withheld"));
+    const hidden = render(finalOf("withheld"), { trustMarks: { confidence: false } });
+    const rows = [...hidden.querySelectorAll(".qclaim")];
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.length).toBe(shown.querySelectorAll(".qclaim").length);
+    expect(hidden.querySelector(".qclaim__conf, .qclaim__lvl")).toBeNull();
+    for (const row of rows) expect(row.children).toHaveLength(3);
+    expect(rows.map((row) => row.children[1]!.textContent)).toEqual(
+      [...shown.querySelectorAll(".qclaim")].map((row) => row.children[1]!.textContent),
+    );
+  });
+
+  it("left out, renders exactly as before", () => {
+    const turn = groundedOf("grounded");
+    // Each render numbers its list ids afresh; compare with them normalised.
+    const html = (slot: HTMLElement) => slot.innerHTML.replace(/qb-srclist-\d+/g, "qb-srclist-N");
+    expect(html(render(turn))).toBe(html(render(turn, { trustMarks: {} })));
+    expect(render(turn).querySelector(".vrow")).not.toBeNull();
+    expect(render(turn).querySelector(".provfoot")).not.toBeNull();
+  });
+
+  it("rejects a bad value, even on an answer with no marks", () => {
+    expect(() =>
+      render(finalOf("refused-off-topic"), { trustMarks: { footer: 0 } as never }),
+    ).toThrow("trustMarks.footer must be a boolean.");
   });
 });

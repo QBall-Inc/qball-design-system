@@ -5,9 +5,13 @@
 // zoom, pinch and node drag. jsdom has no WebGL, so this is the only place
 // these are provable. States and lifecycle: graph-canvas-states.spec.ts.
 // Renders the BUILT dist/graph entry. Needs the built dist/ (`pnpm test` builds it).
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import {
+  FIXTURES,
   LAYOUT_BUNDLE,
+  ORIGIN,
   countBlends,
   nearestHue,
   segmentColors,
@@ -113,6 +117,39 @@ test.describe("rendering", () => {
     expect(verdicts.filter((v) => v.typed).length).toBeGreaterThan(1);
     expect(verdicts.filter((v) => !v.typed).length).toBeGreaterThan(1);
     for (const v of verdicts) expect(v.hue).toBe(v.typed ? "sage" : "amber");
+  });
+
+  test("every legend swatch, the unknown class included, paints its own colour", async ({
+    page,
+  }) => {
+    // The 0.6.0 bug: unknown classes and standard-protocol resolved to the same
+    // grey. Serve the bundle with a few nodes reclassified to a class the
+    // palette does not know, then read the colours the browser actually paints.
+    const bundle = JSON.parse(readFileSync(resolve(FIXTURES, LAYOUT_BUNDLE), "utf8")) as {
+      nodes: { cls: string }[];
+    };
+    for (const node of bundle.nodes.filter((n) => n.cls === "tool").slice(0, 5))
+      node.cls = "unclassified";
+    await openHarness(page);
+    await page.route(`${ORIGIN}/fixtures/unclassified.json`, (route) =>
+      route.fulfill({ contentType: "application/json", body: JSON.stringify(bundle) }),
+    );
+    expect(await mountCanvas(page, "unclassified.json")).toEqual({ ok: true });
+    const items = page.locator("#host .gc-legend .gc-li");
+    await expect(items.filter({ hasText: "unclassified" })).toHaveCount(1);
+    const swatches = await items.evaluateAll((els) =>
+      els.map((el) => ({
+        label: el.textContent ?? "",
+        colour: getComputedStyle(el.querySelector(".gc-sw")!).backgroundColor,
+      })),
+    );
+    expect(swatches.length).toBe(10);
+    expect(new Set(swatches.map((s) => s.colour)).size).toBe(swatches.length);
+    const colourOf = (label: string) => swatches.find((s) => s.label === label)?.colour;
+    expect(colourOf("unclassified")).toBe("rgb(107, 110, 117)");
+    // standard-protocol shows as "protocol" (default class labels).
+    expect(colourOf("protocol")).toBeDefined();
+    expect(colourOf("protocol")).not.toBe(colourOf("unclassified"));
   });
 });
 

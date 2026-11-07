@@ -25,7 +25,15 @@ import { renderFeedback, type FeedbackChange, type FeedbackValue } from "../trus
 import { renderProvenanceFooter } from "../trust/ProvenanceFooter";
 import { SOURCE_UNAVAILABLE, renderReadingList } from "../trust/SourceRow";
 import type { SourceBadgeOptions } from "../trust/source-badge";
-import { openInNewTab, resolveNewTab, safeInternalUrl, type NewTab } from "../trust/url";
+import {
+  EXTERNAL_LINK_REL,
+  openInNewTab,
+  resolveNewTab,
+  safeExternalUrl,
+  safeInternalUrl,
+  type NewTab,
+} from "../trust/url";
+import { resolveTrustMarks, type ResolvedTrustMarks, type TrustMarks } from "../trust/trust-marks";
 import { renderVerdictStamp } from "../trust/VerdictStamp";
 
 export interface AnswerFeedbackOptions {
@@ -59,12 +67,14 @@ export interface AnswerOptions {
   onWarn?: (message: string) => void;
   /**
    * Open every link the answer draws (explorer link, site links, reading-list
-   * sources) in a new tab (default false). Each such link gets
+   * sources, linked citations) in a new tab (default false). Each such link gets
    * `rel="noopener noreferrer"`, so internal links send no referrer either.
    */
   openLinksInNewTab?: boolean;
   /** With the switch on: words read out (visually hidden) after each such link, e.g. your "opens in a new tab". No default. */
   newTabLabel?: string;
+  /** Show or hide each trust mark (stamp, footer, confidence); every mark shows by default. */
+  trustMarks?: TrustMarks;
 }
 
 export const ANSWER_DEFAULTS = {
@@ -78,6 +88,8 @@ const TIER_CLASS = { high: "high", medium: "med", low: "low" } as const;
 /** Sources a citation can resolve against, numbered in reading-list order. */
 interface CitationIndex {
   numberOf(episodeId: string): { n: number; source: ClaimSource } | null;
+  /** The answer's resolved new-tab setting, applied to linked citations. */
+  readonly newTab: NewTab | null;
 }
 
 /** One entry per episode id (first wins), in input order — the reading list's order. */
@@ -92,9 +104,10 @@ function readingOrder(sources: readonly ClaimSource[]): ClaimSource[] {
   });
 }
 
-function citationIndex(sources: readonly ClaimSource[]): CitationIndex {
+function citationIndex(sources: readonly ClaimSource[], newTab: NewTab | null): CitationIndex {
   const ordered = readingOrder(sources);
   return {
+    newTab,
     numberOf(episodeId) {
       const at = ordered.findIndex((source) => source.episode_id === episodeId);
       const source = ordered[at];
@@ -111,9 +124,20 @@ function renderCitation(episodeId: string, index: CitationIndex): HTMLElement {
     node.setAttribute("title", SOURCE_UNAVAILABLE);
     return node;
   }
-  const node = el("span", "qcite", `[${String(hit.n)}]`);
-  node.setAttribute("title", hit.source.title);
-  return node;
+  const label = `[${String(hit.n)}]`;
+  // Same policy as the reading list: only an http(s) URL makes a link.
+  const url = safeExternalUrl(hit.source.url);
+  if (url === null) {
+    const node = el("span", "qcite", label);
+    node.setAttribute("title", hit.source.title);
+    return node;
+  }
+  const link = el("a", "qcite", label);
+  link.setAttribute("href", url.href);
+  link.setAttribute("rel", EXTERNAL_LINK_REL);
+  link.setAttribute("title", hit.source.title);
+  if (index.newTab !== null) openInNewTab(link, index.newTab);
+  return link;
 }
 
 function renderInline(inline: AnswerInline, index: CitationIndex): Node {
@@ -261,7 +285,7 @@ function renderSources(sources: readonly ClaimSource[], options: AnswerOptions):
   }
   const toggle = el(
     "button",
-    "qsrcline ground-wave ground-wave--sources",
+    "qsrcline",
     sourcesLine({ sources: list.childElementCount, newestDate: newest }),
   );
   wireListToggle(toggle, list);
@@ -318,11 +342,7 @@ function renderSiteLinks(
     }
     list.append(renderSiteLinkRow(title, url, allowedOrigins, warn, newTab));
   });
-  const toggle = el(
-    "button",
-    "qsrcline ground-wave ground-wave--sources qsitelinks__line",
-    siteLinks.heading,
-  );
+  const toggle = el("button", "qsrcline qsitelinks__line", siteLinks.heading);
   wireListToggle(toggle, list);
   return [toggle, list];
 }
@@ -374,6 +394,7 @@ function groundedParts(
   turn: GroundedTurn,
   options: AnswerOptions,
   newTab: NewTab | null,
+  marks: ResolvedTrustMarks,
 ): HTMLElement[] {
   if (turn.provenance === undefined && !isNoEvidence(turn)) {
     throw new RangeError(
@@ -381,10 +402,10 @@ function groundedParts(
     );
   }
   const parts = [
-    renderBox("grounded", turn.body, citationIndex(turn.sources), options),
+    renderBox("grounded", turn.body, citationIndex(turn.sources, newTab), options),
     ...renderSources(turn.sources, options),
   ];
-  if (turn.provenance !== undefined) {
+  if (turn.provenance !== undefined && marks.footer) {
     parts.push(renderProvenanceFooter("answer", turn.provenance, requireLabels(options)));
   }
   if (turn.siteLinks !== undefined) parts.push(...renderSiteLinks(turn.siteLinks, options, newTab));
@@ -393,9 +414,14 @@ function groundedParts(
   return parts;
 }
 
-function renderClaimRow(claim: Claim): HTMLElement {
-  const mark = confidenceMark(claim.confidence_tier);
+function renderClaimRow(claim: Claim, showConfidence: boolean): HTMLElement {
   const row = el("div", "qclaim");
+  if (!showConfidence) {
+    // Empty cells keep the sentence in its column.
+    row.append(el("span"), el("span", undefined, claim.claim_text), el("span"));
+    return row;
+  }
+  const mark = confidenceMark(claim.confidence_tier);
   row.append(
     el("span", `qclaim__conf qclaim__conf--${TIER_CLASS[mark.tier]}`, mark.glyph),
     el("span", undefined, claim.claim_text),
@@ -404,19 +430,28 @@ function renderClaimRow(claim: Claim): HTMLElement {
   return row;
 }
 
-function withheldParts(turn: WithheldTurn, options: AnswerOptions): HTMLElement[] {
-  const index = citationIndex(turn.traceableClaims.map((claim) => claim.source));
+function withheldParts(
+  turn: WithheldTurn,
+  options: AnswerOptions,
+  newTab: NewTab | null,
+  marks: ResolvedTrustMarks,
+): HTMLElement[] {
+  const index = citationIndex(
+    turn.traceableClaims.map((claim) => claim.source),
+    newTab,
+  );
   const parts = [renderBox("withheld", turn.body, index, options)];
   if (turn.traceableClaims.length > 0) {
     const claims = el("div", "qclaims");
-    for (const claim of turn.traceableClaims) claims.append(renderClaimRow(claim));
+    for (const claim of turn.traceableClaims)
+      claims.append(renderClaimRow(claim, marks.confidence));
     parts.push(el("div", "qlead", options.withheldLead ?? ANSWER_DEFAULTS.withheldLead), claims);
   }
   return parts;
 }
 
 function refusedParts(turn: RefusedTurn, options: AnswerOptions): HTMLElement[] {
-  const parts = [renderBox("refused", turn.body, citationIndex([]), options)];
+  const parts = [renderBox("refused", turn.body, citationIndex([], null), options)];
   if (turn.closingLine !== undefined && turn.closingLine.length > 0) {
     parts.push(el("div", "qclose", turn.closingLine));
   }
@@ -432,21 +467,24 @@ function stampFor(turn: FinalTurn, options: AnswerOptions): HTMLElement {
 
 /**
  * The nodes of one finished turn, in order: stamp row, box, then per-verdict
- * extras. A grounded answer with no evidence (0 claims, 0 sources) has no stamp.
+ * extras. A grounded answer with no evidence (0 claims, 0 sources) has no
+ * stamp; `trustMarks` can hide the stamp, the footer and claim confidence.
  */
 export function renderAnswer(turn: FinalTurn, options: AnswerOptions = {}): HTMLElement[] {
   // Resolved once per answer: fails fast on a bad switch or label, even on an
   // answer with no links to draw.
   const newTab = resolveNewTab(options.openLinksInNewTab, options.newTabLabel);
+  const marks = resolveTrustMarks(options.trustMarks);
+  const stamp = (): HTMLElement[] => (marks.stamp ? [stampFor(turn, options)] : []);
   switch (turn.verdict) {
     case "grounded": {
-      const parts = groundedParts(turn, options, newTab);
-      return isNoEvidence(turn) ? parts : [stampFor(turn, options), ...parts];
+      const parts = groundedParts(turn, options, newTab, marks);
+      return isNoEvidence(turn) ? parts : [...stamp(), ...parts];
     }
     case "withheld":
-      return [stampFor(turn, options), ...withheldParts(turn, options)];
+      return [...stamp(), ...withheldParts(turn, options, newTab, marks)];
     case "refused":
-      return [stampFor(turn, options), ...refusedParts(turn, options)];
+      return [...stamp(), ...refusedParts(turn, options)];
     default: {
       const unknown: unknown = (turn as { verdict: unknown }).verdict;
       throw new RangeError(`Unknown verdict "${String(unknown)}".`);

@@ -3,21 +3,15 @@
 // stillness all live in the shipped tokens CSS (`.qlaunch*`); this module
 // only builds the button and toggles its modifier classes.
 
-import { el } from "../trust/dom";
+import { el, staticSvg } from "../trust/dom";
 
 /** The mascot, verbatim from the reference engine (static chrome, no data). */
 export const MASCOT_SVG =
   '<svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M13.5 9.5 10.8 4M18.5 9.5 21.2 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle class="qb-dot" cx="10.5" cy="3.4" r="1.7"/><circle class="qb-dot" cx="21.5" cy="3.4" r="1.7"/><rect x="4" y="9.5" width="24" height="19.5" rx="5" stroke="currentColor" stroke-width="2"/><rect class="qb-screen" x="7.5" y="13" width="17" height="12.5" rx="3"/><rect class="qb-scan" x="9" y="14.6" width="14" height="1.5" rx=".75"/><circle class="qb-eye" cx="12.9" cy="20.3" r="2.3"/><circle class="qb-glint" cx="13.6" cy="19.6" r=".65"/><circle class="qb-eye" cx="19.1" cy="20.3" r="2.3"/><circle class="qb-glint" cx="19.8" cy="19.6" r=".65"/><rect x="9.5" y="29" width="2.8" height="3.2" rx="1.2" fill="currentColor"/><rect x="19.7" y="29" width="2.8" height="3.2" rx="1.2" fill="currentColor"/></svg>';
 
-/**
- * Builds the default mascot as a fresh SVG element. Parsed as HTML (an inert
- * document — nothing in it runs) so the markup lands in the SVG namespace
- * without an xmlns attribute, exactly as inline <svg> does; never innerHTML.
- */
+/** Builds the default mascot as a fresh SVG element (see staticSvg). */
 export function defaultMascot(): Element {
-  const svg = new DOMParser().parseFromString(MASCOT_SVG, "text/html").body.firstElementChild;
-  if (svg === null) throw new Error("The built-in mascot failed to parse.");
-  return document.importNode(svg, true);
+  return staticSvg(MASCOT_SVG, "mascot");
 }
 
 /** Corner placement, or the compact bottom-left corner for long-form pages. */

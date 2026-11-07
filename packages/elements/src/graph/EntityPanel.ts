@@ -13,6 +13,7 @@ import { el } from "../trust/dom";
 import { renderProvenanceFooter } from "../trust/ProvenanceFooter";
 import { renderReadingList } from "../trust/SourceRow";
 import type { SourceBadgeOptions } from "../trust/source-badge";
+import { resolveTrustMarks, type TrustMarks } from "../trust/trust-marks";
 import type { BundleNode, BundleStats, Claim, ClaimSource, ConnectionDetail } from "../types";
 import type { GraphNeighbor } from "./canvas";
 import { classLabel } from "./canvas-copy";
@@ -44,6 +45,8 @@ export interface EntityPanelOptions {
   labels?: Partial<PanelLabels>;
   /** Consumer domain badges for claim cards and the reading list. */
   sourceBadges?: SourceBadgeOptions;
+  /** Show or hide the footer, claim labels and confidence; all show by default. */
+  trustMarks?: TrustMarks;
   /** A breadcrumb before the current one was activated: `index` into the path. */
   onCrumb?: (index: number, node: BundleNode) => void;
   /** A connection row was activated. */
@@ -122,6 +125,7 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
   const warn = options.onWarn ?? defaultWarn;
   const labels = resolveLabels(DEFAULT_PANEL_LABELS, options.labels);
   const badges = options.sourceBadges === undefined ? {} : { sourceBadges: options.sourceBadges };
+  const marks = resolveTrustMarks(options.trustMarks);
 
   let stats = options.stats;
   let path: readonly BundleNode[] = [];
@@ -205,6 +209,7 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
         section.append(
           renderClaimCard(claim, {
             ...badges,
+            trustMarks: marks,
             replacement: resolveReplacement(claim, state.claims),
           }),
         );
@@ -335,6 +340,10 @@ export function mount(host: HTMLElement, options: EntityPanelOptions): EntityPan
       const section = el("section");
       section.append(el("h4", "epanel__hlabel", labels.readingList), list);
       scroll.append(section);
+    }
+    if (!marks.footer) {
+      foot.replaceChildren();
+      return;
     }
     foot.replaceChildren(
       renderProvenanceFooter("panel", {

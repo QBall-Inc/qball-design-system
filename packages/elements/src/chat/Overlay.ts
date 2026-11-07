@@ -4,7 +4,7 @@
 // (`.qoverlay`, `.qpanel*`); this module builds the DOM and owns the modal
 // behavior: focus trap, inert background and body scroll lock.
 
-import { el } from "../trust/dom";
+import { el, staticSvg } from "../trust/dom";
 import { buildMascot } from "./Launcher";
 
 export { focusWithoutRing } from "../focus";
@@ -29,6 +29,18 @@ export interface OverlayParts {
   composer: HTMLElement;
   /** The composer textarea. */
   input: HTMLTextAreaElement;
+}
+
+/** The `info` icon from lucide (ISC licence, lucide.dev), as the DS icon set ships it. */
+const INFO_ICON_SVG =
+  '<svg class="qpanel__disc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+
+/** The line under the composer: an info icon before the consumer's text; empty text, no icon. */
+function renderDisclaimer(text: string): HTMLElement {
+  const line = el("div", "qpanel__disc");
+  if (text.length === 0) return line;
+  line.append(staticSvg(INFO_ICON_SVG, "info icon"), el("span", "qpanel__disc-text", text));
+  return line;
 }
 
 /** Builds the overlay DOM, closed. All option strings land as text or attributes. */
@@ -59,7 +71,7 @@ export function renderOverlay(options: OverlayOptions): OverlayParts {
   setComposerText(input, options.placeholder);
   composer.append(el("span", "qpanel__prompt", "you ›"), input);
 
-  panel.append(head, body, composer, el("div", "qpanel__disc", options.disclaimer));
+  panel.append(head, body, composer, renderDisclaimer(options.disclaimer));
   root.append(scrim, panel);
   return { root, scrim, closeButton, body, composer, input };
 }

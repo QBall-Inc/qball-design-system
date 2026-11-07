@@ -13,7 +13,7 @@ import type { Page } from "@playwright/test";
 export const ORIGIN = "http://elements.test";
 const DIST = resolve(process.cwd(), "dist");
 const TOKENS = resolve(process.cwd(), "..", "tokens");
-const FIXTURES = resolve(process.cwd(), "..", "..", "fixtures", "qubrain");
+export const FIXTURES = resolve(process.cwd(), "..", "..", "fixtures", "qubrain");
 const PERF = resolve(process.cwd(), "perf");
 const THREE_BUILD_DIR = dirname(createRequire(import.meta.url).resolve("three"));
 

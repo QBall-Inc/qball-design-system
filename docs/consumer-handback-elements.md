@@ -1,4 +1,4 @@
-# Consumer hand-back packet — `@qball-inc/elements` @ 0.5.0
+# Consumer hand-back packet — `@qball-inc/elements` @ 1.0.0
 
 Everything a site needs to adopt the framework-free trust, chat and graph components. Companion docs are
 linked inline; this page is the index. For `@qball-inc/react`, see
@@ -397,7 +397,23 @@ fixtures (`fixtures/qubrain`) inside a real static site. However complete the de
 it does not prove any backend maps into the input model; that integration is a later,
 gated step.
 
-## 8. Not yet available
+## 8. 1.0.0 — the API freeze
 
-Nothing site-facing is outstanding. The one remaining step is adopting the certified
-backend contract, in a later integration phase.
+1.0.0 freezes the surface listed in [api-review-1.0.0.md](./api-review-1.0.0.md). Upgrading from
+0.6.0 needs no code change; see [migration-1.0.md](./migration-1.0.md). Upgrade tokens in the same
+change, because the new looks ship in its CSS. New options, all optional:
+
+```ts
+mountTranscript(handle.body, {
+  answer: { labels, trustMarks: { verified: false } }, // hide any trust mark; all show by default
+  intro: "a welcome line shown at the top of an empty chat", // not a turn; returns after clear()
+});
+GraphExplorer.mount(host, { ...options, trustMarks: { confidence: false } });
+```
+
+`trustMarks` keys: `stamp`, `footer`, `endorsed`, `verified`, `superseded`, `confidence`. An
+unknown key or a non-boolean value throws at mount.
+
+## 9. Not yet available
+
+Nothing site-facing is outstanding.

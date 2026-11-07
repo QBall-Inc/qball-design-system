@@ -20,6 +20,7 @@ export type {
 export { TRANSCRIPT_DEFAULTS, mountTranscript } from "./Transcript";
 
 export type { AnswerFeedbackOptions, AnswerOptions } from "./AnswerBox";
+export type { TrustMarks } from "../trust/trust-marks";
 export { ANSWER_DEFAULTS, renderAnswer, renderErrorAnswer } from "./AnswerBox";
 
 export type { NoticeAction, NoticeOptions } from "./Notice";

@@ -70,6 +70,26 @@ describe("overlay structure", () => {
   });
 });
 
+describe("disclaimer (site request S141: more prominent)", () => {
+  it("puts a decorative info icon before the consumer's text, verbatim", () => {
+    const line = mountIn({ disclaimer: "answers come from the notes." }).overlay.querySelector(
+      ".qpanel__disc",
+    )!;
+    const [icon, text] = [...line.children];
+    expect(icon?.tagName.toLowerCase()).toBe("svg");
+    expect(icon?.namespaceURI).toBe("http://www.w3.org/2000/svg");
+    expect(icon?.getAttribute("aria-hidden")).toBe("true");
+    expect(icon?.getAttribute("class")).toBe("qpanel__disc-ic");
+    expect(text?.className).toBe("qpanel__disc-text");
+    expect(line.textContent).toBe("answers come from the notes.");
+  });
+
+  it("with no disclaimer, the line stays empty (no lone icon)", () => {
+    const line = mountIn().overlay.querySelector(".qpanel__disc")!;
+    expect(line.childNodes).toHaveLength(0);
+  });
+});
+
 describe("open / close", () => {
   it("opens on launcher click, focuses the composer, locks the page, emits open", () => {
     const handle = mountIn();

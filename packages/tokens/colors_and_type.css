@@ -498,6 +498,7 @@ hr, .rule {
   --stage-panel-divider:       rgba(255, 255, 255, 0.07);   /* glass strip hairline */
   --stage-mark:                #E7E2DA;   /* launcher mascot ink over the stage */
   --stage-hub:                 #F5F2EA;   /* parchment-white the biggest graph hubs brighten toward */
+  --stage-unclassified:        #6B6E75;   /* cool slate grey for entity classes the palette does not know (legend + nodes) */
 
   /* accents (shared by both tiers) */
   --stage-signal:          #5B9E87;

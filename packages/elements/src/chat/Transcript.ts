@@ -9,6 +9,7 @@
 import { AnswerTurn, type TurnView } from "../answer-turn";
 import type { FeedbackChange, FeedbackValue } from "../trust/Feedback";
 import { el } from "../trust/dom";
+import { resolveTrustMarks } from "../trust/trust-marks";
 import { resolveNewTab } from "../trust/url";
 import { renderAnswer, renderErrorAnswer, type AnswerOptions } from "./AnswerBox";
 import { renderNotice, type NoticeAction } from "./Notice";
@@ -18,6 +19,12 @@ export interface TranscriptOptions {
   userPrompt?: string;
   /** Prompt beside bot turns (default `bot ›`). */
   botPrompt?: string;
+  /**
+   * A welcome line shown as a bot-styled row at the top of the empty chat, at
+   * mount and again after clear(). Plain text; `\n` starts a new line. Not a
+   * turn: no feedback, stamp, sources or events. Leave out for none.
+   */
+  intro?: string;
   /**
    * Passed to every AnswerTurn. Leave off until the backend guarantees an
    * irreversible grounded verdict before any tokens.
@@ -72,7 +79,7 @@ export interface TranscriptHandle {
   addBotTurn(options?: BotTurnOptions): AnswerTurn;
   /** Appends a notice (limits, pauses); `\n` starts a new line. */
   addNotice(text: string, options?: TranscriptNoticeOptions): HTMLElement;
-  /** Removes every rendered turn and notice. */
+  /** Removes every rendered turn and notice; the intro (if any) shows again. */
   clear(): void;
   /** Clears the container and detaches from every turn. */
   destroy(): void;
@@ -141,6 +148,7 @@ export function mountTranscript(
   );
   const botPrompt = optionalString("botPrompt", options.botPrompt, TRANSCRIPT_DEFAULTS.botPrompt);
   const errorText = optionalString("errorText", options.errorText, TRANSCRIPT_DEFAULTS.errorText);
+  const intro = optionalString("intro", options.intro, "");
   for (const name of ["onWarn", "onFeedback"] as const) {
     if (options[name] !== undefined && typeof options[name] !== "function") {
       throw new TypeError(`${name} must be a function.`);
@@ -154,8 +162,9 @@ export function mountTranscript(
     answerOptions.openLinksInNewTab = options.openLinksInNewTab;
   }
   if (options.newTabLabel !== undefined) answerOptions.newTabLabel = options.newTabLabel;
-  // Validates the switch and label at mount, not at the first answer.
+  // Validates the switches and label at mount, not at the first answer.
   resolveNewTab(answerOptions.openLinksInNewTab, answerOptions.newTabLabel);
+  resolveTrustMarks(answerOptions.trustMarks);
   const labels: unknown = answerOptions.labels;
   if (labels !== undefined) {
     const valid =
@@ -190,6 +199,15 @@ export function mountTranscript(
     const text = el("div", textClass);
     row.append(el("span", promptClass, prompt), text);
     return { row, text };
+  };
+
+  /** The welcome row, when the consumer gave an intro (empty text renders nothing). */
+  const showIntro = (): void => {
+    if (intro.length === 0) return;
+    const { row, text } = turnRow("qturn__bot", botPrompt, "qturn__t-bot");
+    row.classList.add("qturn--intro");
+    text.textContent = intro;
+    container.append(row);
   };
 
   const renderView = (
@@ -246,6 +264,7 @@ export function mountTranscript(
     }
   };
 
+  showIntro();
   return {
     container,
     addUserTurn(text) {
@@ -328,6 +347,7 @@ export function mountTranscript(
       requireLive("clear");
       for (const detach of [...detachers]) detach();
       container.replaceChildren();
+      showIntro();
     },
     destroy() {
       if (destroyed) return;

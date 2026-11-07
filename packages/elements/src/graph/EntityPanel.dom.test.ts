@@ -642,3 +642,26 @@ describe("EntityPanel — head action", () => {
     );
   });
 });
+
+describe("EntityPanel — trustMarks", () => {
+  it("hides the footer and passes the claim switches to every claim card", async () => {
+    const panel = mount(
+      host,
+      base({
+        detail: () => Promise.resolve(detailFixture("typed-superseded-with-replacement")),
+        trustMarks: { footer: false, superseded: false, confidence: false },
+      }),
+    );
+    panel.show({ path: [A, B] });
+    await settle();
+    expect(host.querySelectorAll(".claim")).toHaveLength(2);
+    expect(host.querySelector(".claim .badge, .claim__conf")).toBeNull();
+    expect(host.querySelector(".epanel__foot")?.childElementCount).toBe(0);
+  });
+
+  it("rejects a bad switch at mount", () => {
+    expect(() => mount(host, base({ trustMarks: { footer: "off" } as never }))).toThrow(
+      "trustMarks.footer must be a boolean.",
+    );
+  });
+});

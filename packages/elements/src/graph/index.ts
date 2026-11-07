@@ -30,6 +30,7 @@ export type {
 } from "./canvas";
 export { GRAPH_CANVAS_MARKER } from "./canvas";
 export type { CanvasLabels, ClassLabels } from "./canvas-copy";
+export type { TrustMarks } from "../trust/trust-marks";
 export { DEFAULT_CANVAS_LABELS } from "./canvas-copy";
 export type { GraphCanvasErrorCode } from "./canvas-errors";
 export { GraphCanvasError } from "./canvas-errors";

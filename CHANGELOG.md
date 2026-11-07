@@ -9,6 +9,21 @@ The versioning contract (token / type-stack / radius-scale changes = MAJOR; addi
 component / variant = MINOR) is defined in `CAVEATS.md` and enforced via Changesets
 in the release pipeline.
 
+## 1.0 freeze — @qball-inc/elements 1.0.0, @qball-inc/tokens 1.5.0, @qball-inc/react 1.0.11
+
+**`@qball-inc/elements` 1.0.0** freezes the API: everything in
+[docs/api-review-1.0.0.md](./docs/api-review-1.0.0.md) now follows the semver contract in
+`CAVEATS.md`. Upgrading from 0.6.0 needs no code change
+([docs/migration-1.0.md](./docs/migration-1.0.md)). New in this release, all optional:
+`trustMarks` switches to hide any trust mark (stamp, footer, endorsed, verified, superseded,
+confidence) in answers and the graph panel, and a transcript `intro` welcome row. Visible
+polish: inline citations link to their source, the finished sources and site-links rows are
+static with a chevron (no "still loading" shimmer), the disclaimer is more prominent, and
+unknown graph classes get their own legend grey.
+
+**`@qball-inc/tokens` 1.5.0** (minor) adds `--stage-unclassified` and the styles above.
+**`@qball-inc/react` 1.0.11** has no code changes; it depends on the new tokens.
+
 ## Release C — @qball-inc/elements 0.5.0, @qball-inc/tokens 1.3.0, @qball-inc/react 1.0.8 — 2026-10-20
 
 **`@qball-inc/elements` 0.5.0** adds `GraphExplorer` to `./graph`: the canvas, the facet

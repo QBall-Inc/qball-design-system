@@ -394,8 +394,7 @@ test("status text, the site-links line and its rows meet AA contrast in both the
           bg: panel === null ? "" : getComputedStyle(panel).backgroundColor,
         },
       ];
-      // The site-links line is a shimmer; with reduced motion it is painted
-      // in its base colour, which is what is checked.
+      // The site-links line is a static row painted in its own ink (1.0).
       const selectors = [
         ".qstatus",
         ".qsitelinks__line",
