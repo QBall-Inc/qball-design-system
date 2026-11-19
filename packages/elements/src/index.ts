@@ -12,6 +12,7 @@ export type {
   BundleNode,
   BundleStats,
   Claim,
+  ClaimReplacement,
   ClaimSource,
   ComentionEdge,
   ConnectionDetail,

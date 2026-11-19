@@ -35,7 +35,7 @@ import { resolveReplacement } from "@qball-inc/elements";
 renderClaimCard(claim: Claim, options?: ClaimCardOptions): HTMLElement
 
 interface ClaimCardOptions {
-  replacement?: Replacement | null; // the resolveReplacement() result
+  replacement?: Replacement | null; // the resolveReplacement() result; ignored when the claim carries current_replacement
   sourceBadges?: SourceBadgeOptions;
 }
 ```
@@ -50,6 +50,8 @@ Anatomy (`<article class="claim">`), top to bottom:
 | `.claim__mark--verified` | `⁂ verified` — only when `verification` is set.                                         |
 | `.claim__text`           | `claim_text` in full. Never truncated: designed for 40–200 characters.                  |
 | `.claim__now`            | Superseded only: `now` + the replacement's sentence, or `replacement not available`.    |
+| `.claim__now-date`       | Inline latest replacement only: `since {valid_from}` after `now` (omitted when null).   |
+| `.claim__now-note`       | Incomplete chain only: `a newer version isn't available`, on its own line.              |
 | `.claim__meta`           | Fixed two-row grid (below).                                                             |
 | `.claim__conf--{tier}`   | Row 1, left. Glyph + score (2 decimals) + tier word: `◆ 0.95 high`, `◈ 0.82 medium`.    |
 | `.claim__valid`          | Row 2, left. `validity: current`; superseded: `validity: {valid_from} - {valid_to}`.    |
@@ -86,6 +88,13 @@ Rules:
   `replacement not available` line. The atom does no lookups and never invents a
   sentence. Passing a replacement for a current claim, or one whose id differs from
   `superseded_by_claim_id`, throws.
+- **Latest replacement inline.** When the claim carries `current_replacement` (the
+  latest claim in its replacement chain, possibly from another entity pair), `now`
+  renders from it and the `replacement` option is ignored: `since {valid_from}` then
+  the sentence. `chain_complete: false` adds `a newer version isn't available`.
+  `null`, or a `null` or blank sentence, renders `replacement not available`. A non-null
+  value on a current claim, a non-boolean `chain_complete`, a non-integer `claim_id`, or a
+  `claim_text` / `valid_from` that is neither a string nor `null` throws. Leave the field out when your payload does not carry it.
 - **Unavailable source.** A `{ kind: "unavailable" }` source renders as plain
   `source unavailable` text: never dropped, never an empty link.
 

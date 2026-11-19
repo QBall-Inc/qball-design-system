@@ -129,3 +129,12 @@ selects them is relying on internals. 1.0 changes two of them (see `migration-1.
   elements 1.0 no longer applies it (tokens is past 1.0; removing a class would be a tokens MAJOR).
 - Carried forward on purpose: `GroundedTurn.abstained` stays opt-in. The consumer turns it on
   once its backend's abstained flag is reliable.
+
+## Additions since 1.0.0
+
+All additive (MINOR), so the 1.0.0 surface above is unchanged.
+
+- **1.1.0:** root type `ClaimReplacement`; optional `Claim.current_replacement`
+  (`ClaimReplacement | null`); `./trust` value `NEWER_VERSION_UNAVAILABLE`; CSS classes
+  `.claim__now-date` and `.claim__now-note` (tokens patch). See
+  [claim-card.md](./claim-card.md).

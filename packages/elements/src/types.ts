@@ -104,6 +104,23 @@ export interface UnavailableSource {
 
 export type ClaimSource = SourceRef | UnavailableSource;
 
+/**
+ * The latest claim in a superseded claim's replacement chain, as the consumer's
+ * payload carries it inline (it may belong to another entity pair).
+ */
+export interface ClaimReplacement {
+  claim_id: number;
+  /** `null` when the payload has no sentence for it: renders as unavailable. */
+  claim_text: string | null;
+  /** When the latest claim became true; `null` omits the date. */
+  valid_from: string | null;
+  /**
+   * `false` when the chain stopped at a missing step: this is the newest claim
+   * that resolved, and a newer one exists but is not available.
+   */
+  chain_complete: boolean;
+}
+
 export interface Claim {
   /** Ephemeral per revision. */
   claim_id: number;
@@ -116,6 +133,12 @@ export interface Claim {
   /** Set => superseded. */
   valid_to?: string;
   superseded_by_claim_id?: number;
+  /**
+   * The latest replacement, inline. Present => ClaimCard renders `now` from it
+   * (and ignores `ClaimCardOptions.replacement`); `null` on a superseded claim
+   * => `replacement not available`. Omit it when the payload does not carry it.
+   */
+  current_replacement?: ClaimReplacement | null;
   /** Absent on older data. */
   endorsement_tier?: string;
   verification?: string;

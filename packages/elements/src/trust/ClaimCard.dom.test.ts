@@ -1,9 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { resolveReplacement } from "../claims";
-import { REPLACEMENT_UNAVAILABLE, renderClaimCard, type ClaimCardOptions } from "./ClaimCard";
+import type { Claim } from "../types";
+import {
+  NEWER_VERSION_UNAVAILABLE,
+  REPLACEMENT_UNAVAILABLE,
+  renderClaimCard,
+  type ClaimCardOptions,
+} from "./ClaimCard";
 import {
   HOSTILE_MARKUP,
   claim,
+  inlineSuperseded,
   pwned,
   resetPwned,
   settle,
@@ -160,6 +167,151 @@ describe("renderClaimCard — superseded", () => {
     expect(() =>
       renderClaimCard(old, { replacement: { kind: "available", claim: claim({ claim_id: 9 }) } }),
     ).toThrow(/superseded_by_claim_id is 2/);
+  });
+});
+
+describe("renderClaimCard — inline latest replacement (current_replacement)", () => {
+  function nowParts(card: HTMLElement): (string | null)[] {
+    const now = card.querySelector(".claim__now");
+    if (now === null) throw new Error("claim__now missing");
+    return [...now.childNodes].map((node) => node.textContent);
+  }
+
+  it("one hop: now, its date, then the sentence", () => {
+    const card = renderClaimCard(inlineSuperseded("one-hop"));
+    expect(nowParts(card)).toEqual([
+      "now",
+      "since 2025-06-20",
+      "The tool is generally available and adds write access.",
+    ]);
+    expect(card.querySelector(".claim__now-note")).toBeNull();
+    expect(card.querySelector(".claim__text")?.textContent).toBe(supersededPair().old.claim_text);
+  });
+
+  it("a longer chain shows the LATEST claim and its date, not the first replacement", () => {
+    const card = renderClaimCard(inlineSuperseded("multi-hop"));
+    expect(nowParts(card)).toEqual([
+      "now",
+      "since 2026-02-14",
+      "The tool is retired; its features moved into the main product.",
+    ]);
+    // The superseded claim's own validity still ends at its first replacement.
+    expect(card.querySelector(".claim__valid")?.textContent).toBe(
+      "validity: 2025-03-11 - 2025-06-20",
+    );
+  });
+
+  it("an incomplete chain shows the newest resolved claim plus the note", () => {
+    const card = renderClaimCard(inlineSuperseded("incomplete"));
+    expect(nowParts(card)).toEqual([
+      "now",
+      "since 2025-11-02",
+      "The tool adds an offline mode.",
+      NEWER_VERSION_UNAVAILABLE,
+    ]);
+    expect(card.querySelector(".claim__now-note")?.textContent).toBe(NEWER_VERSION_UNAVAILABLE);
+  });
+
+  it("null renders the unavailable line with no date", () => {
+    const card = renderClaimCard(inlineSuperseded("missing"));
+    expect(nowParts(card)).toEqual(["now", REPLACEMENT_UNAVAILABLE]);
+  });
+
+  it("a null sentence renders the unavailable line; a null date is omitted", () => {
+    const base = inlineSuperseded("one-hop");
+    const noText = renderClaimCard({
+      ...base,
+      current_replacement: {
+        claim_id: 2,
+        claim_text: null,
+        valid_from: "2025-06-20",
+        chain_complete: true,
+      },
+    });
+    expect(nowParts(noText)).toEqual(["now", REPLACEMENT_UNAVAILABLE]);
+    const blank = renderClaimCard({
+      ...base,
+      current_replacement: {
+        claim_id: 2,
+        claim_text: "   ",
+        valid_from: "2025-06-20",
+        chain_complete: false,
+      },
+    });
+    expect(nowParts(blank)).toEqual(["now", REPLACEMENT_UNAVAILABLE]);
+    const noDate = renderClaimCard({
+      ...base,
+      current_replacement: {
+        claim_id: 2,
+        claim_text: "Later.",
+        valid_from: null,
+        chain_complete: true,
+      },
+    });
+    expect(nowParts(noDate)).toEqual(["now", "Later."]);
+  });
+
+  it("the inline field wins over a pooled replacement, including null over an available one", () => {
+    const { replacement } = supersededPair();
+    const pooled: ClaimCardOptions = { replacement: { kind: "available", claim: replacement } };
+    expect(nowParts(renderClaimCard(inlineSuperseded("multi-hop"), pooled))[2]).toBe(
+      "The tool is retired; its features moved into the main product.",
+    );
+    expect(nowParts(renderClaimCard(inlineSuperseded("missing"), pooled))).toEqual([
+      "now",
+      REPLACEMENT_UNAVAILABLE,
+    ]);
+  });
+
+  it("a current claim may carry null but rejects a non-null replacement", () => {
+    expect(
+      renderClaimCard(claim({ current_replacement: null })).querySelector(".claim__now"),
+    ).toBeNull();
+    expect(() =>
+      renderClaimCard(
+        claim({
+          current_replacement: {
+            claim_id: 2,
+            claim_text: "x",
+            valid_from: null,
+            chain_complete: true,
+          },
+        }),
+      ),
+    ).toThrow(/is current/);
+  });
+
+  it("fails fast on a malformed replacement", () => {
+    const base = inlineSuperseded("one-hop");
+    const bad = (patch: Record<string, unknown>): Claim =>
+      ({ ...base, current_replacement: { ...base.current_replacement, ...patch } }) as Claim;
+    expect(() => renderClaimCard(bad({ chain_complete: "yes" }))).toThrow(/chain_complete/);
+    expect(() => renderClaimCard(bad({ claim_id: 2.5 }))).toThrow(/claim_id/);
+    expect(() => renderClaimCard(bad({ claim_text: undefined }))).toThrow(
+      /claim_text must be a string or null/,
+    );
+    expect(() => renderClaimCard(bad({ valid_from: 20260627 }))).toThrow(
+      /valid_from must be a string or null/,
+    );
+  });
+
+  it("renders a hostile replacement sentence and date as inert text", async () => {
+    const base = inlineSuperseded("one-hop");
+    const card = renderClaimCard({
+      ...base,
+      current_replacement: {
+        claim_id: 2,
+        claim_text: HOSTILE_MARKUP,
+        valid_from: HOSTILE_MARKUP,
+        chain_complete: true,
+      },
+    });
+    document.body.append(card);
+    await settle();
+    expect(card.querySelector(".claim__now img")).toBeNull();
+    expect(nowParts(card)[1]).toBe(`since ${HOSTILE_MARKUP}`);
+    expect(nowParts(card)[2]).toBe(HOSTILE_MARKUP);
+    expect(pwned()).toBe(false);
   });
 });
 

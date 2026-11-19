@@ -8,7 +8,7 @@
 
 import { isSuperseded, type Replacement } from "../claims";
 import { confidenceMark, type ConfidenceTier } from "../confidence";
-import { isSourceUnavailable, type Claim, type ClaimSource } from "../types";
+import { isSourceUnavailable, type Claim, type ClaimReplacement, type ClaimSource } from "../types";
 import { el } from "./dom";
 import { resolveSourceBadge, sourceHost, type SourceBadgeOptions } from "./source-badge";
 import { SOURCE_UNAVAILABLE } from "./SourceRow";
@@ -19,7 +19,8 @@ export interface ClaimCardOptions {
   /**
    * What replaced a superseded claim — pass the `resolveReplacement()` result.
    * Omitted or `null` on a superseded claim renders the replacement-unavailable
-   * state. Must be omitted for a current claim.
+   * state. Must be omitted for a current claim. Ignored when the claim carries
+   * `current_replacement` (the inline latest replacement wins).
    */
   replacement?: Replacement | null;
   /** Consumer domain badges (see SourceBadgeOptions). */
@@ -30,6 +31,9 @@ export interface ClaimCardOptions {
 
 /** Shown in place of a replacement sentence the payload does not carry. */
 export const REPLACEMENT_UNAVAILABLE = "replacement not available";
+
+/** Follows the newest resolved replacement when its chain stopped at a missing step. */
+export const NEWER_VERSION_UNAVAILABLE = "a newer version isn't available";
 
 const TIER_CLASS: Record<ConfidenceTier, string> = {
   high: "claim__conf--high",
@@ -114,14 +118,55 @@ function tagsElement(
   return tags.childElementCount === 0 ? null : tags;
 }
 
-function replacementText(claim: Claim, replacement: Replacement | null): string {
-  if (replacement === null || replacement.kind === "unavailable") return REPLACEMENT_UNAVAILABLE;
+/** What the `now` line says: a sentence (or the unavailable line), its date, and the incomplete-chain note. */
+interface NowContent {
+  text: string;
+  since: string | null;
+  incomplete: boolean;
+}
+
+const UNAVAILABLE_NOW: NowContent = {
+  text: REPLACEMENT_UNAVAILABLE,
+  since: null,
+  incomplete: false,
+};
+
+function pooledNow(claim: Claim, replacement: Replacement | null): NowContent {
+  if (replacement === null || replacement.kind === "unavailable") return UNAVAILABLE_NOW;
   if (replacement.claim.claim_id !== claim.superseded_by_claim_id) {
     throw new RangeError(
       `claim ${String(claim.claim_id)}: replacement is claim ${String(replacement.claim.claim_id)}, but superseded_by_claim_id is ${String(claim.superseded_by_claim_id)}.`,
     );
   }
-  return replacement.claim.claim_text;
+  return { text: replacement.claim.claim_text, since: null, incomplete: false };
+}
+
+function inlineNow(claim: Claim, latest: ClaimReplacement | null): NowContent {
+  if (latest === null) return UNAVAILABLE_NOW;
+  const prefix = `claim ${String(claim.claim_id)}: current_replacement`;
+  if (!Number.isInteger(latest.claim_id))
+    throw new RangeError(`${prefix}.claim_id must be an integer (got ${String(latest.claim_id)}).`);
+  if (typeof latest.chain_complete !== "boolean")
+    throw new RangeError(
+      `${prefix}.chain_complete must be a boolean (got ${String(latest.chain_complete)}).`,
+    );
+  for (const key of ["claim_text", "valid_from"] as const) {
+    const value: unknown = latest[key];
+    if (value !== null && typeof value !== "string")
+      throw new RangeError(`${prefix}.${key} must be a string or null (got ${typeof value}).`);
+  }
+  // A blank sentence is no sentence: never a date over an empty line.
+  if (latest.claim_text === null || latest.claim_text.trim() === "") return UNAVAILABLE_NOW;
+  return { text: latest.claim_text, since: latest.valid_from, incomplete: !latest.chain_complete };
+}
+
+function nowElement(content: NowContent): HTMLElement {
+  const now = el("p", "claim__now");
+  now.append(el("b", undefined, "now"));
+  if (content.since !== null) now.append(el("span", "claim__now-date", `since ${content.since}`));
+  now.append(document.createTextNode(content.text));
+  if (content.incomplete) now.append(el("span", "claim__now-note", NEWER_VERSION_UNAVAILABLE));
+  return now;
 }
 
 /** `<article class="claim">` for one claim. */
@@ -129,7 +174,8 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
   const superseded = isSuperseded(claim);
   const replacement = options.replacement ?? null;
   const marks = resolveTrustMarks(options.trustMarks);
-  if (!superseded && replacement !== null) {
+  const inline = claim.current_replacement;
+  if (!superseded && (replacement !== null || (inline !== undefined && inline !== null))) {
     throw new RangeError(
       `claim ${String(claim.claim_id)} is current; a replacement applies only to a superseded claim.`,
     );
@@ -140,12 +186,9 @@ export function renderClaimCard(claim: Claim, options: ClaimCardOptions = {}): H
   if (tags !== null) card.append(tags);
   card.append(el("p", "claim__text", claim.claim_text));
   if (superseded) {
-    const now = el("p", "claim__now");
-    now.append(
-      el("b", undefined, "now"),
-      document.createTextNode(replacementText(claim, replacement)),
+    card.append(
+      nowElement(inline === undefined ? pooledNow(claim, replacement) : inlineNow(claim, inline)),
     );
-    card.append(now);
   }
 
   // Fixed 2x2 grid (components.css): confidence | source on row 1, validity on

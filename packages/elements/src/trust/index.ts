@@ -9,7 +9,7 @@ export type { ClaimCardOptions } from "./ClaimCard";
 export type { TrustMarks } from "./trust-marks";
 export { safeInternalUrl } from "./url";
 
-export { REPLACEMENT_UNAVAILABLE, renderClaimCard } from "./ClaimCard";
+export { NEWER_VERSION_UNAVAILABLE, REPLACEMENT_UNAVAILABLE, renderClaimCard } from "./ClaimCard";
 
 export type { SourceRowOptions } from "./SourceRow";
 export { SOURCE_UNAVAILABLE, renderReadingList, renderSourceRow } from "./SourceRow";

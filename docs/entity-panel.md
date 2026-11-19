@@ -175,9 +175,10 @@ What it renders:
 discussed together in N sources. association, not assertion.`, where N is
     the number of shared sources.
 
-  Superseded claims are never hidden. Each shows what replaced it when the
-  replacing claim is in the same hop, and "replacement not available" when it
-  is not.
+  Superseded claims are never hidden. Each shows the latest claim that replaced
+  it: from `current_replacement` when the claim carries it (any pair), otherwise
+  when the replacing claim is in the same hop, and "replacement not available"
+  when neither applies.
 
 - **Connections.** `connections · showing N of M` heads the rows. A typed row
   reads `k claims` in sage; a co-mention row reads `discussed together · n src`

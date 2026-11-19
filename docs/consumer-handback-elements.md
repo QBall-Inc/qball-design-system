@@ -414,6 +414,30 @@ GraphExplorer.mount(host, { ...options, trustMarks: { confidence: false } });
 `trustMarks` keys: `stamp`, `footer`, `endorsed`, `verified`, `superseded`, `confidence`. An
 unknown key or a non-boolean value throws at mount.
 
-## 9. Not yet available
+## 9. 1.1.0 — superseded claims show the latest replacement
+
+A superseded claim can now carry the latest claim in its replacement chain inline, so the
+`now` line shows it even when it lives on another entity pair. Map your backend's
+`current_replacement` onto each claim (`claim_id`, `claim_text`, `valid_from`,
+`chain_complete`; other keys are ignored) and pass `null` through as `null`:
+
+```ts
+const claim: Claim = {
+  ...mapped,
+  current_replacement: raw.current_replacement && {
+    claim_id: raw.current_replacement.claim_id,
+    claim_text: raw.current_replacement.claim_text,
+    valid_from: raw.current_replacement.valid_from,
+    chain_complete: raw.current_replacement.chain_complete,
+  },
+};
+```
+
+The card then reads `now · since {valid_from} · {sentence}`; an incomplete chain adds
+`a newer version isn't available`; `null` keeps `replacement not available`. Payloads without
+the field (chat answers) render exactly as before. Upgrade tokens to the matching patch in the
+same change: the date and note styles ship in its CSS.
+
+## 10. Not yet available
 
 Nothing site-facing is outstanding.

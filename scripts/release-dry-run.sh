@@ -5,12 +5,12 @@
 #   1. Zero-secret assertion — no NPM_TOKEN / NODE_AUTH_TOKEN in any workflow
 #      (publishing is npm OIDC trusted publishing only).
 #   2. OIDC assertion — release.yml grants id-token: write + sets provenance.
-#   3. Released-on-0.x check — @qball-inc/elements carries a released 0.x
-#      version (first published as 0.1.0; it stays on 0.x until its 1.0 is cut
-#      deliberately).
+#   3. Stable-release check — @qball-inc/elements carries a released stable
+#      version (>= 1.0.0; frozen at 1.0.0, so the semver contract applies).
 #   4. Next-release preview — drops an EPHEMERAL `minor` changeset for
-#      @qball-inc/elements alone and asserts `changeset status` proposes the
-#      next 0.x minor (0.N.x -> 0.(N+1).0), never a jump to 1.0.0.
+#      @qball-inc/elements and asserts `changeset status` proposes the next
+#      minor (M.N.x -> M.(N+1).0), never a major jump. A pending MAJOR
+#      changeset fails here on purpose: a breaking change must be deliberate.
 #   5. Prints the semver-contract scenarios for the releaser.
 #
 # Invoked by `just release-dry-run`. Safe to run repeatedly: it mutates nothing
@@ -43,17 +43,18 @@ grep -q 'NPM_CONFIG_PROVENANCE' .github/workflows/release.yml || fail "NPM_CONFI
 echo "OK — id-token: write + NPM_CONFIG_PROVENANCE present"
 
 echo
-echo "== 3. @qball-inc/elements is released and stays on 0.x =="
+echo "== 3. @qball-inc/elements is a released stable version (>= 1.0.0) =="
 tmp=".changeset/zzz-dry-run-probe.md"
 out="$(mktemp -u)"
 cleanup() { rm -f "$tmp" "$out"; }
 trap cleanup EXIT
 
 elements_ver="$(node -p "require('./packages/elements/package.json').version")"
-[[ "$elements_ver" =~ ^0\.([1-9][0-9]*)\.[0-9]+$ ]] \
-  || fail "@qball-inc/elements is $elements_ver — expected a released 0.x version (>= 0.1.0, < 1.0.0)"
-elements_minor="${BASH_REMATCH[1]}"
-echo "OK — @qball-inc/elements@$elements_ver (released, 0.x)"
+[[ "$elements_ver" =~ ^([1-9][0-9]*)\.([0-9]+)\.[0-9]+$ ]] \
+  || fail "@qball-inc/elements is $elements_ver — expected a released stable version (>= 1.0.0)"
+elements_major="${BASH_REMATCH[1]}"
+elements_minor="${BASH_REMATCH[2]}"
+echo "OK — @qball-inc/elements@$elements_ver (released, stable)"
 
 # planned_release <status.json> <name> -> prints "old -> new (type)" or "none".
 planned_release() {
@@ -69,11 +70,11 @@ echo "== 4. Next-release preview (ephemeral minor changeset, @qball-inc/elements
 printf '%s\n' '---' '"@qball-inc/elements": minor' '---' '' 'release-dry-run probe (ephemeral).' > "$tmp"
 pnpm exec changeset status --verbose --output "$out" >/dev/null
 plan="$(planned_release "$out" "@qball-inc/elements")"
-expected="$elements_ver -> 0.$((elements_minor + 1)).0 (minor)"
+expected="$elements_ver -> $elements_major.$((elements_minor + 1)).0 (minor)"
 echo "  @qball-inc/elements: $plan"
 [ "$plan" = "$expected" ] || fail "@qball-inc/elements expected $expected, got: $plan"
 rm -f "$tmp"
-echo "OK — a minor changeset keeps @qball-inc/elements on 0.x"
+echo "OK — a minor changeset proposes the next minor, never a major"
 
 echo
 echo "== Semver contract scenarios (declared per changeset; see RELEASING.md / CAVEATS.md) =="

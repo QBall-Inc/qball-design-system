@@ -1,0 +1,44 @@
+{
+  "_note": "ConnectionDetail fixture in the @qball-inc/elements input-model shape: what a consumer's adapter hands the panel for one clicked edge or path hop. Synthetic, public-safe content.",
+  "_case": "typed hop: claim 501 superseded; its first replacement and the latest claim (599, three steps on) both live on OTHER pairs, so the latest arrives inline as current_replacement; claim 502 is current and carries null",
+  "kind": "typed",
+  "claims": [
+    {
+      "claim_id": 501,
+      "claim_text": "the agent framework is closed-source",
+      "confidence": 0.82,
+      "confidence_tier": "high",
+      "valid_from": "2025-10-03",
+      "source": {
+        "episode_id": "ep-demo-0011",
+        "title": "Agent frameworks compared",
+        "url": "https://example.com/agent-frameworks-compared",
+        "source_type": "blog",
+        "save_date": "2025-10-03"
+      },
+      "valid_to": "2026-01-15",
+      "superseded_by_claim_id": 540,
+      "current_replacement": {
+        "claim_id": 599,
+        "claim_text": "the agent framework is open-source under a permissive licence",
+        "valid_from": "2026-06-27",
+        "chain_complete": true
+      }
+    },
+    {
+      "claim_id": 502,
+      "claim_text": "the agent framework supports custom tools",
+      "confidence": 0.9,
+      "confidence_tier": "high",
+      "valid_from": "2025-10-03",
+      "source": {
+        "episode_id": "ep-demo-0011",
+        "title": "Agent frameworks compared",
+        "url": "https://example.com/agent-frameworks-compared",
+        "source_type": "blog",
+        "save_date": "2025-10-03"
+      },
+      "current_replacement": null
+    }
+  ]
+}

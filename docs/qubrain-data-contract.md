@@ -30,7 +30,9 @@ Two distinctions the types make explicit:
 
 Superseded claims stay visible. A claim is superseded exactly when `valid_to` is set.
 `resolveReplacement(claim, claims)` returns the replacing claim when it is among `claims`,
-`{ kind: "unavailable" }` when it is not, and `null` for a current claim.
+`{ kind: "unavailable" }` when it is not, and `null` for a current claim. When your
+backend can name the latest claim in the replacement chain, pass it inline as
+`current_replacement`; it wins over the lookup and may come from any pair.
 
 ## Write your adapter
 
@@ -66,18 +68,23 @@ counts the entity as unattributable for those chips instead of guessing.
 
 **`Claim`**
 
-| Field                    | Type             | Notes                                                  |
-| ------------------------ | ---------------- | ------------------------------------------------------ |
-| `claim_id`               | number           | Per revision                                           |
-| `claim_text`             | string           | The full sentence the panel shows                      |
-| `confidence`             | number           | 0 to 1                                                 |
-| `confidence_tier`        | string           | `high`, `medium` (or `med`) or `low`, any case         |
-| `valid_from`             | string           | ISO date the claim became current                      |
-| `valid_to`               | string, optional | Set means superseded                                   |
-| `superseded_by_claim_id` | number, optional | The replacing claim, when known                        |
-| `endorsement_tier`       | string, optional | Omit when your data has none                           |
-| `verification`           | string, optional | Omit when your data has none                           |
-| `source`                 | `ClaimSource`    | A `SourceRef` or `{ kind: "unavailable", episode_id }` |
+| Field                    | Type                                 | Notes                                                  |
+| ------------------------ | ------------------------------------ | ------------------------------------------------------ |
+| `claim_id`               | number                               | Per revision                                           |
+| `claim_text`             | string                               | The full sentence the panel shows                      |
+| `confidence`             | number                               | 0 to 1                                                 |
+| `confidence_tier`        | string                               | `high`, `medium` (or `med`) or `low`, any case         |
+| `valid_from`             | string                               | ISO date the claim became current                      |
+| `valid_to`               | string, optional                     | Set means superseded                                   |
+| `superseded_by_claim_id` | number, optional                     | The replacing claim, when known                        |
+| `current_replacement`    | `ClaimReplacement` or null, optional | The latest replacement, inline; see below              |
+| `endorsement_tier`       | string, optional                     | Omit when your data has none                           |
+| `verification`           | string, optional                     | Omit when your data has none                           |
+| `source`                 | `ClaimSource`                        | A `SourceRef` or `{ kind: "unavailable", episode_id }` |
+
+`ClaimReplacement`: `claim_id` (integer), `claim_text` (string or null), `valid_from`
+(string or null), `chain_complete` (boolean; `false` = a newer claim exists but is not
+available). `null` on a superseded claim means no replacement is known.
 
 `SourceRef`: `episode_id`, `title`, `url`, `source_type`, `save_date`, all strings. If any
 of them is missing, emit `{ kind: "unavailable", episode_id }` instead of filling blanks.

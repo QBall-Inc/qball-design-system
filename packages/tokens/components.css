@@ -1212,6 +1212,9 @@ html[data-theme="dark"] .theme-toggle .ic-moon { display: inline; }
 .claim--superseded .claim__text{color:var(--text-secondary);text-decoration:line-through;text-decoration-thickness:1px}
 .claim__now{margin:0;font-family:var(--font-body);font-size:calc(13px * var(--text-scale, 1));line-height:1.5;color:var(--text-primary);border-left:2px solid var(--color-signal);padding-left:10px;text-wrap:pretty}
 .claim__now b{font-family:var(--font-ui);font-size:calc(10px * var(--text-scale, 1));letter-spacing:.8px;text-transform:uppercase;color:var(--color-signal);font-weight:600;margin-right:4px}
+/* when the latest replacement became true, and the incomplete-chain note (elements current_replacement) */
+.claim__now-date{font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.3px;color:var(--text-secondary);white-space:nowrap;margin-right:6px}
+.claim__now-note{display:block;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.3px;color:var(--text-secondary);margin-top:2px}
 .claim__tags{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-family:var(--font-ui);font-size:calc(10.5px * var(--text-scale, 1));letter-spacing:.3px}
 /* meta: one fixed 2x2 grid at every width — confidence | source on row 1,
    validity | source date on row 2. Cells wrap inside themselves, never reflow. */

@@ -15,6 +15,7 @@ const CLAIM_KEYS = new Set([
   "valid_from",
   "valid_to",
   "superseded_by_claim_id",
+  "current_replacement",
   "endorsement_tier",
   "verification",
   "source",
@@ -91,6 +92,18 @@ describe("detail fixtures exercise the trust semantics", () => {
       kind: "unavailable",
       claim_id: 399,
     });
+  });
+
+  it("an inline latest replacement carries exactly the input-model fields", () => {
+    const claims = claimsOf("typed-superseded-inline-replacement");
+    const latest = byId(claims, 501).current_replacement;
+    expect(Object.keys(latest ?? {}).sort()).toEqual(
+      ["chain_complete", "claim_id", "claim_text", "valid_from"].sort(),
+    );
+    // The latest claim is not the first replacement and is not in the hop.
+    expect(latest?.claim_id).not.toBe(byId(claims, 501).superseded_by_claim_id);
+    expect(claims.some((claim) => claim.claim_id === latest?.claim_id)).toBe(false);
+    expect(byId(claims, 502).current_replacement).toBeNull();
   });
 
   it("claims with unresolved sources keep the claim and mark the source unavailable", () => {

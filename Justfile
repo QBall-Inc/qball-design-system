@@ -113,7 +113,7 @@ pages-smoke:
     just --justfile {{justfile()}} pages-smoke-test
 
 # Release dry-run (non-mutating): asserts zero NPM_TOKEN + OIDC/provenance in the
-# workflows, previews the 1.0.0 version jump via an ephemeral changeset, and prints
+# workflows, previews the next elements minor via an ephemeral changeset, and prints
 # the semver-contract scenarios. Publishes nothing. Multi-line shell lives in the
 # committed script (WSL exec-bit pattern), invoked via bash.
 release-dry-run:

@@ -35,6 +35,12 @@ const PAGE = `<!doctype html>
         superseded: renderClaimCard(superseded, {
           replacement: { kind: "available", claim: claim({ claim_id: 11 }) },
         }),
+        latest: renderClaimCard({ ...superseded, current_replacement: { claim_id: 14,
+          claim_text: "The server now also runs in the browser build.", valid_from: "2026-09-30",
+          chain_complete: true } }),
+        incomplete: renderClaimCard({ ...superseded, current_replacement: { claim_id: 12,
+          claim_text: "The server adds a sync mode.", valid_from: "2026-07-02",
+          chain_complete: false } }),
         unavailable: renderClaimCard(claim({ source: { kind: "unavailable", episode_id: null } })),
         inert: renderClaimCard(claim({ source: source({ url: "javascript:void 0" }) })),
         // An inert source has no host, so its name is at most the longest built-in platform label.
@@ -215,6 +221,58 @@ for (const width of [320, 390, 1024]) {
       }
       expect(g.valid.bottom - g.valid.top).toBeLessThan(g.lineHeight * 2.5);
       if (width >= 1024) expect(oneLine).toBe(true);
+    });
+
+    test("an inline latest replacement: date on the now line, unbroken; note muted on its own line", async ({
+      page,
+    }) => {
+      const read = await page.evaluate(() => {
+        const box = (n: Element | null): DOMRect => {
+          if (n === null) throw new Error("missing");
+          return n.getBoundingClientRect();
+        };
+        const latest = document.querySelector('[data-variant="latest"]');
+        const incomplete = document.querySelector('[data-variant="incomplete"]');
+        const label = box(latest?.querySelector(".claim__now b") ?? null);
+        const date = box(latest?.querySelector(".claim__now-date") ?? null);
+        const card = box(latest);
+        const note = incomplete?.querySelector(".claim__now-note") ?? null;
+        const sentenceEnd = (() => {
+          const now = incomplete?.querySelector(".claim__now");
+          const text = [...(now?.childNodes ?? [])].find((n) => n.nodeType === Node.TEXT_NODE);
+          if (text === undefined) throw new Error("sentence missing");
+          const range = document.createRange();
+          range.selectNodeContents(text);
+          const rects = range.getClientRects();
+          return rects[rects.length - 1]!.bottom;
+        })();
+        const metaColour = getComputedStyle(
+          incomplete?.querySelector(".claim__meta") ?? document.body,
+        ).color;
+        return {
+          labelTop: label.top,
+          dateTop: date.top,
+          dateHeight: date.height,
+          dateRight: date.right,
+          cardRight: card.right,
+          noteTop: box(note).top,
+          sentenceEnd,
+          noteColour: note === null ? "" : getComputedStyle(note).color,
+          sentenceColour: getComputedStyle(
+            incomplete?.querySelector(".claim__now") ?? document.body,
+          ).color,
+          metaColour,
+        };
+      });
+      // The date follows `now` on the same line and never wraps inside itself.
+      expect(Math.abs(read.dateTop - read.labelTop)).toBeLessThan(read.dateHeight);
+      expect(read.dateHeight).toBeLessThan(24);
+      expect(read.dateRight).toBeLessThanOrEqual(read.cardRight);
+      // The note starts below the sentence, in the meta's secondary ink.
+      expect(read.noteTop).toBeGreaterThanOrEqual(read.sentenceEnd - 1);
+      expect(read.noteColour).toBe(read.metaColour);
+      // ...and that ink really is quieter than the sentence (not a vacuous match).
+      expect(read.noteColour).not.toBe(read.sentenceColour);
     });
 
     test("an unavailable source holds the right slot with no date; two lines on a phone", async ({

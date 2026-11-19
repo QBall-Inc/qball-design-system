@@ -190,6 +190,19 @@ describe("EntityPanel — hop detail", () => {
     expect(footer()).toBe("2 claims · 2 sources · revision 2026-07-17 · 1 superseded shown");
   });
 
+  it("shows the inline latest replacement even though it is not among the hop's claims", async () => {
+    const fixture = detailFixture("typed-superseded-inline-replacement");
+    const panel = mount(host, base({ detail: () => Promise.resolve(fixture) }));
+    panel.show({ path: [A, B] });
+    await settle();
+    expect(host.querySelectorAll(".claim.claim--superseded")).toHaveLength(1);
+    const now = host.querySelector(".claim--superseded .claim__now");
+    expect(now?.querySelector(".claim__now-date")?.textContent).toBe("since 2026-06-27");
+    expect(now?.textContent).toContain(fixture.claims![0]!.current_replacement!.claim_text!);
+    expect(now?.textContent).not.toContain("replacement not available");
+    expect(host.querySelectorAll(".claim__now")).toHaveLength(1);
+  });
+
   it("lists unavailable sources in the reading list, deduped by episode", async () => {
     const panel = mount(
       host,

@@ -9,6 +9,15 @@ The versioning contract (token / type-stack / radius-scale changes = MAJOR; addi
 component / variant = MINOR) is defined in `CAVEATS.md` and enforced via Changesets
 in the release pipeline.
 
+## @qball-inc/elements 1.1.0, @qball-inc/tokens 1.5.1
+
+**`@qball-inc/elements` 1.1.0** lets a superseded claim carry the latest claim in its
+replacement chain inline (`Claim.current_replacement`, new `ClaimReplacement` type), so the
+card's `now` line shows what is true now, with a `since` date, even when the replacing claim
+lives on another entity pair. An incomplete chain adds `a newer version isn't available`.
+Payloads without the field render as before. **`@qball-inc/tokens` 1.5.1** ships the date and
+note styles.
+
 ## 1.0 freeze — @qball-inc/elements 1.0.0, @qball-inc/tokens 1.5.0, @qball-inc/react 1.0.11
 
 **`@qball-inc/elements` 1.0.0** freezes the API: everything in

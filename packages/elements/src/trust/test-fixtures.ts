@@ -1,6 +1,6 @@
 // Synthetic claim/source builders for the trust-atom tests (no real data).
 import type { EvidenceLabels } from "../locked-strings";
-import type { Claim, SourceRef, UnavailableSource } from "../types";
+import type { Claim, ClaimReplacement, SourceRef, UnavailableSource } from "../types";
 
 export const HOSTILE_MARKUP = '<img src=x onerror="globalThis.__trustPwned=1">';
 
@@ -48,6 +48,37 @@ export function supersededPair(): { old: Claim; replacement: Claim } {
       valid_from: "2025-06-20",
     }),
   };
+}
+
+/**
+ * A superseded claim carrying its latest replacement inline, in the shapes the
+ * backend contract names: one hop, a longer chain (the latest is NOT the first
+ * replacement), an incomplete chain, and no replacement at all.
+ */
+export function inlineSuperseded(shape: "one-hop" | "multi-hop" | "incomplete" | "missing"): Claim {
+  const old = supersededPair().old;
+  const latest: Record<typeof shape, ClaimReplacement | null> = {
+    "one-hop": {
+      claim_id: 2,
+      claim_text: "The tool is generally available and adds write access.",
+      valid_from: "2025-06-20",
+      chain_complete: true,
+    },
+    "multi-hop": {
+      claim_id: 7,
+      claim_text: "The tool is retired; its features moved into the main product.",
+      valid_from: "2026-02-14",
+      chain_complete: true,
+    },
+    incomplete: {
+      claim_id: 5,
+      claim_text: "The tool adds an offline mode.",
+      valid_from: "2025-11-02",
+      chain_complete: false,
+    },
+    missing: null,
+  };
+  return { ...old, current_replacement: latest[shape] };
 }
 
 /** Lets any queued event handlers run before asserting nothing executed. */
